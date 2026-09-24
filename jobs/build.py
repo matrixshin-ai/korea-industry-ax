@@ -20,6 +20,10 @@ classified.json -> public/data.json
 7. Sort within each section: score = grade_points(S=100/A=70/B=40) +
    ulsan_score + core*10, desc, then newest first.
 8. Write public/data.json with generation stats for the footer/status line.
+9. Write logs/yield_YYYYMMDD_HHMM.json: per-RSS-feed and per-Naver-query
+   candidate counts and S/A counts (each candidate's own grade, before any
+   dedup merging) - for a manual look after a week of runs at which sources
+   are actually finding S/A-worthy content. Nothing is pruned automatically.
 """
 import glob
 import json
@@ -63,6 +67,30 @@ def parse_published(value):
         return dtparser.parse(value)
     except (ValueError, TypeError, OverflowError):
         return None
+
+
+def compute_yield_log(classified):
+    """Per-RSS-feed and per-Naver-query candidate/S/A counts, using each
+    candidate's own grade (before any dedup merging) - a feed or query that
+    gets merged away a lot is a redundancy signal, not a yield signal, so
+    dedup'd-away duplicates still count here."""
+    rss = {}
+    naver = {}
+    for c in classified:
+        grade = c.get("grade")
+        feed = c.get("origin_feed")
+        query = c.get("origin_query")
+        if feed:
+            entry = rss.setdefault(feed, {"source": c.get("source", ""), "candidates": 0, "s": 0, "a": 0})
+            entry["candidates"] += 1
+            if grade in ("S", "A"):
+                entry[grade.lower()] += 1
+        if query:
+            entry = naver.setdefault(query, {"candidates": 0, "s": 0, "a": 0})
+            entry["candidates"] += 1
+            if grade in ("S", "A"):
+                entry[grade.lower()] += 1
+    return {"rss": rss, "naver": naver}
 
 
 def _all_members(item):
@@ -185,6 +213,8 @@ def main():
             it.pop("collected_via", None)
             it.pop("unclassified", None)
             it.pop("prefiltered", None)
+            it.pop("origin_feed", None)
+            it.pop("origin_query", None)
 
     run_log = load_latest_run_log() or {}
 
@@ -222,12 +252,19 @@ def main():
     with open(DATA_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    yield_log = compute_yield_log(classified)
+    yield_path = os.path.join(LOGS_DIR, f"yield_{datetime.now(KST).strftime('%Y%m%d_%H%M')}.json")
+    with open(yield_path, "w", encoding="utf-8") as f:
+        json.dump(yield_log, f, ensure_ascii=False, indent=2)
+
     print(f"Built public/data.json: {data['article_count']} articles "
           f"(section1={len(sections['1'])}, section2={len(sections['2'])}, section3={len(sections['3'])})")
     print(f"  graded: {len(graded)}, exact-dedup: -{dropped_exact_dupe}, "
           f"window-filtered: -{dropped_out_of_window}, algo-dedup: {before_algo_dedup} -> {after_algo_dedup}, "
           f"llm-dedup: -> {after_llm_dedup}, regrade-dropped(C/X reps): -{dropped_not_published}")
     print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)} B={grade_counts.get('B', 0)}")
+    print(f"  yield log: {yield_path} ({len(yield_log['rss'])} feeds, {len(yield_log['naver'])} queries)")
 
 
 if __name__ == "__main__":

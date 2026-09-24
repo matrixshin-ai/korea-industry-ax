@@ -160,6 +160,65 @@ def test_build_main_skips_item_with_invalid_section_instead_of_crashing(tmp_path
     assert result["stats"]["dropped_invalid_section"] == 1
 
 
+def test_compute_yield_log_aggregates_per_feed_and_per_query():
+    classified = [
+        {"title": "a", "grade": "S", "source": "매체A", "origin_feed": "https://a.example.com/rss"},
+        {"title": "b", "grade": "B", "source": "매체A", "origin_feed": "https://a.example.com/rss"},
+        {"title": "c", "grade": "X", "source": "매체A", "origin_feed": "https://a.example.com/rss"},
+        {"title": "d", "grade": "A", "source": "매체B", "origin_query": "\"AI 전환\""},
+        {"title": "e", "grade": "C", "source": "매체B", "origin_query": "\"AI 전환\""},
+    ]
+
+    result = build.compute_yield_log(classified)
+
+    feed_stats = result["rss"]["https://a.example.com/rss"]
+    assert feed_stats["candidates"] == 3
+    assert feed_stats["s"] == 1
+    assert feed_stats["a"] == 0
+    assert feed_stats["source"] == "매체A"
+
+    query_stats = result["naver"]['"AI 전환"']
+    assert query_stats["candidates"] == 2
+    assert query_stats["s"] == 0
+    assert query_stats["a"] == 1
+
+
+def test_compute_yield_log_ignores_items_without_origin():
+    result = build.compute_yield_log([{"title": "x", "grade": "S"}])
+    assert result == {"rss": {}, "naver": {}}
+
+
+def test_build_main_writes_yield_log(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    recent = _iso(now - timedelta(hours=1))
+    classified = [
+        {"title": "S등급 기사", "link": "https://x.example.com/1", "source": "매체", "summary": "",
+         "published": recent, "grade": "S", "section": 1, "region": "전국", "loc": None,
+         "ulsan_score": 0, "industry": "기타", "tech": [], "core": 0, "origin_feed": "https://feed.example.com/rss"},
+    ]
+    classified_path = tmp_path / "classified.json"
+    data_path = tmp_path / "public" / "data.json"
+    logs_dir = tmp_path / "logs"
+    classified_path.write_text(json.dumps(classified), encoding="utf-8")
+
+    monkeypatch.setattr(build, "CLASSIFIED_PATH", str(classified_path))
+    monkeypatch.setattr(build, "DATA_PATH", str(data_path))
+    monkeypatch.setattr(build, "LOGS_DIR", str(logs_dir))
+    monkeypatch.setattr(build, "get_collection_hours", lambda: 24)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    build.main()
+
+    yield_files = list(logs_dir.glob("yield_*.json"))
+    assert len(yield_files) == 1
+    yield_data = json.loads(yield_files[0].read_text(encoding="utf-8"))
+    assert yield_data["rss"]["https://feed.example.com/rss"]["s"] == 1
+
+    # origin fields are internal-only - shouldn't leak into the public payload.
+    published_item = json.loads(data_path.read_text(encoding="utf-8"))["sections"]["1"]["items"][0]
+    assert "origin_feed" not in published_item
+
+
 def test_build_main_skips_llm_dedup_without_api_key(tmp_path, monkeypatch):
     now = datetime.now(timezone.utc)
     recent = _iso(now - timedelta(hours=1))

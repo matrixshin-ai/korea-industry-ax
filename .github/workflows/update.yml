@@ -56,11 +56,12 @@ jobs:
       - name: Build public/data.json
         run: python jobs/build.py
 
-      - name: Trim old logs (keep most recent 14)
+      - name: Trim old logs (keep most recent 14 - ~2 weeks of daily runs)
         run: |
           cd logs
           ls -1t run_*.json 2>/dev/null | tail -n +15 | xargs -r rm --
           ls -1t classify_*.json 2>/dev/null | tail -n +15 | xargs -r rm --
+          ls -1t yield_*.json 2>/dev/null | tail -n +15 | xargs -r rm --
 
       - name: Commit and push
         run: |

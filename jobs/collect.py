@@ -123,6 +123,7 @@ def fetch_rss_candidates(feeds, hours):
                     "source": source,
                     "published": published.isoformat() if published else None,
                     "collected_via": "rss",
+                    "origin_feed": url,
                 })
 
             feed_log.append({
@@ -240,6 +241,7 @@ def fetch_naver_candidates(queries, hours, domain_map):
                     "source": source_from_domain(link, domain_map),
                     "published": pub_date.isoformat() if pub_date else None,
                     "collected_via": "naver",
+                    "origin_query": query,
                 })
                 results_in_window += 1
 
