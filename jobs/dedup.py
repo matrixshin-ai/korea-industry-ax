@@ -395,7 +395,11 @@ def deduplicate_articles(
     related_map: Dict[int, List[dict]] = {i: [] for i in range(len(stage1))}
 
     def _as_related(item: dict) -> dict:
-        return {"source": item.get("source", ""), "link": item.get("link", "")}
+        # Keep the full item (not just source/link) so a later grade-aware
+        # re-representation pass (see build.py's regrade_representatives) can
+        # still see every absorbed candidate's own grade. Reduced to
+        # {source, link} only when the final published JSON is written.
+        return dict(item)
 
     for bucket_key, group in buckets.items():
         kept: List[Tuple[int, dict, List[str]]] = []

@@ -143,11 +143,11 @@ def apply_merge_map(items: list, merge_map: dict) -> list:
         if link in merge_map:
             continue  # folded into another representative below
         merged = dict(it)
-        extra_related = [
-            {"source": by_link[l].get("source", ""), "link": l}
-            for l in absorbed_into.get(link, [])
-            if l in by_link
-        ]
+        # Keep the full absorbed item (not just source/link) - it may itself
+        # carry a `related` list from dedup.py's earlier pass, and a later
+        # grade-aware re-representation pass (build.py's regrade_representatives)
+        # needs to see every absorbed candidate's own grade, nested or not.
+        extra_related = [dict(by_link[l]) for l in absorbed_into.get(link, []) if l in by_link]
         if extra_related:
             merged["related"] = list(merged.get("related", [])) + extra_related
         result.append(merged)

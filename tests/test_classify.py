@@ -40,17 +40,19 @@ def test_parse_json_array_strips_code_fence():
 
 
 def test_expand_compact_result_x_is_minimal():
-    assert classify.expand_compact_result({"i": 0, "g": "X"}) == {
-        "grade": "X", "section": None, "region": None, "loc": None, "ulsan_score": 0,
-        "industry": None, "tech": [], "core": 0,
+    assert classify.expand_compact_result({"i": 0, "m": "언급", "g": "X"}) == {
+        "grade": "X", "m": "언급", "section": None, "region": None, "loc": None, "ulsan_score": 0,
+        "industry": None, "tech": [], "core": 0, "evidence": None,
     }
 
 
 def test_expand_compact_result_s_maps_all_fields():
-    compact = {"i": 0, "g": "S", "s": 1, "r": "울산", "loc": None, "u": 10,
-               "ind": "조선", "tech": ["로봇", "피지컬AI", "기타없는값"], "core": 1}
+    compact = {"i": 0, "m": "주제", "g": "S", "s": 1, "r": "울산", "loc": None, "u": 10,
+               "ind": "조선", "tech": ["로봇", "피지컬AI", "기타없는값"], "core": 1,
+               "e": "HD현대重-발전엔진공장 신설-울산"}
     expanded = classify.expand_compact_result(compact)
     assert expanded["grade"] == "S"
+    assert expanded["m"] == "주제"
     assert expanded["section"] == 1
     assert expanded["region"] == "울산"
     assert expanded["loc"] is None
@@ -58,6 +60,69 @@ def test_expand_compact_result_s_maps_all_fields():
     assert expanded["industry"] == "조선"
     assert expanded["tech"] == ["로봇", "피지컬AI"]  # capped at 2
     assert expanded["core"] == 1
+    assert expanded["evidence"] == "HD현대重-발전엔진공장 신설-울산"
+
+
+def test_expand_compact_result_m_bujeon_caps_grade_at_b():
+    s_capped = classify.expand_compact_result(
+        {"i": 0, "m": "부분", "g": "S", "s": 1, "r": "전국", "u": 0, "ind": "조선", "tech": [], "core": 0}
+    )
+    assert s_capped["grade"] == "B"
+
+    a_capped = classify.expand_compact_result(
+        {"i": 0, "m": "부분", "g": "A", "s": 1, "r": "전국", "u": 0, "ind": "조선", "tech": [], "core": 0}
+    )
+    assert a_capped["grade"] == "B"
+
+    c_unaffected = classify.expand_compact_result(
+        {"i": 0, "m": "부분", "g": "C", "s": 1, "r": "전국", "u": 0, "ind": "조선", "tech": [], "core": 0}
+    )
+    assert c_unaffected["grade"] == "C"  # already <= B, cap is a no-op
+
+
+def test_expand_compact_result_m_eongeup_forces_x_regardless_of_grade():
+    result = classify.expand_compact_result(
+        {"i": 0, "m": "언급", "g": "S", "s": 1, "r": "울산", "u": 10, "ind": "조선", "tech": [],
+         "core": 1, "e": "누군가-뭔가 했다-어딘가"}
+    )
+    assert result["grade"] == "X"
+    assert result["m"] == "언급"
+
+
+def test_expand_compact_result_missing_section_forces_x_instead_of_none():
+    # A malformed Haiku response (missing/null "s") for a non-X grade must not
+    # silently produce section=None - that crashes build.py's section lookup.
+    missing = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "B", "r": "전국", "u": 0, "ind": "금융", "tech": [], "core": 0}
+    )
+    assert missing["grade"] == "X"
+    assert missing["section"] is None
+
+    invalid = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "B", "s": 7, "r": "전국", "u": 0, "ind": "금융", "tech": [], "core": 0}
+    )
+    assert invalid["grade"] == "X"
+
+
+def test_expand_compact_result_missing_evidence_downgrades_s_and_a_by_one_level():
+    s_no_evidence = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "S", "s": 1, "r": "울산", "u": 10, "ind": "조선", "tech": [], "core": 0}
+    )
+    assert s_no_evidence["grade"] == "A"
+    assert s_no_evidence["evidence"] is None
+
+    a_no_evidence = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "A", "s": 1, "r": "전국", "u": 0, "ind": "조선", "tech": [], "core": 0}
+    )
+    assert a_no_evidence["grade"] == "B"
+    assert a_no_evidence["evidence"] is None
+
+    s_with_evidence = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "S", "s": 1, "r": "울산", "u": 10, "ind": "조선", "tech": [], "core": 0,
+         "e": "현대차-휴머노이드 학습-울산공장"}
+    )
+    assert s_with_evidence["grade"] == "S"
+    assert s_with_evidence["evidence"] == "현대차-휴머노이드 학습-울산공장"
 
 
 def test_expand_compact_result_loc_only_kept_for_tajachidae():
@@ -112,16 +177,16 @@ def test_cache_key_stable_across_tracking_params():
 
 
 def test_fields_to_cache_entry_and_back_roundtrip():
-    fields = {"grade": "A", "section": 2, "region": "타지자체", "loc": "경남", "ulsan_score": 0,
-              "industry": "반도체", "tech": ["데이터센터"], "core": 0}
+    fields = {"grade": "A", "m": "주제", "section": 2, "region": "타지자체", "loc": "경남", "ulsan_score": 0,
+              "industry": "반도체", "tech": ["데이터센터"], "core": 0, "evidence": "OO사-AI반도체 실증-경남공장"}
     entry = classify.fields_to_cache_entry(fields, "2026-01-05T05:00:00+09:00")
     assert entry["pub"] == "2026-01-05T05:00:00+09:00"
     assert classify.cache_entry_to_fields(entry) == fields
 
 
 def test_fields_to_cache_entry_x_grade_is_minimal():
-    entry = classify.fields_to_cache_entry({"grade": "X"}, "2026-01-05T05:00:00+09:00")
-    assert entry == {"g": "X", "pub": "2026-01-05T05:00:00+09:00"}
+    entry = classify.fields_to_cache_entry({"grade": "X", "m": "언급"}, "2026-01-05T05:00:00+09:00")
+    assert entry == {"g": "X", "m": "언급", "pub": "2026-01-05T05:00:00+09:00"}
 
 
 def test_load_and_prune_cache_drops_entries_older_than_48h(tmp_path, monkeypatch):
@@ -175,7 +240,8 @@ def test_classify_groups_sync_marks_unclassified_on_api_exception():
 def test_classify_groups_sync_success_uses_compact_schema():
     client = MagicMock()
     client.messages.create.return_value = _text_response(
-        '[{"i":0,"g":"S","s":1,"r":"울산","loc":null,"u":10,"ind":"조선","tech":["로봇"],"core":1},{"i":1,"g":"X"}]'
+        '[{"i":0,"m":"주제","g":"S","s":1,"r":"울산","loc":null,"u":10,"ind":"조선","tech":["로봇"],"core":1,'
+        '"e":"현대차-휴머노이드 학습-울산공장"},{"i":1,"m":"언급","g":"X"}]'
     )
     items = [
         {"id": 0, "title": "t0", "summary": "s0", "source": "src"},
@@ -223,7 +289,10 @@ def test_classify_groups_sync_splits_in_half_on_truncated_max_tokens_then_succee
 def test_classify_via_batches_api_completes_without_timeout():
     client = MagicMock()
     client.messages.batches.create.return_value = type("B", (), {"id": "batch_1", "processing_status": "ended"})()
-    msg = _text_response('[{"i":0,"g":"A","s":2,"r":"전국","loc":null,"u":0,"ind":"반도체","tech":[],"core":0}]')
+    msg = _text_response(
+        '[{"i":0,"m":"주제","g":"A","s":2,"r":"전국","loc":null,"u":0,"ind":"반도체","tech":[],"core":0,'
+        '"e":"OO연구소-AI반도체 실증-대전"}]'
+    )
     result = type("R", (), {"custom_id": "g0", "result": type("Res", (), {"type": "succeeded", "message": msg})()})()
     client.messages.batches.results.return_value = [result]
 
@@ -268,7 +337,8 @@ def test_main_uses_cache_and_skips_api_call(tmp_path, monkeypatch):
     ]
     cache = {
         classify.cache_key("https://example.com/cached"): {
-            "g": "S", "s": 1, "r": "울산", "loc": None, "u": 10, "ind": "조선", "t": ["로봇"], "core": 1,
+            "g": "S", "m": "주제", "s": 1, "r": "울산", "loc": None, "u": 10, "ind": "조선", "t": ["로봇"],
+            "core": 1, "e": "현대차-휴머노이드 학습-울산공장",
             "pub": (now - timedelta(hours=5)).isoformat(),
         }
     }

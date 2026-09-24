@@ -77,6 +77,7 @@ TECH_OPTIONS = ["피지컬AI", "로봇", "데이터센터", "디지털트윈", "
 CORE_INDUSTRIES = {"에너지", "석유화학", "자동차", "조선"}
 GRADES = ("S", "A", "B", "C", "X")
 GRADE_POINTS = {"S": 100, "A": 70, "B": 40}  # C/X are never published, no score needed
+M_VALUES = ("주제", "부분", "언급")
 
 SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매기는 분류기입니다.
 독자는 울산을 중심으로 전국 산업 AX를 판단하는 사람들입니다 - 중앙정부·울산시 등 지자체
@@ -87,10 +88,21 @@ SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매
 각 기사를 분류해 JSON 배열만 반환하세요. 설명, 코드블록, 다른 텍스트를 절대 추가하지 마세요.
 입력과 정확히 같은 개수만 반환하면 되고 순서는 상관없습니다(각 원소에 입력의 i를 그대로 포함).
 
-출력 스키마 (키 이름을 반드시 그대로 사용):
-- X등급이면 딱 이 두 필드만 반환: {"i": id, "g": "X"}
-- X가 아니면: {"i": id, "g": "S"|"A"|"B"|"C", "s": section, "r": region, "loc": 시도명(또는 null),
-  "u": ulsan_score, "ind": industry, "tech": [tech, ...], "core": 0또는1}
+판정은 두 단계입니다: 먼저 m(주제성)을 판정하고, 그다음 등급을 매기세요. m이 등급의
+상한을 결정합니다.
+
+1단계 - m(주제성), 등급보다 먼저 판정:
+- "주제": 제목 또는 요약 첫 문장이 AX(AI 도입·지원·투자·정책·인재) 자체를 다룬다 ->
+  등급 정상 부여 (S~C 모두 가능)
+- "부분": AX가 기사의 한 축이지만 기사의 주제는 아니다(다른 주제 기사 속에 AX 내용이
+  섞여 있음) -> 등급 상한 B (아무리 내용이 좋아도 B를 넘지 못함)
+- "언급": 나열 속 한 항목, 지나가는 발언, 배경 설명 수준일 뿐이다 -> 무조건 X
+
+2단계 - 출력 스키마 (키 이름을 반드시 그대로 사용):
+- m이 "언급"이거나 X등급이면 딱 이 세 필드만 반환: {"i": id, "m": m값, "g": "X"}
+- 그 외: {"i": id, "m": m값, "g": "S"|"A"|"B"|"C", "s": section, "r": region,
+  "loc": 시도명(또는 null), "u": ulsan_score, "ind": industry, "tech": [tech, ...],
+  "core": 0또는1, "e": 근거(S·A만, 아래 설명) 또는 null}
   - s(section): 1/2/3 중 하나
     1=기업·현장(기업 AX 전략, AI 드라이브, 공장 도입, 자율제조·다크팩토리, 생산성 개선,
        산업 AI 사업화, FDE 현장 투입 실적)
@@ -114,9 +126,14 @@ SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매
     피지컬AI, 로봇, 데이터센터, 디지털트윈, 자율제조, LLM·에이전트, 기타
   - core: ind가 에너지/석유화학/자동차/조선 중 하나이면서 "공장·현장" 수준의 실제 AI
     도입(등급 S 수준)이면 1, 그 외에는 0
+  - e(근거): 등급이 S 또는 A일 때만 작성. "주체-AI 내용-대상/장소" 형식으로 20자
+    내외(예: "현대차-휴머노이드 학습-울산공장", "HD현대重-발전엔진공장 신설-울산").
+    구체적인 주체·행위·장소를 채워 넣을 수 없다면(기사에 그 정보가 없다면) 등급을
+    한 단계 낮추세요(S->A, A->B) - 등급이 B 이하가 되면 e는 null입니다.
 
-등급 판정 순서: 먼저 X(제외) 해당 여부를 확인하고, X가 아니면 S -> A -> B -> C 순서로
-어디에 해당하는지 확인하세요 (더 높은 등급부터 검토).
+등급 판정 순서: m이 "언급"이면 바로 X. 아니면 X(제외) 해당 여부를 먼저 확인하고,
+X가 아니면 S -> A -> B -> C 순서로 어디에 해당하는지 확인하세요(더 높은 등급부터 검토,
+m="부분"이면 B에서 멈춤).
 
 X(제외) - 아래 중 하나라도 해당하면 다른 조건과 상관없이 무조건 X:
 - 금융권 AI 협약·금융상품·ETF·펀드·주가·실적
@@ -127,6 +144,11 @@ X(제외) - 아래 중 하나라도 해당하면 다른 조건과 상관없이 �
 - 금융·의료 "업무" AI (내부 업무 효율화 등 - 금융/의료 산업 자체의 AX가 아닌 경우)
 - AI 요소가 명시되지 않은 공장 신설·설비 투자 (예: 원전설비 공장 신설 자체는 AI 언급이
   없으면 X)
+- 단체장·총수·정치인의 동정·일정 기사 (누가 어디를 방문했다/무엇을 했다는 일정 소개.
+  단, 제목 자체가 AX 내용을 주제로 다루면 예외 - "S등급" 판단 기준으로 감)
+- 종합 인터뷰, "OO대 이슈" 모음, 주간·월간 정리 기사 (여러 주제를 나열하는 기사)
+- 칼럼·사설 (단, 제목 자체가 AX를 주제로 다루면 예외)
+- AI 요소가 없는 투자 유치·M&A·외교·방산·원자재 수급 기사
 
 S등급 (아래 중 하나):
 - 중앙정부 AX 정책·예산·공모사업·선정 결과
@@ -142,12 +164,27 @@ A등급 (아래 중 하나):
 - AX 인재양성(FDE, 대학 과정)
 - 산업 데이터·안전 규제 변화
 
-B등급 (아래 중 하나):
+B등급 (아래 중 하나, 또는 m="부분"으로 상한이 걸린 경우):
 - 주력산업(자동차·조선·석유화학·에너지) 외 업종의 공장·현장 AI 사례
 - 산업 AI 기술개발 발표
 - 대기업 AX 계획·MOU
 
 C등급: 그 외 산업 AX 관련 기사 (X는 아니지만 S/A/B 어디에도 뚜렷이 해당하지 않는 경우)
+
+실제 오판 사례로 배우는 기준 (전부 X여야 했는데 잘못 높은 등급을 받았던 사례,
+마지막 하나만 정답 사례):
+- "김상욱 울산시장, 추석 앞두고 시립요양원·노동 현장 찾아" -> 시장의 동정·일정
+  소개일 뿐 AX가 제목의 주제가 아님 -> m="언급" -> X
+- "전북권 올 추석 밥상머리 최대 화두는?...10대 이슈 톺아보기" -> 여러 이슈를 나열하는
+  모음 기사, AX는 그중 한 항목일 뿐 -> m="언급" -> X
+- "李대통령 '트럼프와 군함 건조 포함 조선 협력 논의'" -> 제목의 주제는 외교·방산
+  협력이지 AX가 아님(AI 언급이 기사 속 다른 발언에 섞여 있을 뿐) -> m="언급"~"부분"
+  -> X (조선 협력 자체에는 AI 요소 없음)
+- "전직원 스톡옵션, 글로벌 선박AS 개척…현대마솔 3배 키운 KKR" -> 제목의 주제는
+  KKR의 투자·M&A 성과이지 AX가 아님 -> X
+- "현대차 '아틀라스', 공장 학습 본격 시작…2028년 투입 목표로 훈련" -> 제목 자체가
+  "휴머노이드 로봇의 공장 학습"이라는 AX 내용을 주제로 다룸 -> m="주제" -> A 이상
+  (e: "현대차-휴머노이드 아틀라스 공장학습-생산현장")
 """
 
 
@@ -226,6 +263,10 @@ def _sanitize_grade(value) -> str:
     return value if value in GRADES else None
 
 
+def _sanitize_m(value) -> str:
+    return value if value in M_VALUES else None
+
+
 def _sanitize_region(value) -> str:
     return value if value in ("울산", "타지자체", "전국", "해외") else None
 
@@ -234,22 +275,56 @@ def _sanitize_loc(value, region) -> str:
     return value if (region == "타지자체" and value in LOC_OPTIONS) else None
 
 
-def _empty_fields(grade=None):
-    return {"grade": grade, "section": None, "region": None, "loc": None, "ulsan_score": 0,
-            "industry": None, "tech": [], "core": 0}
+def _empty_fields(grade=None, m=None):
+    return {"grade": grade, "m": m, "section": None, "region": None, "loc": None,
+            "ulsan_score": 0, "industry": None, "tech": [], "core": 0, "evidence": None}
+
+
+def _apply_topicality_cap(grade: str, m: str) -> str:
+    """m="언급" always forces X; m="부분" caps S/A down to B (requirement 1)."""
+    if m == "언급":
+        return "X"
+    if m == "부분" and grade in ("S", "A"):
+        return "B"
+    return grade
+
+
+def _sanitize_section(value):
+    return value if value in (1, 2, 3) else None
 
 
 def _expand(d: dict) -> dict:
     """Shared expansion for both a Haiku compact result and a cache entry -
-    both use the same key names (i/g/s/r/loc/u/ind/t or tech/core)."""
+    both use the same key names (i/g/m/s/r/loc/u/ind/t or tech/core/e)."""
+    m = _sanitize_m(d.get("m"))
     grade = _sanitize_grade(d.get("g"))
-    if grade is None or grade == "X":
-        return _empty_fields(grade="X" if d.get("g") == "X" else grade)
+    if grade is None:
+        return _empty_fields(grade=None, m=m)
+
+    grade = _apply_topicality_cap(grade, m)
+    if grade == "X":
+        return _empty_fields(grade="X", m=m)
+
+    section = _sanitize_section(d.get("s"))
+    if section is None:
+        # Haiku omitted/malformed the section for a non-X grade - can't tell
+        # which of the 3 sections this belongs under, so treat it the same as
+        # any other incomplete response rather than crash or guess: drop it.
+        return _empty_fields(grade="X", m=m)
+
     ind = _sanitize_ind(d.get("ind"))
-    section = d.get("s")
     region = _sanitize_region(d.get("r"))
+
+    # Requirement 2: S/A needs a concrete "subject-action-place" evidence string;
+    # if the model couldn't fill it in, downgrade one level (S->A, A->B) rather
+    # than trust an unsupported top grade. B and below never carry evidence.
+    evidence = (d.get("e") or "").strip() or None
+    if grade in ("S", "A") and not evidence:
+        grade = {"S": "A", "A": "B"}.get(grade, grade)
+
     return {
         "grade": grade,
+        "m": m,
         "section": section,
         "region": region,
         "loc": _sanitize_loc(d.get("loc"), region),
@@ -257,6 +332,7 @@ def _expand(d: dict) -> dict:
         "industry": ind,
         "tech": _sanitize_tech(d.get("t") if "t" in d else d.get("tech")),
         "core": _sanitize_core(d.get("core"), ind, section),
+        "evidence": evidence if grade in ("S", "A") else None,
     }
 
 
@@ -266,12 +342,13 @@ def cache_entry_to_fields(entry: dict) -> dict:
 
 def fields_to_cache_entry(fields: dict, published: str) -> dict:
     grade = fields.get("grade")
-    entry = {"g": grade, "pub": published}
+    entry = {"g": grade, "m": fields.get("m"), "pub": published}
     if grade and grade != "X":
         entry.update({
             "s": fields.get("section"), "r": fields.get("region"), "loc": fields.get("loc"),
             "u": fields.get("ulsan_score", 0), "ind": fields.get("industry"),
             "t": fields.get("tech", []), "core": fields.get("core", 0),
+            "e": fields.get("evidence"),
         })
     return entry
 

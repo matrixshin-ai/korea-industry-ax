@@ -90,7 +90,11 @@ def test_apply_merge_map_folds_absorbed_into_related():
 
     assert len(result) == 1
     assert result[0]["link"] == "https://a.example.com/1"
-    assert result[0]["related"] == [{"source": "매체B", "link": "https://b.example.com/2"}]
+    # Full absorbed item is kept (not reduced to source/link) so a later
+    # grade-aware re-representation pass can still see its grade.
+    assert len(result[0]["related"]) == 1
+    assert result[0]["related"][0]["link"] == "https://b.example.com/2"
+    assert result[0]["related"][0]["source"] == "매체B"
 
 
 def test_apply_merge_map_no_merges_returns_all_items_unchanged():
