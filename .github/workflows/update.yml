@@ -1,0 +1,72 @@
+name: Update industry AX briefing
+
+on:
+  schedule:
+    # 21:33 UTC = 06:33 KST next day, Mon-Sat (Sunday does not run).
+    - cron: '33 21 * * 0-5'
+  workflow_dispatch: {}
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Collect RSS + Naver candidates
+        run: python jobs/collect.py
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+
+      # data/classify_cache.json is never committed (see .gitignore) - it's kept
+      # across runs via actions/cache instead. Every run saves under a unique
+      # run_id key; restore-keys falls back to the most recent previous key
+      # prefix match, i.e. the latest cache. A cache miss (first-ever run, or
+      # cache expired/evicted) is a normal cold start - classify.py works fine
+      # with no cache file at all.
+      - name: Restore classification cache
+        uses: actions/cache@v4
+        with:
+          path: data/classify_cache.json
+          key: classify-cache-${{ github.run_id }}
+          restore-keys: |
+            classify-cache-
+
+      - name: Classify with Haiku
+        run: python jobs/classify.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Build public/data.json
+        run: python jobs/build.py
+
+      - name: Trim old logs (keep most recent 14)
+        run: |
+          cd logs
+          ls -1t run_*.json 2>/dev/null | tail -n +15 | xargs -r rm --
+          ls -1t classify_*.json 2>/dev/null | tail -n +15 | xargs -r rm --
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data.json logs/
+          git diff --staged --quiet || git commit -m "Data update $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
+          git push origin main

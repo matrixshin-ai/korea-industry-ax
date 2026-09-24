@@ -1,0 +1,15 @@
+# Ephemeral pipeline artifacts - regenerated every run, not committed.
+/candidates.json
+/classified.json
+
+# Classification cache - kept across CI runs via actions/cache instead of git
+# (see .github/workflows/update.yml). A missing file is a normal cold start.
+/data/classify_cache.json
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local env
+.env

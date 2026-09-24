@@ -1,0 +1,86 @@
+# Naver News Search queries for industry AX (AI transformation) coverage.
+# Each query is a multi-word compound term - bare "AI"/"인공지능" searches are
+# intentionally excluded (48h of results would blow past the 1,000-result API cap
+# with mostly irrelevant hits).
+categories:
+  ax_general:
+    # Quoted for exact-phrase match, all re-measured against the real 48h pagination
+    # (not just the API's corpus-wide "total"):
+    # - "AI 전환" / "제조 AI": loose form saturated the 1,000-result cap (996 / 998
+    #   hits); quoted, they dropped to 467 / 82 - clear fix, adopted.
+    # - "산업 AX" / "제조 AX" / "AI 드라이브": not saturated, but quoting still cut
+    #   volume sharply while keeping healthy double-digit+ counts (410->25, 264->40,
+    #   99->8) - adopted for cost/precision.
+    - "\"AI 전환\""
+    - "\"산업 AX\""
+    - "\"제조 AX\""
+    - "AX 전략"
+    - "\"AI 드라이브\""
+    - "\"제조 AI\""
+    - "산업 AI"
+    - "AI 공장"
+    - "AI 팩토리"
+    - "생성형 AI 제조"
+  autonomous_manufacturing:
+    - "자율제조"
+    - "자율공장"
+    - "자율생산"
+    - "다크팩토리"
+    - "AIDF"
+    - "스마트팩토리"
+    - "스마트공장"
+    - "소프트웨어 정의 공장"
+    - "\"디지털 트윈\""  # quoting barely moved the count (172->171) but is harmless; adopted
+    - "예지보전"
+    - "무인화 공장"
+  technology:
+    # "피지컬 AI", "산업용 LLM", "제조 파운데이션 모델" were tested quoted too and
+    # deliberately left unquoted - see the note at the bottom of this file.
+    - "피지컬 AI"
+    - "휴머노이드"
+    - "지능형 로봇"
+    - "산업용 로봇 AI"
+    - "산업용 LLM"
+    - "제조 파운데이션 모델"
+    - "산업 데이터"
+    - "AI 데이터센터"
+    - "AIDC"
+    - "온디바이스 AI 제조"
+    - "엣지 AI 제조"
+    - "AI 비전 검사"
+  policy:
+    - "M.AX"
+    - "제조 AI 지원사업"
+    - "AI 바우처"
+    - "산업 AI 예산"
+    - "AI 실증"
+    - "스마트공장 보급사업"
+  talent:
+    - "FDE"
+    - "AI 해커톤"
+    - "AI 부트캠프"
+    - "AX 인재"
+    - "제조 AI 교육"
+    - "AI 재교육"
+  ulsan_cross:
+    - "울산 AI"
+    - "울산 AX"
+    - "울산 스마트공장"
+    - "울산 로봇"
+    - "UNIST AI"
+    - "울산 데이터센터"
+  flagship_industry_cross:
+    - "조선 AI"
+    - "자동차 AI 공장"
+    - "석유화학 AI"
+    - "배터리 AI 공정"
+    - "정유 AI"
+
+# Quoting decisions NOT adopted despite being explicitly named as candidates,
+# based on real 48h-window measurements (see Gate 2 report):
+# - "피지컬 AI": still saturated even quoted (885 -> 841 within-window hits, both
+#   hit the cap). Quoting doesn't fix the actual problem here - left loose.
+# - "산업용 LLM": already tiny (3 hits/48h); quoted it went to 0. Quoting would only
+#   destroy the little coverage it has for no saturation problem it was solving.
+# - "제조 파운데이션 모델": 61 -> 2 quoted - real risk of losing genuine matches that
+#   use a different phrase order/spacing, with no saturation problem to justify it.

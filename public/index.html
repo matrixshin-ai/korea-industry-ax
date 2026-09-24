@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>산업 AX 뉴스</title>
+<meta name="description" content="울산·전국·해외 산업 AI 전환(AX) 뉴스를 하루 1회 수집해 보여주는 공개 브리핑">
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #e2e2e4;
+    --accent: #1d4ed8;
+    --accent-bg: #eef2ff;
+    --tag-bg: #f0f0f2;
+    --ulsan-badge: #dc2626;
+    --sidebar-w: 240px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  a { color: inherit; }
+
+  header {
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #hamburgerBtn {
+    display: none;
+    font-size: 20px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+  }
+  .header-titles { flex: 1; min-width: 0; }
+  h1 {
+    font-size: 18px;
+    margin: 0;
+    cursor: pointer;
+    display: inline;
+  }
+  .meta { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+  .meta strong { color: var(--text); }
+
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    flex: 0 0 var(--sidebar-w);
+    padding: 16px 12px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+  }
+  .sidebar input[type="search"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .sidebar nav { display: flex; flex-direction: column; gap: 4px; }
+  .section-nav-btn {
+    text-align: left;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+  }
+  .section-nav-btn .count { color: var(--text-muted); font-size: 12.5px; }
+  .section-nav-btn:hover { background: var(--tag-bg); }
+  .section-nav-btn.active { background: var(--accent); color: #fff; }
+  .section-nav-btn.active .count { color: #dbe4ff; }
+
+  .sidebar-backdrop { display: none; }
+
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .filterbar .group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filter-btn {
+    font-size: 12.5px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .filter-sep { width: 100%; height: 0; }
+
+  .view-title { font-size: 13px; color: var(--text-muted); margin: 12px 0 10px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .card-title { font-size: 16px; font-weight: 600; margin: 0 0 6px; }
+  .card-title a { text-decoration: none; }
+  .card-title a:hover { text-decoration: underline; color: var(--accent); }
+  .card-byline { font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px; }
+  .ulsan-badge {
+    display: inline-block;
+    font-size: 11px;
+    color: #fff;
+    background: var(--ulsan-badge);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .card-summary { font-size: 14px; color: #333; margin: 0 0 8px; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .tag {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--tag-bg);
+    border-radius: 6px;
+    padding: 2px 8px;
+  }
+  .tag.ind-tag { cursor: pointer; }
+  .related-toggle {
+    font-size: 12.5px;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .related-list {
+    display: none;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px;
+  }
+  .related-list.open { display: block; }
+  .related-item { margin-bottom: 4px; }
+  .related-item a { color: var(--text-muted); text-decoration: none; }
+  .related-item a:hover { text-decoration: underline; }
+
+  .home-section-block { margin-bottom: 28px; }
+  .home-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .home-section-header h2 { font-size: 16px; margin: 0; }
+  .home-more-link { font-size: 13px; color: var(--accent); cursor: pointer; background: none; border: none; }
+
+  #loadMoreWrap { text-align: center; margin: 16px 0; }
+  #loadMoreBtn {
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .empty-state { text-align: center; color: var(--text-muted); padding: 40px 0; font-size: 14px; }
+
+  footer {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  footer p { margin: 4px 0; }
+
+  @media (max-width: 860px) {
+    #hamburgerBtn { display: inline-block; }
+    .layout { position: relative; }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border);
+      z-index: 30;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      padding-top: 60px;
+      overflow-y: auto;
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-backdrop.open {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 20;
+    }
+    h1 { font-size: 16px; }
+    .card-title { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <button id="hamburgerBtn" aria-label="메뉴">&#9776;</button>
+  <div class="header-titles">
+    <h1 id="homeLink">산업 AX 뉴스</h1>
+    <div class="meta">
+      마지막 수집: <strong id="generatedAt">-</strong>
+      · 적용 기간: <strong id="windowHours">-</strong>
+      · 기사 <strong id="articleCount">-</strong>건
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <input type="search" id="searchInput" placeholder="제목 검색">
+    <nav id="sectionNav"></nav>
+  </aside>
+
+  <main>
+    <div class="filterbar">
+      <div class="group" id="regionFilter"></div>
+    </div>
+    <div class="filterbar">
+      <div class="group" id="industryFilter"></div>
+    </div>
+
+    <div class="view-title" id="viewTitle"></div>
+    <div id="cardList"></div>
+    <div id="emptyState" class="empty-state" style="display:none;">표시할 기사가 없습니다.</div>
+    <div id="loadMoreWrap" style="display:none;">
+      <button id="loadMoreBtn"></button>
+    </div>
+  </main>
+</div>
+
+<footer id="footer"></footer>
+
+<script>
+(function () {
+  var SECTION_LABELS = { "1": "기업·현장", "2": "기술·인프라", "3": "정책·생태계·인재" };
+  var REGIONS = ["전체", "울산", "국내", "해외"];
+  var INDUSTRIES_PRIORITY = ["전체", "에너지", "석유화학", "자동차", "조선"];
+  var INDUSTRIES_REST = ["배터리", "반도체", "철강·기계", "물류", "건설", "금융", "의료", "공공", "기타"];
+  var HOME_TOP_N = 10;
+  var SECTION_PAGE_SIZE = 20;
+
+  var state = {
+    data: null,
+    view: "home",          // "home" | "section"
+    activeSection: "1",
+    region: "전체",
+    industry: "전체",
+    search: "",
+    visibleCount: SECTION_PAGE_SIZE,
+  };
+
+  function fmtDateTime(iso) {
+    if (!iso) return "-";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    return d.toLocaleString("ko-KR", {
+      timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit",
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function sectionItems(key) {
+    var sec = state.data.sections[key];
+    return sec ? sec.items : [];
+  }
+
+  function applyFilters(items) {
+    return items.filter(function (it) {
+      if (state.region !== "전체" && it.region !== state.region) return false;
+      if (state.industry !== "전체" && it.industry !== state.industry) return false;
+      if (state.search && (it.title || "").toLowerCase().indexOf(state.search.toLowerCase()) === -1) return false;
+      return true;
+    });
+  }
+
+  function renderSectionNav() {
+    var nav = document.getElementById("sectionNav");
+    nav.innerHTML = "";
+    ["1", "2", "3"].forEach(function (key) {
+      var items = sectionItems(key);
+      var btn = document.createElement("button");
+      btn.className = "section-nav-btn" + (state.view === "section" && state.activeSection === key ? " active" : "");
+      btn.innerHTML = '<span>' + SECTION_LABELS[key] + '</span><span class="count">' + items.length + '</span>';
+      btn.addEventListener("click", function () {
+        state.view = "section";
+        state.activeSection = key;
+        state.visibleCount = SECTION_PAGE_SIZE;
+        closeSidebarOnMobile();
+        render();
+      });
+      nav.appendChild(btn);
+    });
+  }
+
+  function renderFilterBar() {
+    var regionWrap = document.getElementById("regionFilter");
+    regionWrap.innerHTML = "";
+    REGIONS.forEach(function (r) {
+      var btn = document.createElement("button");
+      btn.className = "filter-btn" + (state.region === r ? " active" : "");
+      btn.textContent = r;
+      btn.addEventListener("click", function () {
+        state.region = r;
+        state.visibleCount = SECTION_PAGE_SIZE;
+        render();
+      });
+      regionWrap.appendChild(btn);
+    });
+
+    var indWrap = document.getElementById("industryFilter");
+    indWrap.innerHTML = "";
+    INDUSTRIES_PRIORITY.concat(INDUSTRIES_REST).forEach(function (ind) {
+      var btn = document.createElement("button");
+      btn.className = "filter-btn" + (state.industry === ind ? " active" : "");
+      btn.textContent = ind;
+      btn.addEventListener("click", function () {
+        state.industry = ind;
+        state.visibleCount = SECTION_PAGE_SIZE;
+        render();
+      });
+      indWrap.appendChild(btn);
+    });
+  }
+
+  function cardHtml(item, idx) {
+    var badge = item.region === "울산" ? '<span class="ulsan-badge">울산</span>' : "";
+    var tagsHtml = "";
+    if (item.industry) {
+      tagsHtml += '<span class="tag ind-tag" data-ind="' + escapeHtml(item.industry) + '">#' + escapeHtml(item.industry) + "</span>";
+    }
+    (item.tech || []).forEach(function (t) {
+      tagsHtml += '<span class="tag">#' + escapeHtml(t) + "</span>";
+    });
+    var related = item.related || [];
+    var relatedToggle = related.length
+      ? '<button class="related-toggle" data-idx="' + idx + '">관련 보도 ' + related.length + '건 펼치기</button>'
+      : "";
+    var relatedList = related.length
+      ? '<div class="related-list" id="related-' + idx + '">' +
+        related.map(function (r) {
+          return '<div class="related-item">· <a href="' + escapeHtml(r.link) + '" target="_blank" rel="noopener">' +
+            escapeHtml(r.source) + "</a></div>";
+        }).join("") + "</div>"
+      : "";
+
+    return (
+      '<article class="card">' +
+      '<h3 class="card-title">' + badge +
+      '<a href="' + escapeHtml(item.link) + '" target="_blank" rel="noopener">' + escapeHtml(item.title) + "</a></h3>" +
+      '<div class="card-byline">' + escapeHtml(item.source) + " · " + fmtDateTime(item.published) + "</div>" +
+      (item.summary ? '<p class="card-summary">' + escapeHtml(item.summary) + "</p>" : "") +
+      (tagsHtml ? '<div class="card-tags">' + tagsHtml + "</div>" : "") +
+      relatedToggle + relatedList +
+      "</article>"
+    );
+  }
+
+  function wireCardInteractions(container) {
+    container.querySelectorAll(".related-toggle").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var panel = document.getElementById("related-" + btn.dataset.idx);
+        var open = panel.classList.toggle("open");
+        btn.textContent = "관련 보도 " + panel.querySelectorAll(".related-item").length +
+          (open ? "건 접기" : "건 펼치기");
+      });
+    });
+    container.querySelectorAll(".ind-tag").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        state.industry = chip.dataset.ind;
+        state.visibleCount = SECTION_PAGE_SIZE;
+        render();
+      });
+    });
+  }
+
+  function renderHome() {
+    document.getElementById("viewTitle").textContent = "";
+    var list = document.getElementById("cardList");
+    list.innerHTML = "";
+    var globalIdx = 0;
+    var anyItems = false;
+
+    ["1", "2", "3"].forEach(function (key) {
+      var filtered = applyFilters(sectionItems(key));
+      if (!filtered.length) return;
+      anyItems = true;
+
+      var block = document.createElement("div");
+      block.className = "home-section-block";
+
+      var remaining = filtered.length - HOME_TOP_N;
+      var headerHtml = '<div class="home-section-header"><h2>' + SECTION_LABELS[key] + "</h2>" +
+        (remaining > 0 ? '<button class="home-more-link" data-key="' + key + '">더보기(' + remaining + '건) &rsaquo;</button>' : "") +
+        "</div>";
+      var cardsHtml = filtered.slice(0, HOME_TOP_N).map(function (it) {
+        return cardHtml(it, globalIdx++);
+      }).join("");
+
+      block.innerHTML = headerHtml + cardsHtml;
+      list.appendChild(block);
+    });
+
+    list.querySelectorAll(".home-more-link").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.view = "section";
+        state.activeSection = btn.dataset.key;
+        state.visibleCount = SECTION_PAGE_SIZE;
+        render();
+      });
+    });
+    wireCardInteractions(list);
+
+    document.getElementById("emptyState").style.display = anyItems ? "none" : "block";
+    document.getElementById("loadMoreWrap").style.display = "none";
+  }
+
+  function renderSection() {
+    var key = state.activeSection;
+    var filtered = applyFilters(sectionItems(key));
+    document.getElementById("viewTitle").textContent = SECTION_LABELS[key] + " · " + filtered.length + "건";
+
+    var visible = filtered.slice(0, state.visibleCount);
+    var list = document.getElementById("cardList");
+    var empty = document.getElementById("emptyState");
+
+    if (!visible.length) {
+      list.innerHTML = "";
+      empty.style.display = "block";
+      document.getElementById("loadMoreWrap").style.display = "none";
+      return;
+    }
+    empty.style.display = "none";
+    list.innerHTML = visible.map(cardHtml).join("");
+    wireCardInteractions(list);
+
+    var loadMoreWrap = document.getElementById("loadMoreWrap");
+    var remaining = filtered.length - visible.length;
+    if (remaining > 0) {
+      loadMoreWrap.style.display = "block";
+      document.getElementById("loadMoreBtn").textContent = "더보기 (" + remaining + "건 남음)";
+    } else {
+      loadMoreWrap.style.display = "none";
+    }
+  }
+
+  function render() {
+    renderSectionNav();
+    renderFilterBar();
+    if (state.view === "home") {
+      renderHome();
+    } else {
+      renderSection();
+    }
+  }
+
+  function closeSidebarOnMobile() {
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarBackdrop").classList.remove("open");
+  }
+
+  function renderFooter(data) {
+    var stats = data.stats || {};
+    var rss = stats.rss || {};
+    var naver = stats.naver || {};
+    var rssFeeds = rss.feeds || [];
+    var rssOk = rssFeeds.filter(function (f) { return f.status === "ok"; }).length;
+    document.getElementById("footer").innerHTML =
+      "<p>수집 현황: RSS " + rssOk + "/" + rssFeeds.length + "개 매체 정상" +
+      (naver.attempted ? ", 네이버 검색 API 호출 " + (naver.total_calls || 0) + "회" : ", 네이버 검색 API 미사용") +
+      " · 중복 제거 " + (stats.before_semantic_dedup || 0) + " → " + (stats.after_semantic_dedup || 0) + "건</p>" +
+      "<p>이 서비스는 네이버 검색 API(뉴스)를 활용해 뉴스를 수집합니다.</p>" +
+      "<p>각 기사의 저작권은 원 언론사에 있습니다. 기사 클릭 시 원문으로 이동합니다.</p>";
+  }
+
+  document.getElementById("homeLink").addEventListener("click", function () {
+    state.view = "home";
+    render();
+  });
+  document.getElementById("hamburgerBtn").addEventListener("click", function () {
+    document.getElementById("sidebar").classList.add("open");
+    document.getElementById("sidebarBackdrop").classList.add("open");
+  });
+  document.getElementById("sidebarBackdrop").addEventListener("click", closeSidebarOnMobile);
+  document.getElementById("searchInput").addEventListener("input", function (e) {
+    state.search = e.target.value.trim();
+    state.visibleCount = SECTION_PAGE_SIZE;
+    render();
+  });
+  document.getElementById("loadMoreBtn").addEventListener("click", function () {
+    state.visibleCount += SECTION_PAGE_SIZE;
+    renderSection();
+  });
+
+  fetch("data.json", { cache: "no-store" })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      state.data = data;
+      document.getElementById("generatedAt").textContent = fmtDateTime(data.generated_at);
+      document.getElementById("windowHours").textContent = data.collection_hours + "시간";
+      document.getElementById("articleCount").textContent = data.article_count;
+      renderFooter(data);
+      render();
+    })
+    .catch(function (err) {
+      document.getElementById("cardList").innerHTML =
+        '<div class="empty-state">데이터를 불러오지 못했습니다: ' + escapeHtml(err.message) + "</div>";
+    });
+})();
+</script>
+</body>
+</html>

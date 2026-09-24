@@ -1,0 +1,125 @@
+# RSS feeds: press only, economy/industry/IT sections preferred over general feeds.
+# No public-agency feeds (정책브리핑, 지자체, 대학, 진흥원, KOTRA, etc).
+#
+# Every URL below was actually fetched and parsed successfully (feedparser, entries > 0)
+# during the Gate 1 verification pass on 2026-09-24 KST. Candidates that returned 404,
+# an empty body, or no parseable feed were dropped rather than guessed - see the Gate 1
+# report for the full pass/fail list (~35 candidates tested, 24 passed).
+#
+# Known caveats (kept anyway, Naver search backfills any gaps):
+# - 한국경제: occasionally blocked by Cloudflare bot-challenge (intermittent, not fixed cause).
+# - 이데일리: only a general "all articles" feed was found, not an economy-only one.
+# - 헬로티: pubDate has no timezone offset; treated as UTC like every other naive timestamp
+#   (see jobs/timewindow.py), which can shift its window boundary by ~9h either way.
+# - 한겨레 RSS was found and parses, but has no pubDate/updated tag on any entry at all,
+#   so every entry fails the 48h/72h window check and it would never contribute an article.
+#   Excluded for that reason; Naver search still surfaces 한겨레 articles when relevant.
+feeds:
+  - url: "https://www.hankyung.com/feed/economy"
+    source: "한국경제"
+  - url: "https://www.asiae.co.kr/rss/industry-IT.htm"
+    source: "아시아경제"
+  - url: "https://rss.donga.com/economy.xml"
+    source: "동아일보"
+  - url: "https://www.khan.co.kr/rss/rssdata/economy_news.xml"
+    source: "경향신문"
+  - url: "https://www.kmib.co.kr/rss/data/kmibEcoRss.xml"
+    source: "국민일보"
+  - url: "https://www.mbn.co.kr/rss/economy/"
+    source: "MBN"
+  - url: "https://www.yna.co.kr/rss/economy.xml"
+    source: "연합뉴스"
+  - url: "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml"
+    source: "조선일보"
+  - url: "https://www.seoul.co.kr/xml/rss/google_economy.xml"
+    source: "서울신문"
+  - url: "https://www.segye.com/Articles/RSSList/segye_economy.xml"
+    source: "세계일보"
+
+  # 울산
+  - url: "https://www.iusm.co.kr/rss/allArticle.xml"
+    source: "울산매일"
+  - url: "https://www.ulsanpress.net/rss/allArticle.xml"
+    source: "울산신문"
+  - url: "https://www.ksilbo.co.kr/rss/allArticle.xml"
+    source: "경상일보"
+  - url: "http://www.ujeil.com/rss/allArticle.xml"
+    source: "울산제일일보"
+
+  # 통신사 - 산업·IT 섹션만
+  - url: "https://www.newsis.com/RSS/industry.xml"
+    source: "뉴시스"
+  - url: "https://www.newsis.com/RSS/health.xml"
+    source: "뉴시스"
+
+  # 경제지
+  - url: "https://www.sedaily.com/rss/economy"
+    source: "서울경제"
+  - url: "http://rss.edaily.co.kr/edaily_news.xml"
+    source: "이데일리"
+  - url: "https://biz.heraldcorp.com/rss/google/economy"
+    source: "헤럴드경제"
+  - url: "https://www.fnnews.com/rss/r20/fn_realnews_economy.xml"
+    source: "파이낸셜뉴스"
+
+  # IT·AI 전문지
+  - url: "http://rss.etnews.com/Section901.xml"
+    source: "전자신문"
+  - url: "https://www.aitimes.com/rss/allArticle.xml"
+    source: "AI타임스"
+  - url: "https://www.irobotnews.com/rss/allArticle.xml"
+    source: "로봇신문"
+
+  # 제조·스마트공장 전문지
+  - url: "https://www.hellot.net/data/rss/news.xml"
+    source: "헬로티"
+  - url: "https://kidd.co.kr/xml/news_rss.php"
+    source: "산업일보"
+  - url: "https://www.industrynews.co.kr/rss/allArticle.xml"
+    source: "인더스트리뉴스"
+
+# Domain -> display source name, used to label Naver API results (originallink-based).
+# Falls back to the bare domain when not listed here. Includes outlets with no live RSS
+# feed too (매일경제, 중앙일보, 한국일보, 뉴스1, 디지털타임스, 지디넷코리아, 오토메이션월드,
+# 울산경제신문, KBS울산, 울산MBC, 한겨레, 머니투데이) so Naver-sourced articles from them
+# still get a proper display name instead of a bare domain.
+domain_map:
+  hankyung.com: "한국경제"
+  mk.co.kr: "매일경제"
+  asiae.co.kr: "아시아경제"
+  donga.com: "동아일보"
+  khan.co.kr: "경향신문"
+  kmib.co.kr: "국민일보"
+  mbn.co.kr: "MBN"
+  yna.co.kr: "연합뉴스"
+  chosun.com: "조선일보"
+  joongang.co.kr: "중앙일보"
+  joins.com: "중앙일보"
+  hani.co.kr: "한겨레"
+  hankookilbo.com: "한국일보"
+  seoul.co.kr: "서울신문"
+  segye.com: "세계일보"
+  iusm.co.kr: "울산매일"
+  ulsanpress.net: "울산신문"
+  ksilbo.co.kr: "경상일보"
+  ujeil.com: "울산제일일보"
+  ulkyung.kr: "울산경제신문"
+  kbs.co.kr: "KBS"
+  usmbc.co.kr: "울산MBC"
+  newsis.com: "뉴시스"
+  news1.kr: "뉴스1"
+  sedaily.com: "서울경제"
+  mt.co.kr: "머니투데이"
+  edaily.co.kr: "이데일리"
+  heraldcorp.com: "헤럴드경제"
+  fnnews.com: "파이낸셜뉴스"
+  etnews.com: "전자신문"
+  dt.co.kr: "디지털타임스"
+  zdnet.co.kr: "지디넷코리아"
+  aitimes.com: "AI타임스"
+  irobotnews.com: "로봇신문"
+  hellot.net: "헬로티"
+  kidd.co.kr: "산업일보"
+  industrynews.co.kr: "인더스트리뉴스"
+  automationworld.kr: "오토메이션월드"
+  automation-world.co.kr: "오토메이션월드"

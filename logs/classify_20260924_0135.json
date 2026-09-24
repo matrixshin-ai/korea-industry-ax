@@ -1,0 +1,9 @@
+{
+  "started_at": "2026-09-24T01:35:09.026824+00:00",
+  "total_candidates": 4059,
+  "cache_hits": 0,
+  "to_classify": 4059,
+  "failed_batches": [],
+  "skipped_no_api_key": true,
+  "finished_at": "2026-09-24T01:35:09.202221+00:00"
+}
