@@ -31,63 +31,76 @@ def test_keyword_prefilter_matches_digital_twin_without_space():
 
 
 def test_parse_json_array_plain():
-    assert classify.parse_json_array('[{"i": 0, "r": 0}]') == [{"i": 0, "r": 0}]
+    assert classify.parse_json_array('[{"i": 0, "g": "X"}]') == [{"i": 0, "g": "X"}]
 
 
 def test_parse_json_array_strips_code_fence():
-    text = '```json\n[{"i": 0, "r": 0}]\n```'
-    assert classify.parse_json_array(text) == [{"i": 0, "r": 0}]
+    text = '```json\n[{"i": 0, "g": "X"}]\n```'
+    assert classify.parse_json_array(text) == [{"i": 0, "g": "X"}]
 
 
-def test_expand_compact_result_false_is_minimal():
-    assert classify.expand_compact_result({"i": 0, "r": 0}) == {
-        "relevant": False, "section": None, "region": None, "ax": 0, "ulsan_score": 0,
+def test_expand_compact_result_x_is_minimal():
+    assert classify.expand_compact_result({"i": 0, "g": "X"}) == {
+        "grade": "X", "section": None, "region": None, "loc": None, "ulsan_score": 0,
         "industry": None, "tech": [], "core": 0,
     }
 
 
-def test_expand_compact_result_true_maps_all_fields():
-    compact = {"i": 0, "r": 1, "s": 1, "g": "울산", "ax": 50, "u": 10,
+def test_expand_compact_result_s_maps_all_fields():
+    compact = {"i": 0, "g": "S", "s": 1, "r": "울산", "loc": None, "u": 10,
                "ind": "조선", "tech": ["로봇", "피지컬AI", "기타없는값"], "core": 1}
     expanded = classify.expand_compact_result(compact)
-    assert expanded["relevant"] is True
+    assert expanded["grade"] == "S"
     assert expanded["section"] == 1
     assert expanded["region"] == "울산"
-    assert expanded["ax"] == 50
+    assert expanded["loc"] is None
     assert expanded["ulsan_score"] == 10
     assert expanded["industry"] == "조선"
-    assert expanded["tech"] == ["로봇", "피지컬AI"]  # capped at 2, invalid entries kept as-is (only >2 truncated)
+    assert expanded["tech"] == ["로봇", "피지컬AI"]  # capped at 2
     assert expanded["core"] == 1
 
 
+def test_expand_compact_result_loc_only_kept_for_tajachidae():
+    kept = classify.expand_compact_result({"i": 0, "g": "B", "s": 1, "r": "타지자체", "loc": "경북",
+                                             "u": 0, "ind": "반도체", "tech": [], "core": 0})
+    assert kept["loc"] == "경북"
+
+    dropped = classify.expand_compact_result({"i": 0, "g": "B", "s": 1, "r": "전국", "loc": "경북",
+                                                "u": 0, "ind": "반도체", "tech": [], "core": 0})
+    assert dropped["loc"] is None  # loc only valid when region is 타지자체
+
+
+def test_expand_compact_result_invalid_loc_value_dropped():
+    result = classify.expand_compact_result({"i": 0, "g": "B", "s": 1, "r": "타지자체", "loc": "존재하지않는시도",
+                                               "u": 0, "ind": "반도체", "tech": [], "core": 0})
+    assert result["loc"] is None
+
+
 def test_expand_compact_result_sanitizes_invalid_industry_to_gita():
-    expanded = classify.expand_compact_result({"i": 0, "r": 1, "s": 1, "g": "국내", "ax": 20, "u": 0,
+    expanded = classify.expand_compact_result({"i": 0, "g": "B", "s": 1, "r": "전국", "u": 0,
                                                  "ind": "존재하지않는업종", "tech": [], "core": 0})
     assert expanded["industry"] == "기타"
 
 
-def test_expand_compact_result_drops_invalid_tech_values():
-    expanded = classify.expand_compact_result({"i": 0, "r": 1, "s": 1, "g": "국내", "ax": 20, "u": 0,
-                                                 "ind": "금융", "tech": ["존재하지않는기술", "로봇"], "core": 0})
-    assert expanded["tech"] == ["로봇"]
+def test_expand_compact_result_it_industry_option_kept():
+    expanded = classify.expand_compact_result({"i": 0, "g": "A", "s": 2, "r": "전국", "u": 0,
+                                                 "ind": "IT·통신·데이터센터", "tech": ["데이터센터"], "core": 0})
+    assert expanded["industry"] == "IT·통신·데이터센터"
 
 
 def test_expand_compact_result_core_requires_core_industry_and_section_1():
-    # core=1 claimed but industry isn't a core industry -> forced to 0.
     not_core_industry = classify.expand_compact_result(
-        {"i": 0, "r": 1, "s": 1, "g": "국내", "ax": 50, "u": 0, "ind": "금융", "tech": [], "core": 1}
+        {"i": 0, "g": "S", "s": 1, "r": "전국", "u": 0, "ind": "금융", "tech": [], "core": 1}
     )
     assert not_core_industry["core"] == 0
 
-    # core=1 claimed but section isn't 1 (기업·현장) -> forced to 0.
     not_section_1 = classify.expand_compact_result(
-        {"i": 0, "r": 1, "s": 3, "g": "국내", "ax": 50, "u": 0, "ind": "조선", "tech": [], "core": 1}
+        {"i": 0, "g": "S", "s": 3, "r": "전국", "u": 0, "ind": "조선", "tech": [], "core": 1}
     )
     assert not_section_1["core"] == 0
 
-    # both conditions met -> stays 1.
     valid = classify.expand_compact_result(
-        {"i": 0, "r": 1, "s": 1, "g": "국내", "ax": 50, "u": 0, "ind": "조선", "tech": [], "core": 1}
+        {"i": 0, "g": "S", "s": 1, "r": "울산", "u": 10, "ind": "조선", "tech": [], "core": 1}
     )
     assert valid["core"] == 1
 
@@ -99,11 +112,16 @@ def test_cache_key_stable_across_tracking_params():
 
 
 def test_fields_to_cache_entry_and_back_roundtrip():
-    fields = {"relevant": True, "section": 2, "region": "국내", "ax": 30, "ulsan_score": 0,
+    fields = {"grade": "A", "section": 2, "region": "타지자체", "loc": "경남", "ulsan_score": 0,
               "industry": "반도체", "tech": ["데이터센터"], "core": 0}
     entry = classify.fields_to_cache_entry(fields, "2026-01-05T05:00:00+09:00")
     assert entry["pub"] == "2026-01-05T05:00:00+09:00"
     assert classify.cache_entry_to_fields(entry) == fields
+
+
+def test_fields_to_cache_entry_x_grade_is_minimal():
+    entry = classify.fields_to_cache_entry({"grade": "X"}, "2026-01-05T05:00:00+09:00")
+    assert entry == {"g": "X", "pub": "2026-01-05T05:00:00+09:00"}
 
 
 def test_load_and_prune_cache_drops_entries_older_than_48h(tmp_path, monkeypatch):
@@ -112,8 +130,8 @@ def test_load_and_prune_cache_drops_entries_older_than_48h(tmp_path, monkeypatch
     stale = (now - timedelta(hours=60)).isoformat()
     cache_path = tmp_path / "classify_cache.json"
     cache_path.write_text(json.dumps({
-        "fresh_key": {"r": 1, "s": 1, "g": "국내", "ax": 20, "u": 0, "ind": "금융", "t": [], "core": 0, "pub": fresh},
-        "stale_key": {"r": 0, "pub": stale},
+        "fresh_key": {"g": "B", "s": 1, "r": "전국", "loc": None, "u": 0, "ind": "금융", "t": [], "core": 0, "pub": fresh},
+        "stale_key": {"g": "X", "pub": stale},
     }), encoding="utf-8")
     monkeypatch.setattr(classify, "CLASSIFY_CACHE_PATH", str(cache_path))
 
@@ -157,7 +175,7 @@ def test_classify_groups_sync_marks_unclassified_on_api_exception():
 def test_classify_groups_sync_success_uses_compact_schema():
     client = MagicMock()
     client.messages.create.return_value = _text_response(
-        '[{"i":0,"r":1,"s":1,"g":"울산","ax":50,"u":10,"ind":"조선","tech":["로봇"],"core":1},{"i":1,"r":0}]'
+        '[{"i":0,"g":"S","s":1,"r":"울산","loc":null,"u":10,"ind":"조선","tech":["로봇"],"core":1},{"i":1,"g":"X"}]'
     )
     items = [
         {"id": 0, "title": "t0", "summary": "s0", "source": "src"},
@@ -167,10 +185,9 @@ def test_classify_groups_sync_success_uses_compact_schema():
 
     results = classify.classify_groups_sync(client, [items], log)
 
-    assert results[0]["relevant"] is True
+    assert results[0]["grade"] == "S"
     assert results[0]["section"] == 1
-    assert results[0]["ax"] == 50
-    assert results[1]["relevant"] is False
+    assert results[1]["grade"] == "X"
     assert log["failed_batches"] == []
     assert log["sync_input_tokens"] == 100
     assert log["sync_output_tokens"] == 50
@@ -186,11 +203,9 @@ def test_classify_groups_sync_splits_in_half_on_truncated_max_tokens_then_succee
         call_count["n"] += 1
         content = json.loads(kwargs["messages"][0]["content"])
         if len(content) == 20:
-            # First attempt at full size: simulate a truncated (max_tokens) response.
             return _text_response('[{"i":0', stop_reason="max_tokens")
-        # Any smaller (split) attempt succeeds cleanly.
         ids = [item["i"] for item in content]
-        payload = json.dumps([{"i": i, "r": 0} for i in ids])
+        payload = json.dumps([{"i": i, "g": "X"} for i in ids])
         return _text_response(payload)
 
     client.messages.create.side_effect = fake_create
@@ -199,7 +214,7 @@ def test_classify_groups_sync_splits_in_half_on_truncated_max_tokens_then_succee
     results = classify.classify_groups_sync(client, [big_group], log)
 
     assert len(results) == 20
-    assert all(v["relevant"] is False for v in results.values())
+    assert all(v["grade"] == "X" for v in results.values())
     assert call_count["n"] == 3  # 1 truncated full attempt + 2 successful half-size attempts
     assert log["failed_batches"] == []
     assert len(log["split_retries"]) == 1
@@ -208,7 +223,7 @@ def test_classify_groups_sync_splits_in_half_on_truncated_max_tokens_then_succee
 def test_classify_via_batches_api_completes_without_timeout():
     client = MagicMock()
     client.messages.batches.create.return_value = type("B", (), {"id": "batch_1", "processing_status": "ended"})()
-    msg = _text_response('[{"i":0,"r":1,"s":2,"g":"국내","ax":30,"u":0,"ind":"반도체","tech":[],"core":0}]')
+    msg = _text_response('[{"i":0,"g":"A","s":2,"r":"전국","loc":null,"u":0,"ind":"반도체","tech":[],"core":0}]')
     result = type("R", (), {"custom_id": "g0", "result": type("Res", (), {"type": "succeeded", "message": msg})()})()
     client.messages.batches.results.return_value = [result]
 
@@ -217,7 +232,7 @@ def test_classify_via_batches_api_completes_without_timeout():
 
     results = classify.classify_via_batches_api(client, items, log, timeout_seconds=5, poll_interval=0.01)
 
-    assert results[0]["relevant"] is True
+    assert results[0]["grade"] == "A"
     assert results[0]["section"] == 2
     client.messages.batches.cancel.assert_not_called()
     assert log["batches_api_timed_out"] is False
@@ -229,7 +244,7 @@ def test_classify_via_batches_api_timeout_cancels_and_falls_back_to_sync():
     client.messages.batches.create.return_value = in_progress
     client.messages.batches.retrieve.return_value = in_progress
     client.messages.batches.results.return_value = []
-    client.messages.create.return_value = _text_response('[{"i":0,"r":0}]')
+    client.messages.create.return_value = _text_response('[{"i":0,"g":"X"}]')
 
     items = [{"id": 0, "title": "t0", "summary": "s0", "source": "src"}]
     log = {"failed_batches": []}
@@ -241,7 +256,7 @@ def test_classify_via_batches_api_timeout_cancels_and_falls_back_to_sync():
     client.messages.batches.cancel.assert_called_once_with("batch_2")
     assert log["batches_api_timed_out"] is True
     assert log["batches_api_fallback_item_count"] == 1
-    assert results[0]["relevant"] is False
+    assert results[0]["grade"] == "X"
     client.messages.create.assert_called_once()
 
 
@@ -253,7 +268,7 @@ def test_main_uses_cache_and_skips_api_call(tmp_path, monkeypatch):
     ]
     cache = {
         classify.cache_key("https://example.com/cached"): {
-            "r": 1, "s": 1, "g": "울산", "ax": 50, "u": 10, "ind": "조선", "t": ["로봇"], "core": 1,
+            "g": "S", "s": 1, "r": "울산", "loc": None, "u": 10, "ind": "조선", "t": ["로봇"], "core": 1,
             "pub": (now - timedelta(hours=5)).isoformat(),
         }
     }
@@ -278,9 +293,8 @@ def test_main_uses_cache_and_skips_api_call(tmp_path, monkeypatch):
         mock_anthropic.assert_not_called()
 
     result = json.loads(classified_path.read_text(encoding="utf-8"))
-    assert result[0]["relevant"] is True
+    assert result[0]["grade"] == "S"
     assert result[0]["section"] == 1
-    assert result[0]["ax"] == 50
 
 
 def test_main_cold_start_with_no_cache_file_still_works(tmp_path, monkeypatch):
@@ -300,4 +314,4 @@ def test_main_cold_start_with_no_cache_file_still_works(tmp_path, monkeypatch):
     classify.main()  # must not raise despite no cache file existing
 
     result = json.loads((tmp_path / "classified.json").read_text(encoding="utf-8"))
-    assert result[0]["relevant"] is False  # no AI keyword -> filtered out, cold start still works
+    assert result[0]["grade"] == "X"  # no AI keyword -> filtered out, cold start still works

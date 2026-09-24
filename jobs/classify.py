@@ -1,11 +1,15 @@
 """
 Haiku classification: candidates.json -> classified.json
 
+Grades each candidate S/A/B/C/X by usefulness to a 울산 industrial-AX policy
+audience (not by "how real is the AI adoption"). Only S/A/B get published
+(see build.py); C and X are graded but filtered out there.
+
 - Sends title/description/source only (no article body fetched).
-- Cache: data/classify_cache.json, keyed by sha256(normalized URL), stores both
-  relevant=true and relevant=false results (classification fields + published
-  date only - never title/summary/body). Entries older than 48h are pruned
-  every run. The cache file itself is NOT committed - CI restores/saves it via
+- Cache: data/classify_cache.json, keyed by sha256(normalized URL), stores
+  every grade including X (classification fields + published date only -
+  never title/summary/body). Entries older than 48h are pruned every run.
+  The cache file itself is NOT committed - CI restores/saves it via
   actions/cache (see .github/workflows/update.yml); a cold start with no cache
   at all still works correctly, just classifies everything fresh.
 - Keyword prefilter runs before any Haiku call (see passes_keyword_prefilter).
@@ -15,7 +19,7 @@ Haiku classification: candidates.json -> classified.json
   didn't finish are classified through the synchronous API instead.
 - A group that fails to parse, or hits max_tokens (truncated JSON), is split
   in half and retried, down to a floor of MIN_SPLIT_SIZE items; a group that
-  still fails at the floor is left unclassified (relevant=None) rather than
+  still fails at the floor is left unclassified (grade=None) rather than
   aborting the run - it retries whenever it's re-collected in a future run.
 """
 import hashlib
@@ -67,19 +71,25 @@ PROMPT_CACHING_MIN_TOKENS_HAIKU_4_5 = 4096
 
 IND_OPTIONS = [
     "에너지", "석유화학", "자동차", "조선", "배터리", "반도체", "철강·기계",
-    "물류", "건설", "금융", "의료", "공공", "기타",
+    "물류", "건설", "금융", "의료", "공공", "IT·통신·데이터센터", "기타",
 ]
 TECH_OPTIONS = ["피지컬AI", "로봇", "데이터센터", "디지털트윈", "자율제조", "LLM·에이전트", "기타"]
 CORE_INDUSTRIES = {"에너지", "석유화학", "자동차", "조선"}
+GRADES = ("S", "A", "B", "C", "X")
+GRADE_POINTS = {"S": 100, "A": 70, "B": 40}  # C/X are never published, no score needed
 
-SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스 분류기입니다.
+SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매기는 분류기입니다.
+독자는 울산을 중심으로 전국 산업 AX를 판단하는 사람들입니다 - 중앙정부·울산시 등 지자체
+정책 담당자, 그리고 울산 산업 AX 자문 전문가 그룹. 기준은 "AI 도입이 실질적인가"가
+아니라 "울산의 정책 판단에 쓸모가 있는가"입니다.
+
 입력은 JSON 배열이며, 각 원소는 {"i": id, "t": 제목, "d": 설명(네이버/RSS 요약), "s": 매체명}입니다.
 각 기사를 분류해 JSON 배열만 반환하세요. 설명, 코드블록, 다른 텍스트를 절대 추가하지 마세요.
 입력과 정확히 같은 개수만 반환하면 되고 순서는 상관없습니다(각 원소에 입력의 i를 그대로 포함).
 
 출력 스키마 (키 이름을 반드시 그대로 사용):
-- 관련 없음(relevant=false)이면 딱 이 두 필드만 반환: {"i": id, "r": 0}
-- 관련 있음(relevant=true)이면: {"i": id, "r": 1, "s": section, "g": region, "ax": ax점수,
+- X등급이면 딱 이 두 필드만 반환: {"i": id, "g": "X"}
+- X가 아니면: {"i": id, "g": "S"|"A"|"B"|"C", "s": section, "r": region, "loc": 시도명(또는 null),
   "u": ulsan_score, "ind": industry, "tech": [tech, ...], "core": 0또는1}
   - s(section): 1/2/3 중 하나
     1=기업·현장(기업 AX 전략, AI 드라이브, 공장 도입, 자율제조·다크팩토리, 생산성 개선,
@@ -88,51 +98,56 @@ SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스 분류기입�
        실증센터·테스트베드)
     3=정책·생태계·인재(중앙/지방정부 지원, M.AX, 예산, 규제, 산학연 협력, 시장 동향,
        FDE 교육 프로그램, 해커톤, 대학 교육, 재교육, 채용)
-  - g(region): "울산" / "국내" / "해외" 중 하나
-  - ax(산업 AX 실질성, 아래 중 하나만 - 근거의 구체성 순서):
-    50 = 공장·현장에 AI를 실제로 도입했거나 대규모 AX 투자가 확정된 경우
-    40 = 실증·계약·협약이 체결된 경우
-    30 = 기술개발·정부사업 발표
-    20 = 계획·전망 수준
-    10 = 단순 동향·언급 수준
+  - r(region): "울산" / "타지자체" / "전국" / "해외" 중 하나
+    - 울산: 울산 소재 기업·기관·현장이 주체이거나 울산이 핵심 무대인 기사
+    - 타지자체: 특정 다른 시·도가 주체이거나 핵심 무대인 기사 (loc에 시도명 필수)
+    - 전국: 특정 지자체로 한정되지 않는 중앙정부·전국 단위 기사
+    - 해외: 해외가 주체이거나 핵심 무대인 기사
+  - loc: r이 "타지자체"일 때만 시·도명(서울/부산/대구/인천/광주/대전/세종/경기/강원/
+    충북/충남/전북/전남/경북/경남/제주 중 하나). r이 타지자체가 아니면 null.
   - u(ulsan_score): 10(울산 현장 AX) / 8(울산 기업·대학·기관의 AX 활동) /
     4(울산 주력산업과 직결된 사례) / 0(울산과 무관) 중 하나
   - ind(업종, 아래 고정 목록에서 가장 가까운 것 1개만 선택):
     에너지, 석유화학, 자동차, 조선, 배터리, 반도체, 철강·기계, 물류, 건설, 금융, 의료,
-    공공, 기타
+    공공, IT·통신·데이터센터, 기타
   - tech(기술, 아래 고정 목록에서 최대 2개, 목록에 없는 것은 쓰지 말고 "기타" 사용):
     피지컬AI, 로봇, 데이터센터, 디지털트윈, 자율제조, LLM·에이전트, 기타
-  - core: ind가 에너지/석유화학/자동차/조선 중 하나이면서 "공장·현장" 수준(ax=50에
-    해당하는 실제 도입 수준)의 AI 적용이면 1, 그 외에는 0
+  - core: ind가 에너지/석유화학/자동차/조선 중 하나이면서 "공장·현장" 수준의 실제 AI
+    도입(등급 S 수준)이면 1, 그 외에는 0
 
-relevant 판정 기준 (r=1, 관련 있음):
-핵심 규칙 하나: 업종과 관계없이 항상 같은 기준을 적용합니다 - "구체적인 AI/AX 도입·
-투자·예산·실증 내용이 실제로 있는가?" 이 기준은 제조업이든 금융·보안·의료·공공행정
-이든 동일합니다. 업종이 금융/보안/의료/공공이라는 이유만으로 기준을 낮추거나 높이지
-마세요. 그 업종이라는 이유만으로는 관련 없음이고, 구체적 도입 내용이 있어야 관련
-있음입니다.
+등급 판정 순서: 먼저 X(제외) 해당 여부를 확인하고, X가 아니면 S -> A -> B -> C 순서로
+어디에 해당하는지 확인하세요 (더 높은 등급부터 검토).
 
-포함(r=1) 예 - 아래 모두 "구체적 도입 내용"이 실제로 기사에 있는 경우만:
-- 특정 기업·기관·현장의 AI 도입·실증·AX 전략 (업종 무관: 제조·에너지·조선·물류·
-  건설·금융·보안·의료·공공행정 등 - 예: 은행의 AI 데이터센터 투자 발표, 병원의 AI
-  진단시스템 도입, 정부기관의 AI 실증사업 착수)
-- AI 데이터센터 건립·투자
-- 정부의 AX 예산·지원사업·실증거점 조성 (구체적 예산액·대상 산업/지역이 명시된 경우)
-- 산업 적용이 구체적으로 명시된 국가 AI 정책 (예: "OO산업단지를 AX 실증거점으로 조성",
-  "제조 공정에 AI 적용 예산 편성" 등 - 대상 산업/현장이 특정되어야 함)
+X(제외) - 아래 중 하나라도 해당하면 다른 조건과 상관없이 무조건 X:
+- 금융권 AI 협약·금융상품·ETF·펀드·주가·실적
+- 빅테크 모델 경쟁·해외 빅테크 투자 담론 (특정 산업 현장 적용이 명시되지 않은 경우)
+- 행사·공연·선언적 비전·축사
+- 사회공헌·상생 활동
+- 소비자 대상 AI (개인용 앱, 돌봄 챗봇 등)
+- 금융·의료 "업무" AI (내부 업무 효율화 등 - 금융/의료 산업 자체의 AX가 아닌 경우)
+- AI 요소가 명시되지 않은 공장 신설·설비 투자 (예: 원전설비 공장 신설 자체는 AI 언급이
+  없으면 X)
 
-제외(r=0) 예 - 아래에 해당하면 AI라는 단어가 나와도 제외:
-- 선언적 발언·축사·구호성 언급뿐인 기사(정치인·경영진의 연설/인터뷰에서 "AI 시대",
-  "AI 기본사회", "AI 경쟁력" 같은 표현만 스치듯 나오고 구체적 도입·투자·예산·실증
-  내용이 없는 경우 - 대통령 외교 연설, 기업 축사 등)
-- 빅테크 실적·주가, 반도체 시황, AI 모델 경쟁 담론(단, 산업 현장 적용 사례가 기사에
-  명시된 경우만 포함)
-- 일반 소비자용 AI 서비스·앱 출시(기업/기관 대상 산업 도입이 아닌 일반 소비자 대상.
-  예: 어르신 돌봄 AI 챗봇, 개인용 AI 비서 앱)
-- AI와 무관한 산업 뉴스(원전·조선·배터리 등 산업 시설 신설이라도 AI/AX 요소가
-  기사에 없으면 제외 - 산업이라고 해서 자동으로 포함되지 않음)
-- AI가 아닌 기술(양자컴퓨터, 일반 IT 인프라·클라우드 전환 등)을 AI와 나란히
-  언급했을 뿐 AI 자체의 구체적 도입 내용은 없는 경우
+S등급 (아래 중 하나):
+- 중앙정부 AX 정책·예산·공모사업·선정 결과
+- 타 지자체의 AX 전략·실증거점·유치 성과
+- 울산 소재 기업·기관(현대차 울산공장, HD현대중공업, SK이노베이션, S-OIL, 고려아연,
+  UNIST 등)의 AX 활동
+- 울산 주력산업(자동차·조선·석유화학·에너지)의 현장 AX 도입 사례
+
+A등급 (아래 중 하나):
+- 해외 주력산업 선도 사례(다크팩토리, 자율운항·스마트 조선소, 화학공정 AI 등)
+- AI 데이터센터·전력 인프라 입지 경쟁
+- 중소 협력사 AX 지원·사례
+- AX 인재양성(FDE, 대학 과정)
+- 산업 데이터·안전 규제 변화
+
+B등급 (아래 중 하나):
+- 주력산업(자동차·조선·석유화학·에너지) 외 업종의 공장·현장 AI 사례
+- 산업 AI 기술개발 발표
+- 대기업 AX 계획·MOU
+
+C등급: 그 외 산업 AX 관련 기사 (X는 아니지만 S/A/B 어디에도 뚜렷이 해당하지 않는 경우)
 """
 
 
@@ -187,6 +202,12 @@ def save_cache(cache: dict):
         json.dump(cache, f, ensure_ascii=False, separators=(",", ":"))
 
 
+LOC_OPTIONS = [
+    "서울", "부산", "대구", "인천", "광주", "대전", "세종", "경기", "강원",
+    "충북", "충남", "전북", "전남", "경북", "경남", "제주",
+]
+
+
 def _sanitize_ind(value) -> str:
     return value if value in IND_OPTIONS else "기타"
 
@@ -201,32 +222,56 @@ def _sanitize_core(core, ind: str, section) -> int:
     return 1 if (core and ind in CORE_INDUSTRIES and section == 1) else 0
 
 
-def cache_entry_to_fields(entry: dict) -> dict:
-    if not entry.get("r"):
-        return {"relevant": False, "section": None, "region": None, "ax": 0, "ulsan_score": 0,
-                "industry": None, "tech": [], "core": 0}
-    ind = _sanitize_ind(entry.get("ind"))
-    section = entry.get("s")
+def _sanitize_grade(value) -> str:
+    return value if value in GRADES else None
+
+
+def _sanitize_region(value) -> str:
+    return value if value in ("울산", "타지자체", "전국", "해외") else None
+
+
+def _sanitize_loc(value, region) -> str:
+    return value if (region == "타지자체" and value in LOC_OPTIONS) else None
+
+
+def _empty_fields(grade=None):
+    return {"grade": grade, "section": None, "region": None, "loc": None, "ulsan_score": 0,
+            "industry": None, "tech": [], "core": 0}
+
+
+def _expand(d: dict) -> dict:
+    """Shared expansion for both a Haiku compact result and a cache entry -
+    both use the same key names (i/g/s/r/loc/u/ind/t or tech/core)."""
+    grade = _sanitize_grade(d.get("g"))
+    if grade is None or grade == "X":
+        return _empty_fields(grade="X" if d.get("g") == "X" else grade)
+    ind = _sanitize_ind(d.get("ind"))
+    section = d.get("s")
+    region = _sanitize_region(d.get("r"))
     return {
-        "relevant": True,
+        "grade": grade,
         "section": section,
-        "region": entry.get("g"),
-        "ax": entry.get("ax", 10),
-        "ulsan_score": entry.get("u", 0),
+        "region": region,
+        "loc": _sanitize_loc(d.get("loc"), region),
+        "ulsan_score": d.get("u", 0),
         "industry": ind,
-        "tech": _sanitize_tech(entry.get("t")),
-        "core": _sanitize_core(entry.get("core"), ind, section),
+        "tech": _sanitize_tech(d.get("t") if "t" in d else d.get("tech")),
+        "core": _sanitize_core(d.get("core"), ind, section),
     }
 
 
+def cache_entry_to_fields(entry: dict) -> dict:
+    return _expand(entry)
+
+
 def fields_to_cache_entry(fields: dict, published: str) -> dict:
-    entry = {"r": 1 if fields.get("relevant") else 0, "pub": published}
-    if fields.get("relevant"):
+    grade = fields.get("grade")
+    entry = {"g": grade, "pub": published}
+    if grade and grade != "X":
         entry.update({
-            "s": fields.get("section"), "g": fields.get("region"),
-            "ax": fields.get("ax", 10), "u": fields.get("ulsan_score", 0),
-            "ind": fields.get("industry"), "t": fields.get("tech", []),
-            "core": fields.get("core", 0),
+            "s": fields.get("section"), "r": fields.get("region"), "loc": fields.get("loc"),
+            "u": fields.get("ulsan_score", 0), "ind": fields.get("industry"),
+            "t": fields.get("tech", []), "core": fields.get("core", 0),
         })
     return entry
 
@@ -236,21 +281,7 @@ def build_batch_input(items):
 
 
 def expand_compact_result(p: dict) -> dict:
-    if not p.get("r"):
-        return {"relevant": False, "section": None, "region": None, "ax": 0, "ulsan_score": 0,
-                "industry": None, "tech": [], "core": 0}
-    ind = _sanitize_ind(p.get("ind"))
-    section = p.get("s")
-    return {
-        "relevant": True,
-        "section": section,
-        "region": p.get("g"),
-        "ax": p.get("ax", 10),
-        "ulsan_score": p.get("u", 0),
-        "industry": ind,
-        "tech": _sanitize_tech(p.get("tech")),
-        "core": _sanitize_core(p.get("core"), ind, section),
-    }
+    return _expand(p)
 
 
 def parse_json_array(text: str):
@@ -290,7 +321,7 @@ def _classify_one_group_sync(client, group, log):
         results = {}
         for it in group:
             p = by_id.get(it["id"])
-            results[it["id"]] = expand_compact_result(p) if p else {"relevant": None, "unclassified": True}
+            results[it["id"]] = expand_compact_result(p) if p else {**_empty_fields(), "unclassified": True}
         return results
     except Exception as e:  # noqa: BLE001 - a bad group must not stop the run
         if len(group) > MIN_SPLIT_SIZE:
@@ -300,7 +331,7 @@ def _classify_one_group_sync(client, group, log):
             results.update(_classify_one_group_sync(client, group[mid:], log))
             return results
         log["failed_batches"].append({"group_size": len(group), "error": str(e), "item_ids": [it["id"] for it in group]})
-        return {it["id"]: {"relevant": None, "unclassified": True} for it in group}
+        return {it["id"]: {**_empty_fields(), "unclassified": True} for it in group}
 
 
 def classify_groups_sync(client, groups, log):
@@ -375,7 +406,7 @@ def classify_via_batches_api(client, items, log, timeout_seconds=BATCH_TIMEOUT_S
                 by_id = {p.get("i"): p for p in parsed if isinstance(p, dict)}
                 for it in group:
                     p = by_id.get(it["id"])
-                    id_to_result[it["id"]] = expand_compact_result(p) if p else {"relevant": None, "unclassified": True}
+                    id_to_result[it["id"]] = expand_compact_result(p) if p else {**_empty_fields(), "unclassified": True}
             except Exception:  # noqa: BLE001
                 fallback_groups.append(group)
         else:
@@ -422,9 +453,7 @@ def main():
     keyword_pass = [c for c in to_classify if passes_keyword_prefilter(c)]
     keyword_filtered_out = [c for c in to_classify if not passes_keyword_prefilter(c)]
     for c in keyword_filtered_out:
-        classified.append({**c, "relevant": False, "section": None, "region": None,
-                            "ax": 0, "ulsan_score": 0, "industry": None, "tech": [], "core": 0,
-                            "prefiltered": True})
+        classified.append({**c, **_empty_fields(grade="X"), "prefiltered": True})
 
     log["to_classify"] = len(to_classify)
     log["keyword_prefilter_pass"] = len(keyword_pass)
@@ -438,13 +467,13 @@ def main():
             print(f"ANTHROPIC_API_KEY not set - {len(keyword_pass)} candidates left unclassified (will retry next run)")
             log["skipped_no_api_key"] = True
             for c in keyword_pass:
-                classified.append({**c, "relevant": None, "unclassified": True})
+                classified.append({**c, **_empty_fields(), "unclassified": True})
         else:
             import anthropic
             client = anthropic.Anthropic(api_key=api_key)
             new_results = classify_via_batches_api(client, keyword_pass, log)
             for c in keyword_pass:
-                r = new_results.get(c["id"], {"relevant": None, "unclassified": True})
+                r = new_results.get(c["id"], {**_empty_fields(), "unclassified": True})
                 classified.append({**c, **r})
 
     # Persist freshly-classified (non-cached, non-prefiltered, non-unclassified) results to the cache.

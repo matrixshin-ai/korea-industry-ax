@@ -3,10 +3,15 @@ classified.json -> public/data.json
 
 1. Use only this run's fresh candidates (no carry-over from a previous day).
 2. Drop exact-duplicate URLs (after normalization).
-3. Drop relevant != true (includes unclassified items - they retry next run).
-4. Merge same-event duplicates via dedup.py; representative gets `related`.
-5. Apply the KST collection window (same helper collect.py used).
-6. Sort within each section: score = ax + ulsan_score + core*10, desc, then newest first.
+3. Keep only grade S/A/B (C and X, and unclassified items, are dropped - C/X
+   don't meet the bar for the 울산 policy audience this project serves; an
+   unclassified item just retries whenever it's re-collected).
+4. Apply the KST collection window (same helper collect.py used).
+5. Merge same-event duplicates: dedup.py's algorithmic pass first, then a
+   small targeted Haiku pass (jobs/llm_dedup.py) on whatever still shares a
+   detected organization name afterward. Representative gets `related`.
+6. Sort within each section: score = grade_points(S=100/A=70/B=40) +
+   ulsan_score + core*10, desc, then newest first.
 7. Write public/data.json with generation stats for the footer/status line.
 """
 import glob
@@ -16,7 +21,9 @@ import sys
 from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from classify import GRADE_POINTS
 from dedup import deduplicate_articles
+import llm_dedup
 from timewindow import KST, get_collection_hours, within_window
 from urlnorm import normalize_url
 
@@ -28,6 +35,7 @@ DATA_PATH = os.path.join(ROOT, "public", "data.json")
 LOGS_DIR = os.path.join(ROOT, "logs")
 
 SECTION_LABELS = {1: "기업·현장", 2: "기술·인프라", 3: "정책·생태계·인재"}
+PUBLISHED_GRADES = ("S", "A", "B")
 
 
 def load_latest_run_log():
@@ -59,35 +67,49 @@ def main():
 
     hours = get_collection_hours()
 
-    relevant = [c for c in classified if c.get("relevant") is True and c.get("section") in (1, 2, 3)]
-    dropped_not_relevant = len(classified) - len(relevant)
+    published = [c for c in classified if c.get("grade") in PUBLISHED_GRADES and c.get("section") in (1, 2, 3)]
+    dropped_not_published = len(classified) - len(published)
 
     seen_urls = set()
     exact_deduped = []
-    for c in relevant:
+    for c in published:
         key = normalize_url(c.get("link", ""))
         if key and key not in seen_urls:
             seen_urls.add(key)
             exact_deduped.append(c)
-    dropped_exact_dupe = len(relevant) - len(exact_deduped)
+    dropped_exact_dupe = len(published) - len(exact_deduped)
 
     windowed = []
     for c in exact_deduped:
-        published = parse_published(c.get("published"))
-        if within_window(published, hours):
+        pub_dt = parse_published(c.get("published"))
+        if within_window(pub_dt, hours):
             windowed.append(c)
     dropped_out_of_window = len(exact_deduped) - len(windowed)
 
-    before_semantic_dedup = len(windowed)
+    before_algo_dedup = len(windowed)
     deduped = deduplicate_articles(windowed)
-    after_semantic_dedup = len(deduped)
+    after_algo_dedup = len(deduped)
+
+    llm_dedup_log = {}
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    clusters = llm_dedup.build_clusters(deduped)
+    llm_dedup_log["suspect_clusters"] = len(clusters)
+    llm_dedup_log["suspect_items"] = sum(len(c) for c in clusters)
+    if clusters and api_key:
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        merge_map = llm_dedup.llm_merge_clusters(client, clusters, llm_dedup_log)
+        deduped = llm_dedup.apply_merge_map(deduped, merge_map)
+    elif clusters:
+        print(f"  ANTHROPIC_API_KEY not set - skipping LLM dedup pass on {len(clusters)} suspect clusters")
+    after_llm_dedup = len(deduped)
 
     sections = {"1": [], "2": [], "3": []}
     for item in deduped:
-        published = parse_published(item.get("published"))
-        score = item.get("ax", 0) + item.get("ulsan_score", 0) + item.get("core", 0) * 10
+        pub_dt = parse_published(item.get("published"))
+        score = GRADE_POINTS.get(item.get("grade"), 0) + item.get("ulsan_score", 0) + item.get("core", 0) * 10
         item["score"] = score
-        item["_sort_key"] = (score, published or datetime.min.replace(tzinfo=timezone.utc))
+        item["_sort_key"] = (score, pub_dt or datetime.min.replace(tzinfo=timezone.utc))
         sections[str(item["section"])].append(item)
 
     for key in sections:
@@ -100,8 +122,13 @@ def main():
             it.pop("id", None)
             it.pop("collected_via", None)
             it.pop("unclassified", None)
+            it.pop("prefiltered", None)
 
     run_log = load_latest_run_log() or {}
+
+    grade_counts = {"S": 0, "A": 0, "B": 0}
+    for item in deduped:
+        grade_counts[item.get("grade")] = grade_counts.get(item.get("grade"), 0) + 1
 
     data = {
         "generated_at": datetime.now(KST).isoformat(),
@@ -109,11 +136,14 @@ def main():
         "article_count": sum(len(v) for v in sections.values()),
         "stats": {
             "classified_total": len(classified),
-            "dropped_not_relevant": dropped_not_relevant,
+            "dropped_not_published": dropped_not_published,
             "dropped_exact_duplicate": dropped_exact_dupe,
             "dropped_out_of_window": dropped_out_of_window,
-            "before_semantic_dedup": before_semantic_dedup,
-            "after_semantic_dedup": after_semantic_dedup,
+            "before_algo_dedup": before_algo_dedup,
+            "after_algo_dedup": after_algo_dedup,
+            "after_llm_dedup": after_llm_dedup,
+            "llm_dedup": llm_dedup_log,
+            "published_grade_counts": grade_counts,
             "rss": run_log.get("rss", {}),
             "naver": run_log.get("naver", {}),
         },
@@ -130,8 +160,10 @@ def main():
 
     print(f"Built public/data.json: {data['article_count']} articles "
           f"(section1={len(sections['1'])}, section2={len(sections['2'])}, section3={len(sections['3'])})")
-    print(f"  relevant-only: {len(relevant)}, exact-dedup: -{dropped_exact_dupe}, "
-          f"window-filtered: -{dropped_out_of_window}, semantic-dedup: {before_semantic_dedup} -> {after_semantic_dedup}")
+    print(f"  published(S/A/B): {len(published)}, exact-dedup: -{dropped_exact_dupe}, "
+          f"window-filtered: -{dropped_out_of_window}, algo-dedup: {before_algo_dedup} -> {after_algo_dedup}, "
+          f"llm-dedup: -> {after_llm_dedup}")
+    print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)} B={grade_counts.get('B', 0)}")
 
 
 if __name__ == "__main__":

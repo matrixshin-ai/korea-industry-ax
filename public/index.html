@@ -147,6 +147,20 @@
     margin-right: 6px;
     vertical-align: middle;
   }
+  .grade-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .grade-S { background: #b45309; }
+  .grade-A { background: #2563eb; }
+  .grade-B { background: #6b7280; }
+  .loc-tag { background: var(--accent-bg); color: var(--accent); }
   .card-summary { font-size: 14px; color: #333; margin: 0 0 8px; }
   .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
   .tag {
@@ -263,6 +277,9 @@
       <div class="group" id="regionFilter"></div>
     </div>
     <div class="filterbar">
+      <div class="group" id="locFilter"></div>
+    </div>
+    <div class="filterbar">
       <div class="group" id="industryFilter"></div>
     </div>
 
@@ -280,9 +297,11 @@
 <script>
 (function () {
   var SECTION_LABELS = { "1": "기업·현장", "2": "기술·인프라", "3": "정책·생태계·인재" };
-  var REGIONS = ["전체", "울산", "국내", "해외"];
+  var GRADE_LABELS = { "S": "S", "A": "A", "B": "B" };
+  var HOME_GRADES = { "S": true, "A": true };  // only these show on the home page
+  var REGIONS = ["전체", "울산", "타지자체", "전국", "해외"];
   var INDUSTRIES_PRIORITY = ["전체", "에너지", "석유화학", "자동차", "조선"];
-  var INDUSTRIES_REST = ["배터리", "반도체", "철강·기계", "물류", "건설", "금융", "의료", "공공", "기타"];
+  var INDUSTRIES_REST = ["배터리", "반도체", "철강·기계", "물류", "건설", "금융", "의료", "공공", "IT·통신·데이터센터", "기타"];
   var HOME_TOP_N = 10;
   var SECTION_PAGE_SIZE = 20;
 
@@ -291,6 +310,7 @@
     view: "home",          // "home" | "section"
     activeSection: "1",
     region: "전체",
+    loc: null,              // only meaningful when region === "타지자체"
     industry: "전체",
     search: "",
     visibleCount: SECTION_PAGE_SIZE,
@@ -319,11 +339,25 @@
 
   function applyFilters(items) {
     return items.filter(function (it) {
-      if (state.region !== "전체" && it.region !== state.region) return false;
+      if (state.region !== "전체") {
+        if (it.region !== state.region) return false;
+        if (state.region === "타지자체" && state.loc && it.loc !== state.loc) return false;
+      }
       if (state.industry !== "전체" && it.industry !== state.industry) return false;
       if (state.search && (it.title || "").toLowerCase().indexOf(state.search.toLowerCase()) === -1) return false;
       return true;
     });
+  }
+
+  function locOptionsInData() {
+    if (!state.data) return [];
+    var set = {};
+    ["1", "2", "3"].forEach(function (key) {
+      sectionItems(key).forEach(function (it) {
+        if (it.region === "타지자체" && it.loc) set[it.loc] = true;
+      });
+    });
+    return Object.keys(set).sort();
   }
 
   function renderSectionNav() {
@@ -354,11 +388,29 @@
       btn.textContent = r;
       btn.addEventListener("click", function () {
         state.region = r;
+        state.loc = null;
         state.visibleCount = SECTION_PAGE_SIZE;
         render();
       });
       regionWrap.appendChild(btn);
     });
+
+    var locWrap = document.getElementById("locFilter");
+    locWrap.innerHTML = "";
+    if (state.region === "타지자체") {
+      var locBtn = document.createElement("button");
+      locBtn.className = "filter-btn" + (!state.loc ? " active" : "");
+      locBtn.textContent = "전체";
+      locBtn.addEventListener("click", function () { state.loc = null; state.visibleCount = SECTION_PAGE_SIZE; render(); });
+      locWrap.appendChild(locBtn);
+      locOptionsInData().forEach(function (loc) {
+        var btn = document.createElement("button");
+        btn.className = "filter-btn" + (state.loc === loc ? " active" : "");
+        btn.textContent = loc;
+        btn.addEventListener("click", function () { state.loc = loc; state.visibleCount = SECTION_PAGE_SIZE; render(); });
+        locWrap.appendChild(btn);
+      });
+    }
 
     var indWrap = document.getElementById("industryFilter");
     indWrap.innerHTML = "";
@@ -376,8 +428,14 @@
   }
 
   function cardHtml(item, idx) {
-    var badge = item.region === "울산" ? '<span class="ulsan-badge">울산</span>' : "";
+    var gradeBadge = item.grade
+      ? '<span class="grade-badge grade-' + escapeHtml(item.grade) + '">' + escapeHtml(item.grade) + "</span>"
+      : "";
+    var regionBadge = item.region === "울산" ? '<span class="ulsan-badge">울산</span>' : "";
     var tagsHtml = "";
+    if (item.region === "타지자체" && item.loc) {
+      tagsHtml += '<span class="tag loc-tag">#' + escapeHtml(item.loc) + "</span>";
+    }
     if (item.industry) {
       tagsHtml += '<span class="tag ind-tag" data-ind="' + escapeHtml(item.industry) + '">#' + escapeHtml(item.industry) + "</span>";
     }
@@ -398,7 +456,7 @@
 
     return (
       '<article class="card">' +
-      '<h3 class="card-title">' + badge +
+      '<h3 class="card-title">' + gradeBadge + regionBadge +
       '<a href="' + escapeHtml(item.link) + '" target="_blank" rel="noopener">' + escapeHtml(item.title) + "</a></h3>" +
       '<div class="card-byline">' + escapeHtml(item.source) + " · " + fmtDateTime(item.published) + "</div>" +
       (item.summary ? '<p class="card-summary">' + escapeHtml(item.summary) + "</p>" : "") +
@@ -438,18 +496,24 @@
       if (!filtered.length) return;
       anyItems = true;
 
+      // Home page only ever shows S/A grade cards (already sorted first by
+      // score, since S=100/A=70/B=40 point tiers can never interleave); if
+      // there are fewer than HOME_TOP_N of those, show only that many - never
+      // pad the home page out with B-grade cards.
+      var saOnly = filtered.filter(function (it) { return HOME_GRADES[it.grade]; });
+
       var block = document.createElement("div");
       block.className = "home-section-block";
 
-      var remaining = filtered.length - HOME_TOP_N;
+      var remaining = filtered.length - Math.min(saOnly.length, HOME_TOP_N);
       var headerHtml = '<div class="home-section-header"><h2>' + SECTION_LABELS[key] + "</h2>" +
         (remaining > 0 ? '<button class="home-more-link" data-key="' + key + '">더보기(' + remaining + '건) &rsaquo;</button>' : "") +
         "</div>";
-      var cardsHtml = filtered.slice(0, HOME_TOP_N).map(function (it) {
+      var cardsHtml = saOnly.slice(0, HOME_TOP_N).map(function (it) {
         return cardHtml(it, globalIdx++);
       }).join("");
 
-      block.innerHTML = headerHtml + cardsHtml;
+      block.innerHTML = headerHtml + (cardsHtml || '<div class="empty-state">S·A 등급 기사가 없습니다.</div>');
       list.appendChild(block);
     });
 
