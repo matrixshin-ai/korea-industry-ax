@@ -102,3 +102,22 @@ def test_apply_merge_map_no_merges_returns_all_items_unchanged():
     b = _article("B", "https://b.example.com/2", "매체B")
     result = llm_dedup.apply_merge_map([a, b], {})
     assert len(result) == 2
+
+
+def test_llm_merge_clusters_does_not_chain_merges_across_clusters():
+    # b sits in both clusters. Cluster 0 groups a+b, cluster 1 groups b+c: c must
+    # NOT be pulled into a's group through b (that chaining once built a card
+    # with 240 unrelated related-links).
+    a = _article("대통령 투자서밋", "https://a.example.com/1", "매체A")
+    b = _article("대통령 울산시 방문 투자서밋", "https://b.example.com/2", "매체B")
+    c = _article("울산시 AI 조례", "https://c.example.com/3", "매체C")
+    client = MagicMock()
+    client.messages.create.return_value = _text_response(
+        '[{"c": 0, "groups": [[0, 1]]}, {"c": 1, "groups": [[2, 3]]}]')
+
+    merge_map = llm_dedup.llm_merge_clusters(client, [[a, b], [b, c]], {})
+
+    assert "https://c.example.com/3" not in merge_map
+    assert "https://c.example.com/3" not in merge_map.values()
+    merged = llm_dedup.apply_merge_map([a, b, c], merge_map)
+    assert len(merged) == 2

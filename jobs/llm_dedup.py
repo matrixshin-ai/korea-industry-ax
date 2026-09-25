@@ -108,12 +108,21 @@ def llm_merge_clusters(client, clusters: list, log: dict) -> dict:
         log["llm_dedup_error"] = str(e)
         return {}
 
+    # One article can sit in several clusters (it names several orgs). If each
+    # cluster's grouping were applied independently, the merges would chain
+    # across clusters (A~B in "대통령", B~C in "울산시", ...) and snowball into
+    # one giant group swallowing unrelated stories - seen in practice as a
+    # single card with 240 `related` links. So an article joins only the first
+    # multi-member group it's placed in; later groupings skip it.
     merge_map = {}
+    assigned_links = set()
     for entry in parsed:
         for group in entry.get("groups", []):
             group_items = [id_to_item[i] for i in group if i in id_to_item]
+            group_items = [it for it in group_items if it.get("link", "") not in assigned_links]
             if len(group_items) < 2:
                 continue
+            assigned_links.update(it.get("link", "") for it in group_items)
             rep = group_items[0]
             for other in group_items[1:]:
                 rep = _choose_better(rep, other)

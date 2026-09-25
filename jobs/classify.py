@@ -2,8 +2,8 @@
 Haiku classification: candidates.json -> classified.json
 
 Grades each candidate S/A/B/C/X by usefulness to a 울산 industrial-AX policy
-audience (not by "how real is the AI adoption"). Only S/A/B get published
-(see build.py); C and X are graded but filtered out there.
+audience (not by "how real is the AI adoption"). Only S/A - plus B with
+ulsan_score >= 8 - get published (see build.py).
 
 - Sends title/description/source only (no article body fetched).
 - Cache: data/classify_cache.json, keyed by sha256(normalized URL), stores
@@ -12,7 +12,12 @@ audience (not by "how real is the AI adoption"). Only S/A/B get published
   The cache file itself is NOT committed - CI restores/saves it via
   actions/cache (see .github/workflows/update.yml); a cold start with no cache
   at all still works correctly, just classifies everything fresh.
-- Keyword prefilter runs before any Haiku call (see passes_keyword_prefilter).
+- Finance/securities title filter (is_finance_title) forces X before the
+  cache lookup or any Haiku call; then the keyword prefilter
+  (passes_keyword_prefilter).
+- Deterministic S caps (apply_rule_caps) run on top of every Haiku/cache
+  grade. The cache stores the raw model grade tagged with PROMPT_VERSION;
+  entries from another version are re-graded.
 - Classification goes through the Message Batches API (50% cheaper) in groups
   of up to BATCH_SIZE items per request. If the whole batch job hasn't reached
   "ended" within BATCH_TIMEOUT_SECONDS, it's canceled and whatever groups
@@ -68,6 +73,11 @@ BATCH_API_DISCOUNT = 0.5  # Message Batches API: 50% off standard token price
 # benefit). Deliberately not applying cache_control for that reason;
 # re-measure if the prompt grows a lot.
 PROMPT_CACHING_MIN_TOKENS_HAIKU_4_5 = 4096
+
+# Bump whenever SYSTEM_PROMPT's grading criteria change. Cache entries written
+# under a different version are treated as misses and re-graded, so a prompt
+# change takes effect on the very next run instead of after 48h of cache aging.
+PROMPT_VERSION = 3
 
 IND_OPTIONS = [
     "에너지", "석유화학", "자동차", "조선", "배터리", "반도체", "철강·기계",
@@ -136,7 +146,7 @@ X가 아니면 S -> A -> B -> C 순서로 어디에 해당하는지 확인하세
 m="부분"이면 B에서 멈춤).
 
 X(제외) - 아래 중 하나라도 해당하면 다른 조건과 상관없이 무조건 X:
-- 금융권 AI 협약·금융상품·ETF·펀드·주가·실적
+- 금융권 AI 협약·금융상품·ETF·펀드·주가·목표가·특징주·증시·종목·주주환원·상장·공모주·실적
 - 빅테크 모델 경쟁·해외 빅테크 투자 담론 (특정 산업 현장 적용이 명시되지 않은 경우)
 - 행사·공연·선언적 비전·축사
 - 사회공헌·상생 활동
@@ -150,7 +160,12 @@ X(제외) - 아래 중 하나라도 해당하면 다른 조건과 상관없이 �
 - 칼럼·사설 (단, 제목 자체가 AX를 주제로 다루면 예외)
 - AI 요소가 없는 투자 유치·M&A·외교·방산·원자재 수급 기사
 
-S등급 (아래 중 하나):
+S등급 - 전제 조건: 제목 또는 요약 첫 문장(=기사의 주제)에 AI·AX(인공지능)가 명시돼
+있어야 합니다. 이 조건을 못 채우면 아래 항목에 해당해도 S가 아닙니다. 특히:
+- AI 요소가 명시되지 않은 반도체·설비·공장·연구시설 투자·신설·유치 -> 최대 B
+- 데이터센터 전력 인프라(전력망·송전·변전·발전·전력 공급) 기사 -> AI 데이터센터라도 최대 A
+전제 조건은 S를 아껴 쓰라는 뜻이 아닙니다 - 전제 조건을 채운 기사가 아래 항목 중 하나에
+해당하면 망설이지 말고 S를 주세요:
 - 중앙정부 AX 정책·예산·공모사업·선정 결과
 - 타 지자체의 AX 전략·실증거점·유치 성과
 - 울산 소재 기업·기관(현대차 울산공장, HD현대중공업, SK이노베이션, S-OIL, 고려아연,
@@ -171,8 +186,7 @@ B등급 (아래 중 하나, 또는 m="부분"으로 상한이 걸린 경우):
 
 C등급: 그 외 산업 AX 관련 기사 (X는 아니지만 S/A/B 어디에도 뚜렷이 해당하지 않는 경우)
 
-실제 오판 사례로 배우는 기준 (전부 X여야 했는데 잘못 높은 등급을 받았던 사례,
-마지막 하나만 정답 사례):
+실제 오판 사례로 배우는 기준 (잘못 높은 등급을 받았던 사례들, 마지막 하나만 정답 사례):
 - "김상욱 울산시장, 추석 앞두고 시립요양원·노동 현장 찾아" -> 시장의 동정·일정
   소개일 뿐 AX가 제목의 주제가 아님 -> m="언급" -> X
 - "전북권 올 추석 밥상머리 최대 화두는?...10대 이슈 톺아보기" -> 여러 이슈를 나열하는
@@ -182,6 +196,14 @@ C등급: 그 외 산업 AX 관련 기사 (X는 아니지만 S/A/B 어디에도 �
   -> X (조선 협력 자체에는 AI 요소 없음)
 - "전직원 스톡옵션, 글로벌 선박AS 개척…현대마솔 3배 키운 KKR" -> 제목의 주제는
   KKR의 투자·M&A 성과이지 AX가 아님 -> X
+- "울산시-HD현대중공업, 발전엔진·SMR 공장 신설 맞손" -> 울산 핵심 기업 기사지만 AI
+  요소가 없는 공장 신설 -> S 아님. AI 언급이 전혀 없으면 X, 있더라도 최대 B
+- "SK그룹주 ETF의 귀환, 하이닉스발 주주환원·AI 확장 기대감" -> ETF·주주환원 등 증권
+  기사 -> X
+- "김상욱 '울산시정 기준은 시민 삶…공개행정은 보완하며 계속'" -> 단체장 종합 인터뷰,
+  AX는 여러 시정 주제 중 하나 -> m="언급" -> X
+- "경북·경남·전북, 피지컬AI 지역 거점 육성 협약" -> 제목에 AI 명시 + 타 지자체의 AX
+  전략·거점 -> S (e: "경북·경남·전북-피지컬AI 거점 협약-3개 도") (A로 낮췄던 오판)
 - "현대차 '아틀라스', 공장 학습 본격 시작…2028년 투입 목표로 훈련" -> 제목 자체가
   "휴머노이드 로봇의 공장 학습"이라는 AX 내용을 주제로 다룸 -> m="주제" -> A 이상
   (e: "현대차-휴머노이드 아틀라스 공장학습-생산현장")
@@ -203,6 +225,61 @@ def passes_keyword_prefilter(candidate: dict) -> bool:
     # Collapse whitespace differences ("디지털 트윈" vs "디지털트윈") before matching.
     text = re.sub(r"\s+", "", f"{candidate.get('title', '')} {candidate.get('summary', '')}").upper()
     return any(re.sub(r"\s+", "", kw).upper() in text for kw in PREFILTER_KEYWORDS)
+
+
+# Finance/securities title filter: runs before Haiku (and before the cache
+# lookup), forcing X with no API call. These are stock-market stories that
+# merely mention AI (ETF, 목표가, 특징주...) - the prompt already says X for
+# them, but Haiku still let some through (an ETF story once graded S).
+# Exception: a title naming 울산 together with AI/AX is left for Haiku to judge.
+FINANCE_TITLE_KEYWORDS = ["ETF", "펀드", "주가", "목표가", "특징주", "증시", "종목", "주주환원", "상장", "공모주"]
+
+# "AI/AX explicitly named" - the Latin token must not be glued to other Latin
+# letters on the left or lowercase on the right (so "MAX"/"SAIL" don't count,
+# while "AI팩토리"/"M.AX"/"AIDC" do).
+_AI_TERM_RE = re.compile(r"(?<![A-Za-z])(AI|AX)(?![a-z])|인공지능|에이아이")
+_DATACENTER_RE = re.compile(r"데이터\s*센터|AIDC")
+_POWER_RE = re.compile(r"전력|송전|변전|발전소|전기\s*공급")
+
+
+def has_ai_term(text: str) -> bool:
+    return bool(_AI_TERM_RE.search(text or ""))
+
+
+def is_finance_title(title: str) -> bool:
+    title = title or ""
+    upper = title.upper()
+    if not any(kw.upper() in upper for kw in FINANCE_TITLE_KEYWORDS):
+        return False
+    return not ("울산" in title and has_ai_term(title))
+
+
+def _first_sentence(text: str) -> str:
+    return re.split(r"(?<=[.!?])\s|\n", (text or "").strip(), maxsplit=1)[0]
+
+
+def apply_rule_caps(item: dict) -> dict:
+    """Deterministic caps layered on top of Haiku's S grade (fresh and cached
+    results alike - the cache keeps the raw model grade):
+    - S requires AI/AX named in the topic (title or the summary's first
+      sentence). Otherwise S -> A if AI appears somewhere in the summary,
+      else S -> B (no AI element at all = plain facility/semiconductor/lab).
+    - A data-center power-infrastructure title is capped at A."""
+    if item.get("grade") != "S":
+        return item
+    title = item.get("title", "") or ""
+    summary = item.get("summary", "") or ""
+    new_grade = "S"
+    if not has_ai_term(f"{title} {_first_sentence(summary)}"):
+        new_grade = "A" if has_ai_term(summary) else "B"
+    elif _DATACENTER_RE.search(title) and _POWER_RE.search(title):
+        new_grade = "A"
+    if new_grade == "S":
+        return item
+    out = {**item, "grade": new_grade, "rule_capped_from": "S"}
+    if new_grade == "B":
+        out["evidence"] = None
+    return out
 
 
 def load_json(path, default):
@@ -342,7 +419,7 @@ def cache_entry_to_fields(entry: dict) -> dict:
 
 def fields_to_cache_entry(fields: dict, published: str) -> dict:
     grade = fields.get("grade")
-    entry = {"g": grade, "m": fields.get("m"), "pub": published}
+    entry = {"g": grade, "m": fields.get("m"), "pub": published, "v": PROMPT_VERSION}
     if grade and grade != "X":
         entry.update({
             "s": fields.get("section"), "r": fields.get("region"), "loc": fields.get("loc"),
@@ -519,13 +596,21 @@ def main():
 
     classified = []
     to_classify = []
+    finance_filtered = []
     for c in candidates:
+        if is_finance_title(c.get("title", "")):
+            finance_filtered.append(c)
+            continue
         entry = cache.get(cache_key(c.get("link", "")))
-        if entry:
+        if entry and entry.get("v") == PROMPT_VERSION:
             log["cache_hits"] += 1
-            classified.append({**c, **cache_entry_to_fields(entry)})
+            classified.append(apply_rule_caps({**c, **cache_entry_to_fields(entry)}))
         else:
             to_classify.append(c)
+
+    for c in finance_filtered:
+        classified.append({**c, **_empty_fields(grade="X"), "finance_filtered": True})
+    log["finance_title_filtered_out"] = len(finance_filtered)
 
     keyword_pass = [c for c in to_classify if passes_keyword_prefilter(c)]
     keyword_filtered_out = [c for c in to_classify if not passes_keyword_prefilter(c)]
@@ -535,7 +620,8 @@ def main():
     log["to_classify"] = len(to_classify)
     log["keyword_prefilter_pass"] = len(keyword_pass)
     log["keyword_prefilter_filtered_out"] = len(keyword_filtered_out)
-    print(f"Candidates: {len(candidates)} total, {log['cache_hits']} cache hits, {len(to_classify)} to classify "
+    print(f"Candidates: {len(candidates)} total, {len(finance_filtered)} finance-title filtered, "
+          f"{log['cache_hits']} cache hits, {len(to_classify)} to classify "
           f"({len(keyword_pass)} pass keyword prefilter, {len(keyword_filtered_out)} filtered out)")
 
     new_results = {}
@@ -551,7 +637,7 @@ def main():
             new_results = classify_via_batches_api(client, keyword_pass, log)
             for c in keyword_pass:
                 r = new_results.get(c["id"], {**_empty_fields(), "unclassified": True})
-                classified.append({**c, **r})
+                classified.append(apply_rule_caps({**c, **r}))
 
     # Persist freshly-classified (non-cached, non-prefiltered, non-unclassified) results to the cache.
     for c in keyword_pass:
@@ -576,6 +662,7 @@ def main():
         + sync_in / 1_000_000 * INPUT_PRICE_PER_M
         + sync_out / 1_000_000 * OUTPUT_PRICE_PER_M
     )
+    log["rule_capped"] = sum(1 for c in classified if c.get("rule_capped_from"))
     log["input_tokens"] = total_in
     log["output_tokens"] = total_out
     log["estimated_cost_usd"] = round(est_cost, 4)

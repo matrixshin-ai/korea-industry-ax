@@ -29,6 +29,9 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
         {"title": "B등급 기사", "link": "https://x.example.com/4", "source": "매체A", "summary": "",
          "published": recent, "grade": "B", "section": 1, "region": "전국", "loc": None,
          "ulsan_score": 0, "industry": "금융", "tech": [], "core": 0},
+        {"title": "울산 B등급 기사", "link": "https://x.example.com/4b", "source": "매체D", "summary": "",
+         "published": recent, "grade": "B", "section": 1, "region": "울산", "loc": None,
+         "ulsan_score": 8, "industry": "기타", "tech": [], "core": 0},
         {"title": "S등급 기사", "link": "https://x.example.com/5", "source": "매체B", "summary": "",
          "published": recent, "grade": "S", "section": 1, "region": "울산", "loc": None,
          "ulsan_score": 10, "industry": "조선", "tech": ["로봇"], "core": 1},
@@ -57,7 +60,8 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
     assert "C등급 기사" not in section1_titles
     assert "미분류 기사" not in section1_titles
     assert "기간 밖 S등급 기사" not in section1_titles
-    assert section1_titles == ["S등급 기사", "B등급 기사"]
+    assert "B등급 기사" not in section1_titles  # B with ulsan_score < 8 is not published
+    assert section1_titles == ["S등급 기사", "울산 B등급 기사"]
 
     top = result["sections"]["1"]["items"][0]
     assert top["score"] == 100 + 10 + 1 * 10  # S(100) + ulsan(10) + core(1)*10 == 110
@@ -68,7 +72,7 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
 
     assert result["collection_hours"] == 24
     assert result["stats"]["dropped_unclassified"] == 1  # the grade=None item
-    assert result["stats"]["dropped_not_published_after_regrade"] == 2  # X, C (neither merged into anything)
+    assert result["stats"]["dropped_not_published_after_regrade"] == 3  # X, C, B(u=0)
     assert result["stats"]["dropped_out_of_window"] == 1
     assert result["stats"]["published_grade_counts"] == {"S": 1, "A": 1, "B": 1}
 
@@ -138,7 +142,7 @@ def test_build_main_skips_item_with_invalid_section_instead_of_crashing(tmp_path
          "published": recent, "grade": "S", "section": None, "region": "울산", "loc": None,
          "ulsan_score": 10, "industry": "조선", "tech": [], "core": 0},
         {"title": "정상 기사", "link": "https://x.example.com/2", "source": "매체", "summary": "",
-         "published": recent, "grade": "B", "section": 1, "region": "전국", "loc": None,
+         "published": recent, "grade": "A", "section": 1, "region": "전국", "loc": None,
          "ulsan_score": 0, "industry": "금융", "tech": [], "core": 0},
     ]
 
@@ -251,3 +255,87 @@ def test_build_main_skips_llm_dedup_without_api_key(tmp_path, monkeypatch):
     result = json.loads(data_path.read_text(encoding="utf-8"))
     # Algorithmic dedup.py alone should already merge this pair (org+number match).
     assert result["article_count"] == 1
+
+
+def _setup_main(tmp_path, monkeypatch, classified):
+    classified_path = tmp_path / "classified.json"
+    data_path = tmp_path / "public" / "data.json"
+    classified_path.write_text(json.dumps(classified), encoding="utf-8")
+    monkeypatch.setattr(build, "CLASSIFIED_PATH", str(classified_path))
+    monkeypatch.setattr(build, "DATA_PATH", str(data_path))
+    monkeypatch.setattr(build, "LOGS_DIR", str(tmp_path / "logs"))
+    monkeypatch.setattr(build, "get_collection_hours", lambda: 24)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    return data_path
+
+
+def test_is_publishable_rules():
+    assert build.is_publishable({"grade": "S", "ulsan_score": 0})
+    assert build.is_publishable({"grade": "A", "ulsan_score": 0})
+    assert build.is_publishable({"grade": "B", "ulsan_score": 8})
+    assert build.is_publishable({"grade": "B", "ulsan_score": 10})
+    assert not build.is_publishable({"grade": "B", "ulsan_score": 4})
+    assert not build.is_publishable({"grade": "C", "ulsan_score": 10})
+    assert not build.is_publishable({"grade": "X", "ulsan_score": 10})
+
+
+def test_build_main_applies_daily_cap_by_score_across_sections(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    classified = []
+    # 150 A-grade (score 70) in section 2, 100 S-grade (score 100) in section 3:
+    # the cap keeps all 100 S plus the 100 newest A.
+    for i in range(150):
+        classified.append({"title": f"A기사 가{i} 나{i*7}", "link": f"https://a.example.com/{i}", "source": "매체",
+                           "summary": "", "published": _iso(now - timedelta(minutes=i + 1)), "grade": "A",
+                           "section": 2, "region": "전국", "loc": None, "ulsan_score": 0,
+                           "industry": "기타", "tech": [], "core": 0})
+    for i in range(100):
+        classified.append({"title": f"S기사 다{i} 라{i*7}", "link": f"https://s.example.com/{i}", "source": "매체",
+                           "summary": "", "published": _iso(now - timedelta(minutes=i + 1)), "grade": "S",
+                           "section": 3, "region": "전국", "loc": None, "ulsan_score": 0,
+                           "industry": "기타", "tech": [], "core": 0})
+    data_path = _setup_main(tmp_path, monkeypatch, classified)
+    monkeypatch.setattr(build, "EVENT_MERGE_PATH", str(tmp_path / "none.yaml"))
+
+    build.main()
+
+    result = json.loads(data_path.read_text(encoding="utf-8"))
+    assert result["article_count"] == build.DAILY_CAP == 200
+    assert result["stats"]["publishable_before_cap"] == 250
+    assert result["stats"]["publishable_before_cap_by_section"] == {"1": 0, "2": 150, "3": 100}
+    assert result["stats"]["dropped_over_cap"] == 50
+    assert len(result["sections"]["3"]["items"]) == 100
+    sec2 = result["sections"]["2"]["items"]
+    assert len(sec2) == 100
+    assert sec2[0]["link"] == "https://a.example.com/0"  # newest first within equal score
+    assert "https://a.example.com/149" not in {it["link"] for it in sec2}
+
+
+def test_apply_event_rules_collapses_matching_titles_into_one_group():
+    rules = [{"name": "서밋", "all_of": [["李", "대통령"], ["투자서밋", "월가"]], "none_of": ["멕시코"]}]
+    items = [
+        {"title": "李 대통령, 뉴욕서 '대한민국 투자서밋' 주재", "link": "l1", "grade": "S", "related": []},
+        {"title": "월가 큰 손들과 다시 만난 李", "link": "l2", "grade": "A", "related": []},
+        {"title": "李대통령, 멕시코서 월가식 투자 유치", "link": "l3", "grade": "A", "related": []},
+        {"title": "현대차 울산공장 AI 도입", "link": "l4", "grade": "S", "related": []},
+    ]
+    merged, stats = build.apply_event_rules(items, rules)
+    assert [it["link"] for it in merged] == ["l1", "l3", "l4"]
+    assert [r["link"] for r in merged[0]["related"]] == ["l2"]
+    assert stats == {"서밋": 2}
+
+    regraded = build.regrade_representatives(merged)
+    assert regraded[0]["grade"] == "S" and len(regraded[0]["related"]) == 1
+
+
+def test_load_event_rules_skips_expired_rules(tmp_path):
+    from datetime import date
+    path = tmp_path / "ev.yaml"
+    path.write_text(
+        "events:\n"
+        '  - {name: old, until: "2026-01-01", all_of: [["a"]]}\n'
+        '  - {name: live, until: "2026-12-31", all_of: [["b"]]}\n'
+        '  - {name: forever, all_of: [["c"]]}\n',
+        encoding="utf-8")
+    names = [r["name"] for r in build.load_event_rules(str(path), today_kst=date(2026, 9, 25))]
+    assert names == ["live", "forever"]

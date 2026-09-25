@@ -1,0 +1,20 @@
+# Deterministic same-event merge rules, applied in build.py after both dedup
+# passes (algorithmic + Haiku). Needed for large multi-day events where the
+# Haiku pass is non-deterministic: it sometimes splits one event into several
+# published cards, and titles vary too much for dedup.py's similarity gate.
+#
+# A top-level article (or merged group) joins an event when its TITLE matches
+# at least one term from EVERY list in `all_of` (plain substring match), and
+# none of `none_of`. All matching groups collapse into one; the highest-graded
+# member becomes the representative (same rule as the rest of build.py).
+# `until` (KST date, inclusive) expires a rule so it can't catch unrelated
+# titles long after the event.
+events:
+  - name: "대통령 뉴욕 투자서밋 (2026-09)"
+    until: "2026-09-30"
+    all_of:
+      - ["李", "이 대통령", "이재명", "대통령"]
+      # "트럼프와 군함" = the same 월가 speech (he recapped the Trump talks there);
+      # its summary carries the summit's 3대 메가프로젝트 content.
+      - ["투자서밋", "투자 서밋", "월가", "투자 설명회", "투자설명회", "투자자", "韓 투자", "한국 투자", "대도약", "트럼프와 군함"]
+    none_of: ["멕시코", "FTA"]

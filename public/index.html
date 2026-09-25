@@ -298,7 +298,6 @@
 (function () {
   var SECTION_LABELS = { "1": "기업·현장", "2": "기술·인프라", "3": "정책·생태계·인재" };
   var GRADE_LABELS = { "S": "S", "A": "A", "B": "B" };
-  var HOME_GRADES = { "S": true, "A": true };  // only these show on the home page
   var REGIONS = ["전체", "울산", "타지자체", "전국", "해외"];
   var INDUSTRIES_PRIORITY = ["전체", "에너지", "석유화학", "자동차", "조선"];
   var INDUSTRIES_REST = ["배터리", "반도체", "철강·기계", "물류", "건설", "금융", "의료", "공공", "IT·통신·데이터센터", "기타"];
@@ -496,24 +495,22 @@
       if (!filtered.length) return;
       anyItems = true;
 
-      // Home page only ever shows S/A grade cards (already sorted first by
-      // score, since S=100/A=70/B=40 point tiers can never interleave); if
-      // there are fewer than HOME_TOP_N of those, show only that many - never
-      // pad the home page out with B-grade cards.
-      var saOnly = filtered.filter(function (it) { return HOME_GRADES[it.grade]; });
+      // Home page shows each section's top HOME_TOP_N by score (build.py only
+      // publishes S/A plus 울산-related B, already sorted by score).
+      var topItems = filtered;
 
       var block = document.createElement("div");
       block.className = "home-section-block";
 
-      var remaining = filtered.length - Math.min(saOnly.length, HOME_TOP_N);
+      var remaining = filtered.length - Math.min(topItems.length, HOME_TOP_N);
       var headerHtml = '<div class="home-section-header"><h2>' + SECTION_LABELS[key] + "</h2>" +
         (remaining > 0 ? '<button class="home-more-link" data-key="' + key + '">더보기(' + remaining + '건) &rsaquo;</button>' : "") +
         "</div>";
-      var cardsHtml = saOnly.slice(0, HOME_TOP_N).map(function (it) {
+      var cardsHtml = topItems.slice(0, HOME_TOP_N).map(function (it) {
         return cardHtml(it, globalIdx++);
       }).join("");
 
-      block.innerHTML = headerHtml + (cardsHtml || '<div class="empty-state">S·A 등급 기사가 없습니다.</div>');
+      block.innerHTML = headerHtml + (cardsHtml || '<div class="empty-state">기사가 없습니다.</div>');
       list.appendChild(block);
     });
 

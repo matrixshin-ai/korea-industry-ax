@@ -186,7 +186,7 @@ def test_fields_to_cache_entry_and_back_roundtrip():
 
 def test_fields_to_cache_entry_x_grade_is_minimal():
     entry = classify.fields_to_cache_entry({"grade": "X", "m": "언급"}, "2026-01-05T05:00:00+09:00")
-    assert entry == {"g": "X", "m": "언급", "pub": "2026-01-05T05:00:00+09:00"}
+    assert entry == {"g": "X", "m": "언급", "pub": "2026-01-05T05:00:00+09:00", "v": classify.PROMPT_VERSION}
 
 
 def test_load_and_prune_cache_drops_entries_older_than_48h(tmp_path, monkeypatch):
@@ -332,14 +332,14 @@ def test_classify_via_batches_api_timeout_cancels_and_falls_back_to_sync():
 def test_main_uses_cache_and_skips_api_call(tmp_path, monkeypatch):
     now = datetime.now(timezone.utc)
     candidates = [
-        {"title": "캐시된 기사", "summary": "요약", "link": "https://example.com/cached", "source": "매체",
+        {"title": "현대차 울산공장 AI 휴머노이드 학습", "summary": "요약", "link": "https://example.com/cached", "source": "매체",
          "published": (now - timedelta(hours=5)).isoformat()},
     ]
     cache = {
         classify.cache_key("https://example.com/cached"): {
             "g": "S", "m": "주제", "s": 1, "r": "울산", "loc": None, "u": 10, "ind": "조선", "t": ["로봇"],
             "core": 1, "e": "현대차-휴머노이드 학습-울산공장",
-            "pub": (now - timedelta(hours=5)).isoformat(),
+            "pub": (now - timedelta(hours=5)).isoformat(), "v": classify.PROMPT_VERSION,
         }
     }
 
@@ -385,3 +385,83 @@ def test_main_cold_start_with_no_cache_file_still_works(tmp_path, monkeypatch):
 
     result = json.loads((tmp_path / "classified.json").read_text(encoding="utf-8"))
     assert result[0]["grade"] == "X"  # no AI keyword -> filtered out, cold start still works
+
+
+def test_is_finance_title_blocks_securities_keywords():
+    for t in ["SK그룹주 ETF의 귀환, AI 확장 기대감", "[특징주] 로봇株 급등", "AI 반도체 목표가 상향",
+              "공모주 청약 AI 기업 몰려", "AI 펀드 수익률", "증시 AI 랠리", "AI 종목 추천", "주주환원 확대",
+              "AI 스타트업 코스닥 상장 추진", "현대차 주가 AI 기대"]:
+        assert classify.is_finance_title(t), t
+
+
+def test_is_finance_title_ulsan_ai_exception_and_non_finance():
+    assert not classify.is_finance_title("울산 AI 기업 코스닥 상장 추진")
+    assert not classify.is_finance_title("울산 AX 펀드 조성")
+    assert classify.is_finance_title("울산 기업 코스닥 상장 추진")  # 울산 without AI/AX
+    assert not classify.is_finance_title("현대차 울산공장 AI 자율제조 도입")
+
+
+def test_has_ai_term_word_boundaries():
+    assert classify.has_ai_term("AI팩토리 구축")
+    assert classify.has_ai_term("M.AX 얼라이언스")
+    assert classify.has_ai_term("AIDC 유치")
+    assert classify.has_ai_term("인공지능 전환")
+    assert not classify.has_ai_term("MAX 성능 SAIL 프로젝트")
+    assert not classify.has_ai_term("발전엔진 공장 신설")
+
+
+def test_apply_rule_caps():
+    base = {"grade": "S", "evidence": "e"}
+    # AI in title -> S kept
+    assert classify.apply_rule_caps({**base, "title": "현대차 울산공장 AI 도입", "summary": ""})["grade"] == "S"
+    # AI only in summary's first sentence -> S kept
+    assert classify.apply_rule_caps({**base, "title": "현대차 울산공장 혁신", "summary": "AI를 도입했다. 끝."})["grade"] == "S"
+    # AI only deeper in summary -> A
+    r = classify.apply_rule_caps({**base, "title": "국가반도체연구소 설립", "summary": "2조 투입. 향후 AI 반도체도."})
+    assert r["grade"] == "A" and r["evidence"] == "e" and r["rule_capped_from"] == "S"
+    # no AI at all -> B, evidence dropped
+    r = classify.apply_rule_caps({**base, "title": "발전엔진·SMR 공장 신설 맞손", "summary": "울산 온산에 공장."})
+    assert r["grade"] == "B" and r["evidence"] is None
+    # data-center power infrastructure -> A even with AI
+    assert classify.apply_rule_caps({**base, "title": "AI 데이터센터 전력망 확충", "summary": ""})["grade"] == "A"
+    # non-S untouched
+    a = {"grade": "A", "title": "무관", "summary": ""}
+    assert classify.apply_rule_caps(a) is a
+
+
+def _run_main(tmp_path, monkeypatch, candidates, cache=None):
+    candidates_path = tmp_path / "candidates.json"
+    cache_path = tmp_path / "data" / "classify_cache.json"
+    cache_path.parent.mkdir(exist_ok=True)
+    candidates_path.write_text(json.dumps(candidates), encoding="utf-8")
+    if cache is not None:
+        cache_path.write_text(json.dumps(cache), encoding="utf-8")
+    monkeypatch.setattr(classify, "CANDIDATES_PATH", str(candidates_path))
+    monkeypatch.setattr(classify, "CLASSIFY_CACHE_PATH", str(cache_path))
+    monkeypatch.setattr(classify, "CLASSIFIED_PATH", str(tmp_path / "classified.json"))
+    monkeypatch.setattr(classify, "LOGS_DIR", str(tmp_path / "logs"))
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    classify.main()
+    return json.loads((tmp_path / "classified.json").read_text(encoding="utf-8"))
+
+
+def test_main_finance_title_forced_x_even_when_cached_as_s(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    link = "https://example.com/etf"
+    cache = {classify.cache_key(link): {"g": "S", "m": "주제", "s": 1, "r": "울산", "loc": None, "u": 10,
+                                        "ind": "에너지", "t": [], "core": 0, "e": "e",
+                                        "pub": now.isoformat(), "v": classify.PROMPT_VERSION}}
+    result = _run_main(tmp_path, monkeypatch, [{"title": "SK그룹주 ETF의 귀환, AI 확장 기대감", "summary": "",
+                                                "link": link, "source": "매체", "published": now.isoformat()}], cache)
+    assert result[0]["grade"] == "X" and result[0]["finance_filtered"] is True
+
+
+def test_main_stale_prompt_version_cache_entry_is_regraded(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    link = "https://example.com/old"
+    cache = {classify.cache_key(link): {"g": "S", "m": "주제", "s": 1, "r": "울산", "loc": None, "u": 10,
+                                        "ind": "조선", "t": [], "core": 1, "e": "e", "pub": now.isoformat()}}
+    # No API key: a version-less (stale) entry must not be reused -> left unclassified.
+    result = _run_main(tmp_path, monkeypatch, [{"title": "HD현대중공업 AI 용접로봇 도입", "summary": "",
+                                                "link": link, "source": "매체", "published": now.isoformat()}], cache)
+    assert result[0]["grade"] is None and result[0]["unclassified"] is True
