@@ -1,45 +1,65 @@
 {
-  "generated_at": "2026-09-26T15:24:26.803806+09:00",
+  "generated_at": "2026-09-26T16:36:25.389959+09:00",
   "collection_hours": 24,
-  "article_count": 43,
+  "article_count": 27,
   "stats": {
-    "classified_total": 1912,
+    "classified_total": 1964,
     "dropped_unclassified": 0,
-    "dropped_exact_duplicate": 5,
+    "dropped_exact_duplicate": 6,
     "dropped_out_of_window": 0,
-    "before_algo_dedup": 1907,
-    "after_algo_dedup": 1839,
-    "after_llm_dedup": 1839,
-    "dropped_not_published_after_regrade": 1796,
+    "before_algo_dedup": 1958,
+    "after_algo_dedup": 1888,
+    "after_llm_dedup": 1871,
+    "dropped_not_published_after_regrade": 1844,
     "dropped_invalid_section": 0,
-    "publishable_before_cap": 43,
+    "publishable_before_cap": 27,
     "publishable_before_cap_by_section": {
-      "1": 19,
-      "2": 19,
-      "3": 5
+      "1": 15,
+      "2": 12,
+      "3": 0
     },
     "daily_cap": 200,
     "dropped_over_cap": 0,
-    "finance_title_filtered": 153,
+    "finance_title_filtered": 155,
     "rule_capped": 0,
     "llm_dedup": {
-      "candidate_groups": 43,
-      "candidate_groups_skipped_no_publishable_grade": 1796
+      "ran": true,
+      "chunk_count": 1,
+      "llm_dedup_input_tokens": 2734,
+      "llm_dedup_output_tokens": 135,
+      "estimated_cost_usd": 0.0034,
+      "candidate_groups": 44,
+      "candidate_groups_skipped_no_publishable_grade": 1844
     },
     "published_grade_counts": {
       "S": 0,
-      "A": 43
+      "A": 27
     },
+    "candidates_by_channel": {
+      "rss": 542,
+      "naver": 1422,
+      "unknown": 0
+    },
+    "published_by_channel": {
+      "rss": 2,
+      "naver": 25,
+      "unknown": 0
+    },
+    "published_merged_group_count": 8,
+    "published_related_item_count": 20,
+    "classify_cost_usd": 0.0106,
+    "llm_dedup_cost_usd": 0.0034,
+    "total_estimated_cost_usd": 0.014,
     "rss": {
       "feed_count": 26,
-      "candidates": 530,
+      "candidates": 542,
       "feeds": [
         {
           "source": "한국경제",
           "url": "https://www.hankyung.com/feed/economy",
           "status": "ok",
           "entries": 50,
-          "within_window": 32
+          "within_window": 35
         },
         {
           "source": "아시아경제",
@@ -60,7 +80,7 @@
           "url": "https://www.khan.co.kr/rss/rssdata/economy_news.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 5
+          "within_window": 6
         },
         {
           "source": "국민일보",
@@ -88,14 +108,14 @@
           "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml",
           "status": "ok",
           "entries": 100,
-          "within_window": 71
+          "within_window": 72
         },
         {
           "source": "서울신문",
           "url": "https://www.seoul.co.kr/xml/rss/google_economy.xml",
           "status": "ok",
           "entries": 40,
-          "within_window": 9
+          "within_window": 10
         },
         {
           "source": "세계일보",
@@ -136,22 +156,22 @@
           "source": "뉴시스",
           "url": "https://www.newsis.com/RSS/industry.xml",
           "status": "ok",
-          "entries": 62,
-          "within_window": 55
+          "entries": 63,
+          "within_window": 56
         },
         {
           "source": "뉴시스",
           "url": "https://www.newsis.com/RSS/health.xml",
           "status": "ok",
-          "entries": 34,
-          "within_window": 29
+          "entries": 35,
+          "within_window": 30
         },
         {
           "source": "서울경제",
           "url": "https://www.sedaily.com/rss/economy",
           "status": "ok",
           "entries": 50,
-          "within_window": 17
+          "within_window": 18
         },
         {
           "source": "이데일리",
@@ -178,15 +198,15 @@
           "source": "전자신문",
           "url": "http://rss.etnews.com/Section901.xml",
           "status": "ok",
-          "entries": 14,
-          "within_window": 14
+          "entries": 16,
+          "within_window": 16
         },
         {
           "source": "AI타임스",
           "url": "https://www.aitimes.com/rss/allArticle.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 30
+          "within_window": 31
         },
         {
           "source": "로봇신문",
@@ -221,7 +241,7 @@
     "naver": {
       "attempted": true,
       "query_count": 56,
-      "candidates": 1428,
+      "candidates": 1469,
       "total_calls": 126,
       "saturated_queries": [
         "산업 AI"
@@ -230,7 +250,7 @@
         {
           "query": "\"AI 전환\"",
           "calls": 2,
-          "results_in_window": 53,
+          "results_in_window": 54,
           "saturated": false
         },
         {
@@ -248,7 +268,7 @@
         {
           "query": "AX 전략",
           "calls": 2,
-          "results_in_window": 15,
+          "results_in_window": 16,
           "saturated": false
         },
         {
@@ -260,19 +280,19 @@
         {
           "query": "\"제조 AI\"",
           "calls": 2,
-          "results_in_window": 1,
+          "results_in_window": 2,
           "saturated": false
         },
         {
           "query": "산업 AI",
           "calls": 10,
-          "results_in_window": 847,
+          "results_in_window": 869,
           "saturated": true
         },
         {
           "query": "AI 공장",
           "calls": 3,
-          "results_in_window": 72,
+          "results_in_window": 73,
           "saturated": false
         },
         {
@@ -290,7 +310,7 @@
         {
           "query": "자율제조",
           "calls": 2,
-          "results_in_window": 19,
+          "results_in_window": 20,
           "saturated": false
         },
         {
@@ -338,7 +358,7 @@
         {
           "query": "\"디지털 트윈\"",
           "calls": 2,
-          "results_in_window": 10,
+          "results_in_window": 12,
           "saturated": false
         },
         {
@@ -362,7 +382,7 @@
         {
           "query": "휴머노이드",
           "calls": 2,
-          "results_in_window": 8,
+          "results_in_window": 9,
           "saturated": false
         },
         {
@@ -392,13 +412,13 @@
         {
           "query": "산업 데이터",
           "calls": 6,
-          "results_in_window": 97,
+          "results_in_window": 100,
           "saturated": false
         },
         {
           "query": "AI 데이터센터",
           "calls": 6,
-          "results_in_window": 134,
+          "results_in_window": 139,
           "saturated": false
         },
         {
@@ -452,7 +472,7 @@
         {
           "query": "AI 실증",
           "calls": 2,
-          "results_in_window": 12,
+          "results_in_window": 13,
           "saturated": false
         },
         {
@@ -536,7 +556,7 @@
         {
           "query": "조선 AI",
           "calls": 2,
-          "results_in_window": 20,
+          "results_in_window": 22,
           "saturated": false
         },
         {
@@ -610,7 +630,44 @@
           ],
           "core": 1,
           "evidence": "완성차업계-휴머노이드 공장투입-생산현장",
-          "related": [],
+          "related": [
+            {
+              "source": "seoulfn.com",
+              "link": "https://www.seoulfn.com/news/articleView.html?idxno=638655"
+            },
+            {
+              "source": "인더스트리뉴스",
+              "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=86562"
+            },
+            {
+              "source": "hansbiz.co.kr",
+              "link": "http://www.hansbiz.co.kr/news/articleView.html?idxno=868067"
+            },
+            {
+              "source": "전자신문",
+              "link": "https://www.etnews.com/20260922000454"
+            },
+            {
+              "source": "asiaa.co.kr",
+              "link": "https://www.asiaa.co.kr/news/articleView.html?idxno=263910"
+            },
+            {
+              "source": "연합뉴스",
+              "link": "https://www.yna.co.kr/view/AKR20260923139300017?input=1195m"
+            },
+            {
+              "source": "financialpost.co.kr",
+              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=277322"
+            },
+            {
+              "source": "조선일보",
+              "link": "https://biz.chosun.com/it-science/ict/2026/09/26/O7FBPCOVWBDGDO4OD6FK4UM4LM/?utm_source=naver&utm_medium=original&utm_campaign=biz"
+            },
+            {
+              "source": "조선일보",
+              "link": "https://www.chosun.com/economy/tech_it/2026/09/26/MRRDAYJWG44TEMDBMM3TOMJZMQ/"
+            }
+          ],
           "score": 80
         },
         {
@@ -632,7 +689,12 @@
           ],
           "core": 1,
           "evidence": "완성차-휴머노이드 공장투입-글로벌",
-          "related": [],
+          "related": [
+            {
+              "source": "asiatime.co.kr",
+              "link": "https://www.asiatime.co.kr/article/20260921500339"
+            }
+          ],
           "score": 80
         },
         {
@@ -658,6 +720,28 @@
           "score": 78
         },
         {
+          "title": "현대로템, 차세대 고속철 첫 공개…피지컬AI 트램도 선보여",
+          "summary": "현대로템 관계자는 “최근 글로벌 철도시장은 단순히 제조사의 설계와 제작 역량만 보는 것이 아니라 사업의 지속가능성과 자율주행 역량까지 한꺼번에 평가하는 추세”라며 “차세대 고속차량과 자율주행 기술을...",
+          "link": "https://news.tvchosun.com/site/data/html_dir/2026/09/26/2026092690071.html",
+          "source": "news.tvchosun.com",
+          "published": "2026-09-26T15:14:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "철강·기계",
+          "tech": [
+            "피지컬AI",
+            "자율제조"
+          ],
+          "core": 0,
+          "evidence": "현대로템-자율주행철도·피지컬AI트램-글로벌시장",
+          "related": [],
+          "score": 70
+        },
+        {
           "title": "“기업가치 204조 기대...SK하이닉스 손자회사 솔리다임 이르면 내년 美...",
           "summary": "인공지능(AI) 열풍 속에 낸드플래시 제품 수요가 늘자 미국 뉴욕주에 낸드플래시 생산 거점 건설을 검토 중인 것으로 알려졌다. 현재 솔리다임은 중국 다롄에 공장이 있으나 미국에는 본사 및 연구개발 센터만 두고...",
           "link": "https://www.sedaily.com/article/20095032?ref=naver",
@@ -677,35 +761,10 @@
           "evidence": "SK하이닉스 솔리다임-낸드플래시 공장-미국 뉴욕주",
           "related": [
             {
-              "source": "한국일보",
-              "link": "https://www.hankookilbo.com/news/article/A2026092610060003733?did=NA"
-            },
-            {
-              "source": "뉴시스",
-              "link": "https://www.newsis.com/view/NISX20260926_0003803649"
+              "source": "newsway.co.kr",
+              "link": "https://www.newsway.co.kr/news/view?ud=2026092611250037238"
             }
           ],
-          "score": 70
-        },
-        {
-          "title": "'피지컬 AI' 입은 K-물류···사람 손 타던 곳까지 로봇이 나른다",
-          "summary": "한국산업안전보건공단에 따르면 2020년부터 2024년까지 운수·창고·통신업에서 발생한 '부딪힘' 사고재해자가 3993명에 달할 정도다. CJ대한통운은 이와 같은 현장에 AI를 통한 안전관리 체제 구축을 비롯해 현장 데이터...",
-          "link": "https://www.seoulfn.com/news/articleView.html?idxno=638655",
-          "source": "seoulfn.com",
-          "published": "2026-09-26T10:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "물류",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "CJ대한통운-피지컬AI 물류 안전관리-현장데이터",
-          "related": [],
           "score": 70
         },
         {
@@ -731,27 +790,6 @@
           "score": 70
         },
         {
-          "title": "전력기기 3사, 다가오는 공급과잉 위기 '인증·인력'으로 대응",
-          "summary": "HD현대일렉트릭은 미국 앨라배마 제2공장 투자 규모를 3852억원으로 확대해 현지 변압기 생산능력을 약 50... 여기에 기존 노후 전력망 교체뿐 아니라 AI 데이터센터와 첨단 제조시설이 새로운 수요처로 더해졌다....",
-          "link": "https://www.fetv.co.kr/news/articleView.html?idxno=310768",
-          "source": "fetv.co.kr",
-          "published": "2026-09-26T09:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "에너지",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "전력기기3사-AI데이터센터 전력공급-북미",
-          "related": [],
-          "score": 70
-        },
-        {
           "title": "K-전력기기 3사, 美 AIDC 뚫고 성장 가속…수주잔고 50조 넘나",
           "summary": "K-전력기기 3사가 미국을 중심으로 한 인공지능(AI) 데이터센터 시장이 커지면서 사상 최고 수주 행진을... 앨라배마 북미 생산법인에 약 2억달러를 투자해 제2공장을 건설 중이다. 765kV급 초고압변압기 생산...",
           "link": "https://www.socialvalue.kr/news/view/1065601405709975",
@@ -769,7 +807,12 @@
           ],
           "core": 0,
           "evidence": "전력기기3사-AI데이터센터 변압기-북미",
-          "related": [],
+          "related": [
+            {
+              "source": "fetv.co.kr",
+              "link": "https://www.fetv.co.kr/news/articleView.html?idxno=310768"
+            }
+          ],
           "score": 70
         },
         {
@@ -837,29 +880,16 @@
             {
               "source": "뉴시스",
               "link": "https://www.newsis.com/view/NISX20260925_0003803397"
+            },
+            {
+              "source": "news.bizwatch.co.kr",
+              "link": "https://news.bizwatch.co.kr/article/real_estate/2026/09/15/0001"
+            },
+            {
+              "source": "newsfreezone.co.kr",
+              "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=711073"
             }
           ],
-          "score": 70
-        },
-        {
-          "title": "[르포]현대차 9조 맞을 준비에…더 바빠진 '새만금'",
-          "summary": "이곳에선 웨어러블·물류·배송로봇 등 산업·물류 로봇을 연간 2만대 이상 양산할 계획이다. 연 2만톤 수준 그린수소 생산·공급을 위한 200MW 규모 수전해 플랜트 구축에도 1조원을 쓴다. 이를 기반으로 새만금에 AI...",
-          "link": "https://news.bizwatch.co.kr/article/real_estate/2026/09/15/0001",
-          "source": "news.bizwatch.co.kr",
-          "published": "2026-09-25T16:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "현대차-웨어러블·로봇 생산-새만금",
-          "related": [],
           "score": 70
         },
         {
@@ -880,27 +910,6 @@
           ],
           "core": 0,
           "evidence": "두산-AI반도체 소재 증설-국내외",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "가전 한파 뚫은 LG의 '삼각편대'… 프리미엄·구독·B2B 전면에",
-          "summary": "여기에 창원·미국 테네시 등 주요 생산기지가 세계경제포럼(WEF)이 인증하는 '등대공장(Lighthouse Factory)... AI 데이터센터(AIDC) 냉각 사업은 상반기에만 수주액 6000억원을 넘겼고, 연말까지 수주 목표를 수조원대로 잡고...",
-          "link": "https://www.g-enews.com/view.php?ud=202609231155463652139bf6e4b2_1",
-          "source": "g-enews.com",
-          "published": "2026-09-25T13:30:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "LG-AI데이터센터 냉각-글로벌",
           "related": [],
           "score": 70
         },
@@ -966,54 +975,12 @@
           "evidence": "두산퓨얼셀-AI데이터센터 전력-북미",
           "related": [],
           "score": 70
-        },
-        {
-          "title": "[AI프리즘] 조선소·공장이 AI 훈련장으로…한국의 피지컬 AI 승부수",
-          "summary": "제조업의 AI 전환도 이 전략의 주요 무대다. 산업통상부는 제조업 AI 전환을 뜻하는 'M.AX(Manufacturing AI Transformation)'를 추진하며 AI 팩토리와 AI 로봇, AI 반도체 등 제조 전반에 AI를 적용하는 생태계를 넓히고 있다....",
-          "link": "https://www.yna.co.kr/view/AKR20260923139300017?input=1195m",
-          "source": "연합뉴스",
-          "published": "2026-09-25T06:33:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "산업통상부-M.AX전략-제조AI생태계",
-          "related": [],
-          "score": 70
         }
       ]
     },
     "2": {
       "label": "기술·인프라",
       "items": [
-        {
-          "title": "\"땅 없으면 바다로\"…K조선이 띄우는 '발전소·데이터센터'",
-          "summary": "<p><img src=\"https://image.newsis.com/2026/07/31/NISI20260731_0002201519_web.jpg?rnd=20260731165208\" /></p>[서울=뉴시스]박현준 기자 = 인공지능(AI) 확산으로 데이터센터의 전력과 부지 확보가 새로운 과제로 떠오르면서 국내 조선업계가 바다에서 해법을 찾고 있다.<br /><br />26일 업계에 따르면 HD현대와 한화오션, 삼성중공업 등 조선 대형 3사는 최근 부유식 발전설비(BMPP)와 부유식 데이터센터(FDC) 관련 기술 개발과 사업화를 추진하고 있다.<br /><br />HD현대의 조선 부문 중간지주사 HD한국조선해양은 AI데이터센터 등에 필요한 전력을 바다에서 생산하는 방식에 주목했다.<br /><br />최근에는 자체 개발한 중형 힘센(HiMSEN)엔진을 기반으로 최대 100메가와트(㎿)의 전력을 공급할 수 있는 부유식 발전설비에 대한 기본인증(AIP)을 미국선급(ABS)으로부터 획득했다....",
-          "link": "https://www.newsis.com/view/NISX20260923_0003801379",
-          "source": "뉴시스",
-          "published": "2026-09-26T14:30:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "조선",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "조선3사-부유식발전·데이터센터-해양AI인프라",
-          "related": [],
-          "score": 78
-        },
         {
           "title": "엔비디아, '베라 루빈' 성능 공개·DSX 전력망 혁신 \"전력망과 호흡하는...",
           "summary": "실리콘밸리 파워(Silicon Valley Power)의 유연 부하 연계 프로그램에 참여한 엔비디아와 파트너사 에메랄드 AI(Emerald AI)는 무더위로 냉방 수요가 급증했던 지난 8월, AI 팩토리의 부하를 사람의 개입 없이 자율...",
@@ -1036,27 +1003,6 @@
           "score": 70
         },
         {
-          "title": "전력 부족·주민 반발 부딪힌 AI 데이터센터…육지 떠나 북극·바다·우...",
-          "summary": "오픈AI도 노르웨이에서 AI 데이터센터 프로젝트를 추진하고 있다. 지난해 노르웨이 나르비크에 ‘스타게이트 노르웨이’를 구축하겠다고 밝힌 오픈AI는 230메가와트(MW) 규모로 시작해 이후 290MW를 추가 확장할 계획이다....",
-          "link": "https://www.seoul.co.kr/news/economy/industry/2026/09/26/20260926500033?wlog_tag3=naver",
-          "source": "서울신문",
-          "published": "2026-09-26T12:05:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "오픈AI-AI 데이터센터-노르웨이",
-          "related": [],
-          "score": 70
-        },
-        {
           "title": "전력 부족·주민 반발 부딪힌 AI 데이터센터…육지 떠나 북극·바다·우주 향한다",
           "summary": "인공지능(AI) 데이터센터 경쟁이 ‘입지 경쟁’으로 번지고 있다. AI 추론의 고도화로 막대한 전력 확보와 안정적인 냉각을 위한 조건은 까다로워진 반면, 전력망 부담과 주민 반발 등으로 새로운 데이터센터 부지를 확보하기가 어려워지면서다. 글로벌 기업들은 육지를 넘어 북극권과 바다, 우주까지 데이터센터의 새로운 후보지로 겨냥하고 있다.<br />가장 현실적인 대안으로 꼽히는 곳은 북극권에 가까운 고위도 지역이다. 차가운 외기를 활용해 냉각 부담을 낮출 수 있고 수력·풍력·원전 등 안정적인 전력원을 확보하기도 상대적으로 쉽다.<br />구글은 지난 10일(현지시간) 핀란드에 향후 2년간 최소 130억유로(약 21조원)를 투자해 데이터센터와 관련 인프라를 확충하겠다고 밝혔다. 구글은 원전 운영사 포르툼과 22년간 원전 전력의 최대 50%를 공급받는 계약도 체결했다. 추운 기후를 활용하는 동시에 안정적인 무탄소 전력을 확보하려는 전략이다.<br />오픈AI도 노르웨이에서 AI 데이터센터 프...",
           "link": "https://www.seoul.co.kr/news/economy/industry/2026/09/26/20260926500033",
@@ -1074,7 +1020,16 @@
           ],
           "core": 0,
           "evidence": "글로벌기업-AI데이터센터입지-북극권·바다·우주",
-          "related": [],
+          "related": [
+            {
+              "source": "뉴시스",
+              "link": "https://www.newsis.com/view/NISX20260923_0003801379"
+            },
+            {
+              "source": "서울신문",
+              "link": "https://www.seoul.co.kr/news/economy/industry/2026/09/26/20260926500033?wlog_tag3=naver"
+            }
+          ],
           "score": 70
         },
         {
@@ -1095,7 +1050,12 @@
           ],
           "core": 0,
           "evidence": "구글-우주 AI 데이터센터-위성",
-          "related": [],
+          "related": [
+            {
+              "source": "ddaily.co.kr",
+              "link": "https://www.ddaily.co.kr/page/view/2026092605015739905"
+            }
+          ],
           "score": 70
         },
         {
@@ -1116,7 +1076,16 @@
           ],
           "core": 0,
           "evidence": "LG전자-AI팩토리 냉각솔루션-글로벌",
-          "related": [],
+          "related": [
+            {
+              "source": "weekly.hankooki.com",
+              "link": "https://weekly.hankooki.com/news/articleView.html?idxno=7185678"
+            },
+            {
+              "source": "g-enews.com",
+              "link": "https://www.g-enews.com/view.php?ud=202609231155463652139bf6e4b2_1"
+            }
+          ],
           "score": 70
         },
         {
@@ -1162,27 +1131,6 @@
           "score": 70
         },
         {
-          "title": "네트워크 넘어 현장 제어…통신 3사, '피지컬 AI'로 미래 먹거리 찾는다",
-          "summary": "가상 환경에서 학습한 AI가 실제 제조 현장으로 이식될 때 발생하는 오차를 최소화하고, 상호작용을 통해 성능을 지속 개선하는 데이터 플라이휠 구조를 실증함으로써 향후 산업별 맞춤형 피지컬 AI 솔루션 상용화 및...",
-          "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=277322",
-          "source": "financialpost.co.kr",
-          "published": "2026-09-26T06:10:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "통신3사-피지컬AI 데이터플라이휠 실증-산업현장",
-          "related": [],
-          "score": 70
-        },
-        {
           "title": "AI 인프라 전력 대안 연료전지 시장 커진다",
           "summary": "AI 시대를 뒷받침할 핵심 전원으로 연료전지가 부상하고 있다. 공간 효율성이 높고 설치 기간도 짧아... 현재 회사는 익산공장을 글로벌 생산 거점으로 삼고 시장 공략에 박차를 가하고 있다. 800MW 이상의 설치 실적을...",
           "link": "https://www.sidae.com/article/2026091814501160574",
@@ -1200,48 +1148,6 @@
           ],
           "core": 0,
           "evidence": "연료전지-AI데이터센터 전원-북미",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "구글, 우주 AI 데이터센터 첫 실험…스페이스X 로켓 탑재",
-          "summary": "구글은 우주 AI 데이터센터 연구 프로젝트 '선캐처(Suncatcher)'의 첫 실험 위성을 10월1일 발사한다고 24일(현지시간) 밝혔다. 자사 AI 하드웨어가 우주에서 견디고 작동하는지 확인하는 것이 목표다. 위성 이름은 'MVP...",
-          "link": "https://www.ddaily.co.kr/page/view/2026092605015739905",
-          "source": "ddaily.co.kr",
-          "published": "2026-09-26T05:03:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "구글-우주 AI 데이터센터-위성",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "하드웨어 넘어선 ‘행동 데이터’ 경쟁… 피지컬 AI, 현실·가상 넘나드는 학습 혁신",
-          "summary": "[인더스트리뉴스 문기수 기자] 인공지능(AI) 기술의 패권이 텍스트와 이미지를 다루는 생성형 AI를 넘어 물리적 세계와 상호작용하는 ‘피지컬 AI(Physical AI)’로 빠르게 이동하면서, 글로벌 로봇 및 산업계의 핵심 경쟁력 역시 단순 하드웨어 사양을 넘어 로봇에게 고난도 작업을 가르칠 ‘학습 데이터’ 확보 역량으로 재편되는 양상이다.엔씨 AI는 디지털 트윈과 월드모델, 정밀 모션 데이터 등 가상화 기술을 적극 활용해 피지컬 AI 구현에 필수적인 고난도 학습 데이터 기반을 본격 구축하고 있다고 25일 밝혔다.인터넷상에 축적된",
-          "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=86562",
-          "source": "인더스트리뉴스",
-          "published": "2026-09-25T12:53:23",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "엔씨AI-디지털트윈·학습데이터-피지컬AI 구현",
           "related": [],
           "score": 70
         },
@@ -1309,28 +1215,6 @@
           "score": 70
         },
         {
-          "title": "[새만금] 현대차 9조가 쏘아 올린 전북 대전환",
-          "summary": "전북특별자치도가 피지컬AI·로봇, 청정수소, AI데이터센터를 하나의 산업 사슬로 엮어 새만금을 '투자 부지'에서 전북 산업 전환의 출발점으로 바꾸려는 시험대다. 25일 전북자치도에 따르면 현대차그룹은 새만금 34만...",
-          "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=711073",
-          "source": "newsfreezone.co.kr",
-          "published": "2026-09-25T13:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "피지컬AI",
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "현대차-피지컬AI·로봇·AI데이터센터-새만금",
-          "related": [],
-          "score": 70
-        },
-        {
           "title": "AI·반도체發 전력 대란…\"신규 송전선로 넘어 'NWA'가 해답\"",
           "summary": "인공지능(AI) 데이터센터 확산과 대규모 반도체 클러스터 조성으로 전 세계적인 전력 수요 폭증이 현실화되면서 생산된 전력을 적기에 전달하는 '전력망(Grid)' 확보가 국가 산업 경쟁력의 핵심 인프라로 부상하고...",
           "link": "https://www.mediapen.com/news/view/1125954",
@@ -1371,147 +1255,12 @@
           "evidence": "미국-AI 인프라 투자 확대-민간데이터센터",
           "related": [],
           "score": 70
-        },
-        {
-          "title": "불붙은 휴머노이드 경쟁…美·中 2강에 韓 도전장",
-          "summary": "이와 별도로 피지컬 AI 현장 실증에 2조8000억원을 투입하기로 했다. 국제로봇연맹(IFR)에 따르면 한국은 2024년 기준 제조업 근로자 1만명당 산업용 로봇이 1220대로 세계 1위다. 자동차·전자 분야에서 쌓은 자동화 경험과...",
-          "link": "https://www.asiatime.co.kr/article/20260921500339",
-          "source": "asiatime.co.kr",
-          "published": "2026-09-25T07:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "정부-피지컬AI 현장실증-2.8조원투입",
-          "related": [],
-          "score": 70
         }
       ]
     },
     "3": {
       "label": "정책·생태계·인재",
-      "items": [
-        {
-          "title": "“연봉 7억원에 로봇 인재 모십니다”… 오픈AI·앤트로픽이 피지컬 AI ...",
-          "summary": "AI 산업의 성장축이 생성형 AI에서 화면 밖 현실 세계를 이해하는 ‘피지컬 AI’로 옮겨가면서, 로보틱스 조직을 꾸리고 전문가 채용에 속도를 내고 있다. 챗GPT 개발사 오픈AI는 로봇을 구동하는 소프트웨어를 넘어...",
-          "link": "https://biz.chosun.com/it-science/ict/2026/09/26/O7FBPCOVWBDGDO4OD6FK4UM4LM/?utm_source=naver&utm_medium=original&utm_campaign=biz",
-          "source": "조선일보",
-          "published": "2026-09-26T06:03:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "오픈AI·앤트로픽-로봇소프트웨어개발-피지컬AI채용",
-          "related": [
-            {
-              "source": "조선일보",
-              "link": "https://www.chosun.com/economy/tech_it/2026/09/26/MRRDAYJWG44TEMDBMM3TOMJZMQ/"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "이원택 지사 \"선순환형 피지컬AI 산업생태계 구축\"",
-          "summary": "한국산업은행이 주관한 이번 포럼은 제조업의 AI 전환과 피지컬AI 산업 육성을 위한 지역거점 역할을 공유하고 정책금융 지원 방안을 모색하기 위해 마련됐다. 행사에는 이원택 전북도지사와 배경훈 과학기술부총리...",
-          "link": "http://www.hansbiz.co.kr/news/articleView.html?idxno=868067",
-          "source": "hansbiz.co.kr",
-          "published": "2026-09-25T14:50:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "전북도-피지컬AI산업생태계-지역거점",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "전북도, 피지컬AI 클러스터 육성 속도… 투자유치·금융지원 '투트랙'",
-          "summary": "한국산업은행이 주관한 이번 포럼은 제조업의 AI 전환과 피지컬AI 산업 육성을 위한 지역거점의 역할을 공유하고, 정책금융과 지역금융의 지원 방안을 모색하기 위해 마련했다. 기존 생산 기반을 피지컬AI 중심으로...",
-          "link": "https://www.etnews.com/20260922000454",
-          "source": "전자신문",
-          "published": "2026-09-25T09:01:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "전북도-피지컬AI클러스터-지역거점",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "\"화면 밖으로 나온 AI\" 산업계·정부, '피지컬 AI' 시장 선점 속도 낸다",
-          "summary": "산업통상부는 2030년까지 AI 팩토리 500개 구축을 목표로 제조업 AI 전환을 뜻하는 'M.AX(Manufacturing AI Transformation)' 전략을 가동했다. 특히 2030년까지 5년간 총 1조4131억원의 사업비를 투입하는 전북(공장 자율운영)과 경남...",
-          "link": "https://www.asiaa.co.kr/news/articleView.html?idxno=263910",
-          "source": "asiaa.co.kr",
-          "published": "2026-09-25T09:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "산업통상부-M.AX전략-AI팩토리500개",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "AI 보폭 넓히는 구광모…LG그룹, 엔비디아·MS와 전방위 협력",
-          "summary": "협력 범위는 차세대 AI 데이터센터부터 피지컬 AI, AI 전환에 이르기까지 AI 사업 전반을 아우른다. 이날 회의에는 권봉석 ㈜LG 최고운영책임자(COO)와 류재철 LG전자 대표, 그리고 홍범식 LG유플러스 대표, 현신균 LG CNS...",
-          "link": "https://weekly.hankooki.com/news/articleView.html?idxno=7185678",
-          "source": "weekly.hankooki.com",
-          "published": "2026-09-25T07:30:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "LG그룹-AI데이터센터·피지컬AI-전방위협력",
-          "related": [],
-          "score": 70
-        }
-      ]
+      "items": []
     }
   }
 }
