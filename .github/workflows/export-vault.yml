@@ -9,7 +9,10 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  export:
+  # Public vault (matrixshin-ai/ax-vault) - summary + link only, per
+  # vars.EXPORT_MODE (defaults to "summary" - kept that way deliberately
+  # while this vault is public; see export-full below for the private one).
+  export-summary:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
@@ -53,5 +56,52 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add AX뉴스
           git diff --staged --quiet || git commit -m "AX 뉴스 export $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase
+          git push
+
+  # Private full-text vault (matrixshin-ai/ax-vault-full) - always EXPORT_MODE
+  # full (trafilatura-extracted article body), independent of vars.EXPORT_MODE
+  # above. Repo name is hardcoded here since this job is dedicated to this one
+  # private vault, not parameterized like export-summary's vars.VAULT_REPO.
+  export-full:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout korea-industry-ax
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Checkout AX vault (full)
+        uses: actions/checkout@v4
+        with:
+          repository: matrixshin-ai/ax-vault-full
+          ssh-key: ${{ secrets.VAULT_FULL_DEPLOY_KEY }}
+          path: vault-full
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install trafilatura
+        run: pip install trafilatura
+
+      - name: Export published articles to vault (full text)
+        run: python scripts/export_to_vault.py --data public/data.json --vault-dir vault-full
+        env:
+          EXPORT_MODE: full
+
+      - name: Commit and push to vault (full)
+        working-directory: vault-full
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add AX뉴스
+          git diff --staged --quiet || git commit -m "AX 뉴스 export (full) $(date -u +'%Y-%m-%d %H:%M UTC')"
           git pull --rebase
           git push

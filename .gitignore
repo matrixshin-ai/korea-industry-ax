@@ -14,6 +14,7 @@ __pycache__/
 # Local env
 .env
 
-# Local test checkout of the AX vault repo (scripts/export_to_vault.py's
-# default --vault-dir) - the real vault lives in a separate GitHub repo.
+# Local test checkout of the AX vault repos (scripts/export_to_vault.py's
+# --vault-dir) - the real vaults live in separate GitHub repos.
 /vault/
+/vault-full/
