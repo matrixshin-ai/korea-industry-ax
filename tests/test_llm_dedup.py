@@ -15,69 +15,52 @@ def _text_response(text, usage_in=100, usage_out=50):
     return response
 
 
-def test_build_clusters_groups_items_sharing_an_organization():
-    a = _article("현대차 울산공장 AI 도입", "https://a.example.com/1", "매체A")
-    b = _article("현대차, 울산에서 AI 라인 가동", "https://b.example.com/2", "매체B")
-    unrelated = _article("삼성전자 반도체 공장 AI", "https://c.example.com/3", "매체C")
-
-    clusters = llm_dedup.build_clusters([a, b, unrelated])
-
-    # 현대차 isn't a single-word match in ORGANIZATIONS ("현대차" is listed) - both a,b share it.
-    assert len(clusters) == 1
-    assert {it["link"] for it in clusters[0]} == {"https://a.example.com/1", "https://b.example.com/2"}
-
-
-def test_build_clusters_skips_singletons():
-    only_one = _article("현대차 단독 기사", "https://a.example.com/1", "매체A")
-    clusters = llm_dedup.build_clusters([only_one])
-    assert clusters == []
-
-
-def test_llm_merge_clusters_returns_empty_for_no_clusters():
+def test_llm_merge_candidates_returns_empty_for_no_items():
     client = MagicMock()
-    assert llm_dedup.llm_merge_clusters(client, [], {}) == {}
+    assert llm_dedup.llm_merge_candidates(client, [], {}) == {}
     client.messages.create.assert_not_called()
 
 
-def test_llm_merge_clusters_builds_merge_map_from_response():
+def test_llm_merge_candidates_builds_merge_map_from_response():
     a = _article("우리금융 포항 AI데이터센터 6천억 PF", "https://a.example.com/1", "매체A")
     b = _article("우리금융, 포항 AI데이터센터에 6000억 지원", "https://b.example.com/2", "매체B")
     client = MagicMock()
-    client.messages.create.return_value = _text_response('[{"c": 0, "groups": [[0, 1]]}]')
+    client.messages.create.return_value = _text_response('[[0, 1]]')
 
     log = {}
-    merge_map = llm_dedup.llm_merge_clusters(client, [[a, b]], log)
+    merge_map = llm_dedup.llm_merge_candidates(client, [a, b], log)
 
     assert len(merge_map) == 1
     absorbed_link, rep_link = next(iter(merge_map.items()))
     assert {absorbed_link, rep_link} == {"https://a.example.com/1", "https://b.example.com/2"}
     assert log["llm_dedup_input_tokens"] == 100
     assert log["llm_dedup_output_tokens"] == 50
+    assert log["chunk_count"] == 1
 
 
-def test_llm_merge_clusters_keeps_different_stage_items_separate():
+def test_llm_merge_candidates_keeps_different_stage_items_separate():
     a = _article("현대차 울산공장 AI라인 착공", "https://a.example.com/1", "매체A")
     b = _article("현대차 울산공장 AI라인 준공", "https://b.example.com/2", "매체B")
     client = MagicMock()
     # Model decides these are different stages - each its own singleton group.
-    client.messages.create.return_value = _text_response('[{"c": 0, "groups": [[0], [1]]}]')
+    client.messages.create.return_value = _text_response('[[0], [1]]')
 
-    merge_map = llm_dedup.llm_merge_clusters(client, [[a, b]], {})
+    merge_map = llm_dedup.llm_merge_candidates(client, [a, b], {})
 
     assert merge_map == {}
 
 
-def test_llm_merge_clusters_handles_api_error_gracefully():
+def test_llm_merge_candidates_handles_api_error_gracefully():
     client = MagicMock()
     client.messages.create.side_effect = RuntimeError("simulated failure")
     a = _article("A", "https://a.example.com/1", "매체A")
     b = _article("B", "https://b.example.com/2", "매체B")
 
     log = {}
-    merge_map = llm_dedup.llm_merge_clusters(client, [[a, b]], log)
+    merge_map = llm_dedup.llm_merge_candidates(client, [a, b], log)
 
     assert merge_map == {}
-    assert "llm_dedup_error" in log
+    assert "llm_dedup_errors" in log
 
 
 def test_apply_merge_map_folds_absorbed_into_related():
@@ -104,20 +87,33 @@ def test_apply_merge_map_no_merges_returns_all_items_unchanged():
     assert len(result) == 2
 
 
-def test_llm_merge_clusters_does_not_chain_merges_across_clusters():
-    # b sits in both clusters. Cluster 0 groups a+b, cluster 1 groups b+c: c must
-    # NOT be pulled into a's group through b (that chaining once built a card
-    # with 240 unrelated related-links).
-    a = _article("대통령 투자서밋", "https://a.example.com/1", "매체A")
-    b = _article("대통령 울산시 방문 투자서밋", "https://b.example.com/2", "매체B")
-    c = _article("울산시 AI 조례", "https://c.example.com/3", "매체C")
+def test_llm_merge_candidates_splits_into_chunks_of_max_chunk_size(monkeypatch):
+    monkeypatch.setattr(llm_dedup, "MAX_CHUNK_SIZE", 2)
+    items = [_article(f"기사{i}", f"https://x.example.com/{i}", "매체") for i in range(5)]
     client = MagicMock()
-    client.messages.create.return_value = _text_response(
-        '[{"c": 0, "groups": [[0, 1]]}, {"c": 1, "groups": [[2, 3]]}]')
+    # Every chunk: no merges (each id its own group).
+    client.messages.create.return_value = _text_response('[[0], [1]]')
 
-    merge_map = llm_dedup.llm_merge_clusters(client, [[a, b], [b, c]], {})
+    log = {}
+    merge_map = llm_dedup.llm_merge_candidates(client, items, log)
 
+    assert merge_map == {}
+    assert log["chunk_count"] == 3  # ceil(5/2)
+    assert client.messages.create.call_count == 3
+
+
+def test_llm_merge_candidates_ignores_duplicate_id_across_groups_in_one_response():
+    # A malformed response repeats id 1 across two groups - the first group it
+    # appears in wins, the second (which would otherwise chain c into a+b) is
+    # ignored for that id (defensive guard against a hallucinated response).
+    a = _article("현대차 울산 AI 라인 3000억 투자", "https://a.example.com/1", "매체A")
+    b = _article("현대차 AI 라인 3000억", "https://b.example.com/2", "매체B")
+    c = _article("무관 기사", "https://c.example.com/3", "매체C")
+    client = MagicMock()
+    client.messages.create.return_value = _text_response('[[0, 1], [1, 2]]')
+
+    merge_map = llm_dedup.llm_merge_candidates(client, [a, b, c], {})
+
+    assert merge_map == {"https://b.example.com/2": "https://a.example.com/1"}
     assert "https://c.example.com/3" not in merge_map
     assert "https://c.example.com/3" not in merge_map.values()
-    merged = llm_dedup.apply_merge_map([a, b, c], merge_map)
-    assert len(merged) == 2

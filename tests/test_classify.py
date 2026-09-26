@@ -153,6 +153,23 @@ def test_expand_compact_result_it_industry_option_kept():
     assert expanded["industry"] == "IT·통신·데이터센터"
 
 
+def test_expand_compact_result_ulsan_score_forced_zero_when_region_not_ulsan():
+    # Requirement 2: u can only be positive when region == "울산" - a
+    # defense-in-depth check in code, not just in the prompt.
+    for region in ("타지자체", "전국", "해외"):
+        result = classify.expand_compact_result(
+            {"i": 0, "m": "주제", "g": "A", "s": 1, "r": region, "u": 10, "ind": "조선", "tech": [], "core": 0,
+             "e": "e"}
+        )
+        assert result["ulsan_score"] == 0, region
+
+    kept = classify.expand_compact_result(
+        {"i": 0, "m": "주제", "g": "S", "s": 1, "r": "울산", "u": 10, "ind": "조선", "tech": [], "core": 0,
+         "e": "e"}
+    )
+    assert kept["ulsan_score"] == 10
+
+
 def test_expand_compact_result_core_requires_core_industry_and_section_1():
     not_core_industry = classify.expand_compact_result(
         {"i": 0, "g": "S", "s": 1, "r": "전국", "u": 0, "ind": "금융", "tech": [], "core": 1}

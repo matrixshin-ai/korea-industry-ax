@@ -2,8 +2,9 @@
 Haiku classification: candidates.json -> classified.json
 
 Grades each candidate S/A/B/C/X by usefulness to a 울산 industrial-AX policy
-audience (not by "how real is the AI adoption"). Only S/A - plus B with
-ulsan_score >= 8 - get published (see build.py).
+audience (not by "how real is the AI adoption"). Only S/A get published (see
+build.py) - B is a demotion target only (m="부분" cap, missing-evidence
+downgrade, rule-cap floor), never published regardless of ulsan_score.
 
 - Sends title/description/source only (no article body fetched).
 - Cache: data/classify_cache.json, keyed by sha256(normalized URL), stores
@@ -77,7 +78,7 @@ PROMPT_CACHING_MIN_TOKENS_HAIKU_4_5 = 4096
 # Bump whenever SYSTEM_PROMPT's grading criteria change. Cache entries written
 # under a different version are treated as misses and re-graded, so a prompt
 # change takes effect on the very next run instead of after 48h of cache aging.
-PROMPT_VERSION = 3
+PROMPT_VERSION = 4
 
 IND_OPTIONS = [
     "에너지", "석유화학", "자동차", "조선", "배터리", "반도체", "철강·기계",
@@ -86,7 +87,7 @@ IND_OPTIONS = [
 TECH_OPTIONS = ["피지컬AI", "로봇", "데이터센터", "디지털트윈", "자율제조", "LLM·에이전트", "기타"]
 CORE_INDUSTRIES = {"에너지", "석유화학", "자동차", "조선"}
 GRADES = ("S", "A", "B", "C", "X")
-GRADE_POINTS = {"S": 100, "A": 70, "B": 40}  # C/X are never published, no score needed
+GRADE_POINTS = {"S": 100, "A": 70, "B": 40}  # B/C/X are never published, B's points are unused (kept for GRADE_ORDER-style comparisons)
 M_VALUES = ("주제", "부분", "언급")
 
 SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매기는 분류기입니다.
@@ -127,8 +128,11 @@ SYSTEM_PROMPT = """당신은 한국어 산업 AI 전환(AX) 뉴스를 등급 매
     - 해외: 해외가 주체이거나 핵심 무대인 기사
   - loc: r이 "타지자체"일 때만 시·도명(서울/부산/대구/인천/광주/대전/세종/경기/강원/
     충북/충남/전북/전남/경북/경남/제주 중 하나). r이 타지자체가 아니면 null.
-  - u(ulsan_score): 10(울산 현장 AX) / 8(울산 기업·대학·기관의 AX 활동) /
-    4(울산 주력산업과 직결된 사례) / 0(울산과 무관) 중 하나
+  - u(ulsan_score): AX 내용 자체가 울산 소재 기업·기관·현장과 직접 연결될 때만 0보다 큰
+    값을 주세요. r(region)이 "울산"이 아니면(타지자체/전국/해외) 무조건 0입니다.
+    r이 "울산"일 때만: 10(울산 현장 단위 AX 도입) / 8(울산 기업·대학·기관 차원의 AX
+    활동, 현장 단위까지는 아님) / 0(그 외 - 기사에 울산이 등장해도 AX 내용과 직접
+    연결되지 않는 경우, 예: 울산 소재 기관의 AX와 무관한 사건·사고 기사) 중 하나
   - ind(업종, 아래 고정 목록에서 가장 가까운 것 1개만 선택):
     에너지, 석유화학, 자동차, 조선, 배터리, 반도체, 철강·기계, 물류, 건설, 금융, 의료,
     공공, IT·통신·데이터센터, 기타
@@ -203,7 +207,12 @@ C등급: 그 외 산업 AX 관련 기사 (X는 아니지만 S/A/B 어디에도 �
 - "김상욱 '울산시정 기준은 시민 삶…공개행정은 보완하며 계속'" -> 단체장 종합 인터뷰,
   AX는 여러 시정 주제 중 하나 -> m="언급" -> X
 - "경북·경남·전북, 피지컬AI 지역 거점 육성 협약" -> 제목에 AI 명시 + 타 지자체의 AX
-  전략·거점 -> S (e: "경북·경남·전북-피지컬AI 거점 협약-3개 도") (A로 낮췄던 오판)
+  전략·거점 -> S (e: "경북·경남·전북-피지컬AI 거점 협약-3개 도") (A로 낮췄던 오판).
+  r="타지자체"이므로 u=0 (울산 소재 주체가 아님 - u를 4 등으로 준 것은 오판)
+- "울산경찰청, AI 활용한 로맨스스캠 주의보 발령" -> 울산 소재 기관 기사지만 내용은
+  범죄 예방 홍보이지 AX가 아님 -> m="언급" 또는 X. r="울산"이라는 이유만으로,
+  또는 "AI"라는 단어가 있다는 이유만으로 u를 주면 안 됨 (u는 AX 내용 자체가 울산
+  기업·기관·현장과 직접 연결될 때만)
 - "현대차 '아틀라스', 공장 학습 본격 시작…2028년 투입 목표로 훈련" -> 제목 자체가
   "휴머노이드 로봇의 공장 학습"이라는 AX 내용을 주제로 다룸 -> m="주제" -> A 이상
   (e: "현대차-휴머노이드 아틀라스 공장학습-생산현장")
@@ -352,6 +361,17 @@ def _sanitize_loc(value, region) -> str:
     return value if (region == "타지자체" and value in LOC_OPTIONS) else None
 
 
+def _sanitize_ulsan_score(value, region) -> int:
+    """Requirement 2 defense-in-depth: u can only be positive when the AX
+    content is directly tied to a 울산 subject/site (region == "울산"). Any
+    other region forces 0 regardless of what the model returned, in case the
+    prompt's instruction is missed for an edge case (e.g. 울산 named in text
+    but the AX activity itself is elsewhere, or not AX-related at all)."""
+    if region != "울산":
+        return 0
+    return value if value in (10, 8, 4, 0) else 0
+
+
 def _empty_fields(grade=None, m=None):
     return {"grade": grade, "m": m, "section": None, "region": None, "loc": None,
             "ulsan_score": 0, "industry": None, "tech": [], "core": 0, "evidence": None}
@@ -405,7 +425,7 @@ def _expand(d: dict) -> dict:
         "section": section,
         "region": region,
         "loc": _sanitize_loc(d.get("loc"), region),
-        "ulsan_score": d.get("u", 0),
+        "ulsan_score": _sanitize_ulsan_score(d.get("u", 0), region),
         "industry": ind,
         "tech": _sanitize_tech(d.get("t") if "t" in d else d.get("tech")),
         "core": _sanitize_core(d.get("core"), ind, section),

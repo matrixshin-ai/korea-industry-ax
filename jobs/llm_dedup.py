@@ -1,68 +1,56 @@
 """
-Second-pass event dedup (requirement 5 of the "grade" rewrite).
+Second-pass event dedup (post algorithmic-merge, pre-cap).
 
-dedup.py's algorithmic pass (title/number/policy matching) runs first and
-catches most duplicates for free. This module runs a small, targeted Haiku
-call ONLY on what's left: articles that still share a detected organization
-name after the algorithmic pass - the same clue dedup.py itself uses, so
-this only re-examines cases the cheap pass already flagged as suspicious but
-couldn't confidently merge (e.g. different exact wording, differing reported
-amounts). It never runs over the full published set, keeping cost small.
+dedup.py's algorithmic pass (exact-title match, then org+number/quote/policy
+gated Jaccard similarity) runs first and catches most duplicates for free.
+This module takes whatever is left - restricted to groups that could still
+end up published (S or A grade somewhere in the group; see build.py's
+_group_has_publishable_grade) - and asks Haiku to partition their FULL TITLES
+into same-event groups. It no longer restricts itself to items sharing a
+detected organization name: the whole day's publishable candidate set is sent,
+split into chunks of at most MAX_CHUNK_SIZE items so one call's context never
+has to hold more than that. Different stages of the same story
+(발표/선정/착공/실증/성과 등) must never be merged - the prompt says so
+explicitly, and "애매하면 묶지 말라"는 지시로 과병합보다 과소병합을 선호한다.
 
-Only call this on the final PUBLISHED set (grade S/A/B) - never on rejected
-(C/X) articles, and never before the algorithmic pass has already run.
+Anti-chain-merge guard: each candidate item belongs to exactly one chunk (the
+chunking is a straight partition of the candidate list), so no item can be
+placed in two different chunks and chain unrelated groups together across
+calls. Within a single chunk's response, an id is honored only the first time
+it appears across the response's groups - a defensive guard against a
+malformed/duplicated response, mirroring the anti-chain protection the old
+org-cluster version needed (that one could put the same article in several
+clusters; this version can't structurally, but the guard costs nothing and
+catches a hallucinated response that repeats an id).
+
+Only call this on the deduped, still-graded (S/A/B/C/X) set - never before
+dedup.py's algorithmic pass has already run.
 """
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from dedup import _choose_better, _extract_organizations, _get_combined_text
+from dedup import _choose_better
 
 MODEL = "claude-haiku-4-5-20251001"
 MAX_TOKENS = 8000
+MAX_CHUNK_SIZE = 200  # requirement 3: split candidates into chunks of this size, one Haiku call per chunk
 
 SYSTEM_PROMPT = """당신은 한국어 뉴스 동일 사건 판별기입니다.
-입력은 클러스터 배열이며, 각 클러스터는 {"c": 클러스터ID, "items": [{"i": id, "t": 제목,
-"s": 매체명}, ...]} 형태입니다. 각 클러스터 "내부"의 기사들끼리만 비교하세요(클러스터를
-넘나드는 비교는 하지 마세요). 진짜 같은 사건(같은 발표·같은 계약·같은 투자 건)을 다루는
-기사들만 하나의 그룹으로 묶으세요. 발표·선정·착공·실증·성과처럼 사건의 단계가 다르면
-절대 같은 그룹으로 묶지 마세요. 애매하면 묶지 말고 각자 별도 그룹으로 두세요.
+입력은 JSON 배열이며, 각 원소는 {"i": id, "t": 제목, "s": 매체명}입니다. 이 기사
+전체를 훑어, 진짜 같은 사건(같은 발표·같은 계약·같은 투자 건)을 다루는 기사들만 하나의
+그룹으로 묶으세요. 발표·선정·착공·실증·성과처럼 사건의 단계가 다르면 절대 같은 그룹으로
+묶지 마세요. 애매하면 묶지 말고 각자 별도 그룹으로 두세요.
 
-출력은 JSON 배열만 반환하세요: [{"c": 클러스터ID, "groups": [[id, id], [id], ...]}, ...]
-groups는 그 클러스터에 속한 모든 id를 정확히 한 번씩만 포함하는 부분집합들이어야 합니다.
-설명, 코드블록, 다른 텍스트를 절대 추가하지 마세요.
+출력은 JSON 배열만 반환하세요: [[id, id], [id], ...] - 입력에 있는 모든 id를 정확히
+한 번씩만 포함하는 부분집합들이어야 합니다. 설명, 코드블록, 다른 텍스트를 절대 추가하지
+마세요.
 """
 
 
-def build_clusters(items: list) -> list:
-    """Group items that share a detected organization name (see dedup.py's
-    ORGANIZATIONS list). Returns only groups with 2+ members - singletons
-    have nothing to compare against and are skipped entirely."""
-    org_map = {}
-    for it in items:
-        text = _get_combined_text(it)
-        for org in _extract_organizations(text):
-            org_map.setdefault(org, []).append(it)
-
-    seen_keys = set()
-    clusters = []
-    for group in org_map.values():
-        unique, seen_links = [], set()
-        for it in group:
-            link = it.get("link", "")
-            if link in seen_links:
-                continue
-            seen_links.add(link)
-            unique.append(it)
-        if len(unique) < 2:
-            continue
-        key = tuple(sorted(seen_links))
-        if key in seen_keys:
-            continue
-        seen_keys.add(key)
-        clusters.append(unique)
-    return clusters
+def _chunk(items, size):
+    return [items[i:i + size] for i in range(0, len(items), size)]
 
 
 def _parse_json_array(text: str):
@@ -74,24 +62,11 @@ def _parse_json_array(text: str):
     return json.loads(text)
 
 
-def llm_merge_clusters(client, clusters: list, log: dict) -> dict:
-    """Ask Haiku to partition each cluster into same-event groups.
-    Returns {absorbed_link: representative_link} for items that should merge;
-    items not returned are left as their own representative."""
-    if not clusters:
-        return {}
-
-    id_to_item = {}
-    payload = []
-    next_id = 0
-    for ci, cluster in enumerate(clusters):
-        cluster_items = []
-        for it in cluster:
-            iid = next_id
-            next_id += 1
-            id_to_item[iid] = it
-            cluster_items.append({"i": iid, "t": it.get("title", ""), "s": it.get("source", "")})
-        payload.append({"c": ci, "items": cluster_items})
+def _merge_one_chunk(client, chunk_items: list, log: dict) -> dict:
+    """Ask Haiku to partition one chunk (<= MAX_CHUNK_SIZE items) by full
+    title. Returns {absorbed_link: representative_link} for this chunk only."""
+    id_to_item = dict(enumerate(chunk_items))
+    payload = [{"i": i, "t": it.get("title", ""), "s": it.get("source", "")} for i, it in id_to_item.items()]
 
     try:
         response = client.messages.create(
@@ -100,35 +75,48 @@ def llm_merge_clusters(client, clusters: list, log: dict) -> dict:
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False, separators=(",", ":"))}],
         )
-        log["llm_dedup_input_tokens"] = response.usage.input_tokens
-        log["llm_dedup_output_tokens"] = response.usage.output_tokens
+        log["llm_dedup_input_tokens"] = log.get("llm_dedup_input_tokens", 0) + response.usage.input_tokens
+        log["llm_dedup_output_tokens"] = log.get("llm_dedup_output_tokens", 0) + response.usage.output_tokens
         text = "".join(b.text for b in response.content if b.type == "text")
-        parsed = _parse_json_array(text)
+        groups = _parse_json_array(text)
     except Exception as e:  # noqa: BLE001 - this pass failing must not break the run
-        log["llm_dedup_error"] = str(e)
+        log.setdefault("llm_dedup_errors", []).append(str(e))
         return {}
 
-    # One article can sit in several clusters (it names several orgs). If each
-    # cluster's grouping were applied independently, the merges would chain
-    # across clusters (A~B in "대통령", B~C in "울산시", ...) and snowball into
-    # one giant group swallowing unrelated stories - seen in practice as a
-    # single card with 240 `related` links. So an article joins only the first
-    # multi-member group it's placed in; later groupings skip it.
     merge_map = {}
-    assigned_links = set()
-    for entry in parsed:
-        for group in entry.get("groups", []):
-            group_items = [id_to_item[i] for i in group if i in id_to_item]
-            group_items = [it for it in group_items if it.get("link", "") not in assigned_links]
-            if len(group_items) < 2:
-                continue
-            assigned_links.update(it.get("link", "") for it in group_items)
-            rep = group_items[0]
-            for other in group_items[1:]:
-                rep = _choose_better(rep, other)
-            for it in group_items:
-                if it is not rep:
-                    merge_map[it.get("link", "")] = rep.get("link", "")
+    assigned = set()
+    for group in groups if isinstance(groups, list) else []:
+        ids = group if isinstance(group, list) else []
+        # An id already assigned from an earlier group in this same response is
+        # skipped here (defensive guard against a malformed/duplicated response
+        # - see module docstring).
+        group_items = [id_to_item[i] for i in ids if i in id_to_item and i not in assigned]
+        assigned.update(i for i in ids if i in id_to_item)
+        if len(group_items) < 2:
+            continue
+        rep = group_items[0]
+        for other in group_items[1:]:
+            rep = _choose_better(rep, other)
+        for it in group_items:
+            if it is not rep:
+                merge_map[it.get("link", "")] = rep.get("link", "")
+    return merge_map
+
+
+def llm_merge_candidates(client, items: list, log: dict) -> dict:
+    """items: top-level (post algo-dedup) groups that carry a publishable
+    (S/A) grade somewhere in the group (build.py filters this before calling).
+    Splits into MAX_CHUNK_SIZE-item chunks and merges each chunk independently
+    - no cross-chunk merging is possible since each item belongs to exactly
+    one chunk. Returns a flat {absorbed_link: representative_link} merge map
+    across every chunk."""
+    if not items:
+        return {}
+    chunks = _chunk(items, MAX_CHUNK_SIZE)
+    log["chunk_count"] = len(chunks)
+    merge_map = {}
+    for c in chunks:
+        merge_map.update(_merge_one_chunk(client, c, log))
     return merge_map
 
 

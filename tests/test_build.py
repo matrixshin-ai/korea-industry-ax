@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta, timezone
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import build
 
@@ -31,7 +31,7 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
          "ulsan_score": 0, "industry": "금융", "tech": [], "core": 0},
         {"title": "울산 B등급 기사", "link": "https://x.example.com/4b", "source": "매체D", "summary": "",
          "published": recent, "grade": "B", "section": 1, "region": "울산", "loc": None,
-         "ulsan_score": 8, "industry": "기타", "tech": [], "core": 0},
+         "ulsan_score": 8, "industry": "기타", "tech": [], "core": 0},  # B is never published (requirement 1), regardless of ulsan_score
         {"title": "S등급 기사", "link": "https://x.example.com/5", "source": "매체B", "summary": "",
          "published": recent, "grade": "S", "section": 1, "region": "울산", "loc": None,
          "ulsan_score": 10, "industry": "조선", "tech": ["로봇"], "core": 1},
@@ -60,8 +60,9 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
     assert "C등급 기사" not in section1_titles
     assert "미분류 기사" not in section1_titles
     assert "기간 밖 S등급 기사" not in section1_titles
-    assert "B등급 기사" not in section1_titles  # B with ulsan_score < 8 is not published
-    assert section1_titles == ["S등급 기사", "울산 B등급 기사"]
+    assert "B등급 기사" not in section1_titles  # B is never published, regardless of ulsan_score
+    assert "울산 B등급 기사" not in section1_titles  # same - ulsan_score 8 no longer publishes B
+    assert section1_titles == ["S등급 기사"]
 
     top = result["sections"]["1"]["items"][0]
     assert top["score"] == 100 + 10 + 1 * 10  # S(100) + ulsan(10) + core(1)*10 == 110
@@ -72,9 +73,9 @@ def test_build_main_drops_c_x_unpublished_dedupes_and_sorts(tmp_path, monkeypatc
 
     assert result["collection_hours"] == 24
     assert result["stats"]["dropped_unclassified"] == 1  # the grade=None item
-    assert result["stats"]["dropped_not_published_after_regrade"] == 3  # X, C, B(u=0)
+    assert result["stats"]["dropped_not_published_after_regrade"] == 4  # X, C, B(u=0), B(u=8)
     assert result["stats"]["dropped_out_of_window"] == 1
-    assert result["stats"]["published_grade_counts"] == {"S": 1, "A": 1, "B": 1}
+    assert result["stats"]["published_grade_counts"] == {"S": 1, "A": 1}
 
 
 def test_regrade_representatives_unifies_group_to_highest_graded_member():
@@ -257,6 +258,47 @@ def test_build_main_skips_llm_dedup_without_api_key(tmp_path, monkeypatch):
     assert result["article_count"] == 1
 
 
+def test_build_main_uses_llm_dedup_full_title_pass_when_algo_dedup_cannot_merge(tmp_path, monkeypatch):
+    # Requirement 3: two S-graded articles about the same event but worded too
+    # differently for dedup.py's algorithmic gate (no shared org/number/quote)
+    # - only the full-title Haiku pass can merge these.
+    now = datetime.now(timezone.utc)
+    recent = _iso(now - timedelta(hours=1))
+    classified = [
+        {"title": "울산 어느 조선소, 로봇 용접 도입해 생산성 확 끌어올려", "link": "https://a.example.com/1",
+         "source": "매체A", "summary": "", "published": recent, "grade": "S", "section": 1, "region": "울산",
+         "loc": None, "ulsan_score": 10, "industry": "조선", "tech": ["로봇"], "core": 1},
+        {"title": "조선업계 최초 완전자동 용접 라인 가동 시작", "link": "https://b.example.com/2",
+         "source": "매체B", "summary": "", "published": recent, "grade": "S", "section": 1, "region": "울산",
+         "loc": None, "ulsan_score": 10, "industry": "조선", "tech": ["로봇"], "core": 1},
+    ]
+
+    classified_path = tmp_path / "classified.json"
+    data_path = tmp_path / "public" / "data.json"
+    logs_dir = tmp_path / "logs"
+    classified_path.write_text(json.dumps(classified), encoding="utf-8")
+
+    monkeypatch.setattr(build, "CLASSIFIED_PATH", str(classified_path))
+    monkeypatch.setattr(build, "DATA_PATH", str(data_path))
+    monkeypatch.setattr(build, "LOGS_DIR", str(logs_dir))
+    monkeypatch.setattr(build, "get_collection_hours", lambda: 24)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+
+    block = type("Block", (), {"type": "text", "text": "[[0, 1]]"})()
+    response = MagicMock()
+    response.content = [block]
+    response.usage = type("Usage", (), {"input_tokens": 10, "output_tokens": 5})()
+
+    with patch("anthropic.Anthropic") as mock_anthropic:
+        mock_anthropic.return_value.messages.create.return_value = response
+        build.main()
+        mock_anthropic.return_value.messages.create.assert_called_once()
+
+    result = json.loads(data_path.read_text(encoding="utf-8"))
+    assert result["article_count"] == 1
+    assert len(result["sections"]["1"]["items"][0]["related"]) == 1
+
+
 def _setup_main(tmp_path, monkeypatch, classified):
     classified_path = tmp_path / "classified.json"
     data_path = tmp_path / "public" / "data.json"
@@ -270,10 +312,11 @@ def _setup_main(tmp_path, monkeypatch, classified):
 
 
 def test_is_publishable_rules():
+    # Requirement 1: only S/A publish. B never does, regardless of ulsan_score.
     assert build.is_publishable({"grade": "S", "ulsan_score": 0})
     assert build.is_publishable({"grade": "A", "ulsan_score": 0})
-    assert build.is_publishable({"grade": "B", "ulsan_score": 8})
-    assert build.is_publishable({"grade": "B", "ulsan_score": 10})
+    assert not build.is_publishable({"grade": "B", "ulsan_score": 10})
+    assert not build.is_publishable({"grade": "B", "ulsan_score": 8})
     assert not build.is_publishable({"grade": "B", "ulsan_score": 4})
     assert not build.is_publishable({"grade": "C", "ulsan_score": 10})
     assert not build.is_publishable({"grade": "X", "ulsan_score": 10})
@@ -295,7 +338,6 @@ def test_build_main_applies_daily_cap_by_score_across_sections(tmp_path, monkeyp
                            "section": 3, "region": "전국", "loc": None, "ulsan_score": 0,
                            "industry": "기타", "tech": [], "core": 0})
     data_path = _setup_main(tmp_path, monkeypatch, classified)
-    monkeypatch.setattr(build, "EVENT_MERGE_PATH", str(tmp_path / "none.yaml"))
 
     build.main()
 
@@ -311,31 +353,36 @@ def test_build_main_applies_daily_cap_by_score_across_sections(tmp_path, monkeyp
     assert "https://a.example.com/149" not in {it["link"] for it in sec2}
 
 
-def test_apply_event_rules_collapses_matching_titles_into_one_group():
-    rules = [{"name": "서밋", "all_of": [["李", "대통령"], ["투자서밋", "월가"]], "none_of": ["멕시코"]}]
-    items = [
-        {"title": "李 대통령, 뉴욕서 '대한민국 투자서밋' 주재", "link": "l1", "grade": "S", "related": []},
-        {"title": "월가 큰 손들과 다시 만난 李", "link": "l2", "grade": "A", "related": []},
-        {"title": "李대통령, 멕시코서 월가식 투자 유치", "link": "l3", "grade": "A", "related": []},
-        {"title": "현대차 울산공장 AI 도입", "link": "l4", "grade": "S", "related": []},
-    ]
-    merged, stats = build.apply_event_rules(items, rules)
-    assert [it["link"] for it in merged] == ["l1", "l3", "l4"]
-    assert [r["link"] for r in merged[0]["related"]] == ["l2"]
-    assert stats == {"서밋": 2}
+def test_regrade_representatives_swaps_representative_when_best_title_lacks_ax_content():
+    # Requirement 4: the highest (grade, score) member is picked first - but if
+    # its title doesn't itself name AI/AX (e.g. the summit's foreign-policy
+    # angle, "군함 건조", rather than its AX announcement), fall back to the
+    # highest-ranked S/A member whose title DOES name AI/AX.
+    no_ax_title = {"title": "李 대통령, 뉴욕서 트럼프와 군함 건조 협력 논의", "link": "https://a.example.com/1",
+                   "source": "매체A", "grade": "S", "section": 3, "ulsan_score": 0, "core": 0}
+    ax_title = {"title": "李 대통령, 뉴욕 투자서밋서 AI 메가프로젝트 발표", "link": "https://b.example.com/2",
+                "source": "매체B", "grade": "A", "section": 3, "ulsan_score": 0, "core": 0}
+    host = {**no_ax_title, "related": [ax_title]}
 
-    regraded = build.regrade_representatives(merged)
-    assert regraded[0]["grade"] == "S" and len(regraded[0]["related"]) == 1
+    result = build.regrade_representatives([host])
+
+    assert len(result) == 1
+    assert result[0]["grade"] == "A"
+    assert result[0]["link"] == "https://b.example.com/2"
+    related_links = {r["link"] for r in result[0]["related"]}
+    assert related_links == {"https://a.example.com/1"}
 
 
-def test_load_event_rules_skips_expired_rules(tmp_path):
-    from datetime import date
-    path = tmp_path / "ev.yaml"
-    path.write_text(
-        "events:\n"
-        '  - {name: old, until: "2026-01-01", all_of: [["a"]]}\n'
-        '  - {name: live, until: "2026-12-31", all_of: [["b"]]}\n'
-        '  - {name: forever, all_of: [["c"]]}\n',
-        encoding="utf-8")
-    names = [r["name"] for r in build.load_event_rules(str(path), today_kst=date(2026, 9, 25))]
-    assert names == ["live", "forever"]
+def test_regrade_representatives_keeps_best_when_no_ax_titled_alternative_exists():
+    # If no member's title names AI/AX, keep the highest (grade, score) pick
+    # as-is rather than leaving the group without a representative.
+    no_ax_title = {"title": "李 대통령, 뉴욕서 트럼프와 군함 건조 협력 논의", "link": "https://a.example.com/1",
+                   "source": "매체A", "grade": "S", "section": 3, "ulsan_score": 0, "core": 0}
+    also_no_ax = {"title": "李 대통령, 월가 인사들과 만찬", "link": "https://b.example.com/2",
+                  "source": "매체B", "grade": "A", "section": 3, "ulsan_score": 0, "core": 0}
+    host = {**no_ax_title, "related": [also_no_ax]}
+
+    result = build.regrade_representatives([host])
+
+    assert result[0]["grade"] == "S"
+    assert result[0]["link"] == "https://a.example.com/1"

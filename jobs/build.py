@@ -2,24 +2,30 @@
 classified.json -> public/data.json
 
 1. Use only this run's fresh candidates (no carry-over from a previous day),
-   keeping every graded item (S/A/B/C/X) at this stage - not just S/A/B - so
-   a same-event duplicate that individually landed on C or X can still ride
-   along as a `related` citation under a higher-graded representative.
+   keeping every graded item (S/A/B/C/X) at this stage - not just S/A - so
+   a same-event duplicate that individually landed on B, C or X can still
+   ride along as a `related` citation under a higher-graded representative.
 2. Drop exact-duplicate URLs (after normalization).
 3. Apply the KST collection window (same helper collect.py used).
-4. Merge same-event duplicates: dedup.py's algorithmic pass first, then a
-   small targeted Haiku pass (jobs/llm_dedup.py) on whatever still shares a
-   detected organization name afterward, then the deterministic title rules
-   in config/event_merge.yaml (for big events the Haiku pass splits
-   inconsistently).
+4. Merge same-event duplicates: dedup.py's algorithmic pass first (exact
+   title / URL / org+number-or-quote-or-policy gated similarity), then one
+   Haiku pass (jobs/llm_dedup.py) over the FULL TITLES of every group that
+   could still end up published (S or A somewhere in the group) - not just
+   groups sharing a detected organization name - split into chunks of at
+   most llm_dedup.MAX_CHUNK_SIZE items per call so one day's publishable
+   volume never exceeds a single call's context. Different stages of the
+   same story (발표/선정/착공/실증/성과) are never merged.
 5. Event-level grade unification: for each merged group, the group's grade/
-   section/etc become whichever single member graded highest (S > A > B >
-   C > X); every other member - regardless of its own grade - becomes a
-   `related` citation under that representative.
-6. Keep only groups whose representative is S or A, or B with
-   ulsan_score >= 8 (everything else is dropped; an unclassified item just
-   retries whenever it's re-collected).
-7. score = grade_points(S=100/A=70/B=40) + ulsan_score + core*10. Apply the
+   section/etc become whichever single member ranks highest by (grade,
+   score); if that member is S/A but its title doesn't itself name AI/AX
+   (e.g. it was picked for an unrelated angle inside an AX-event group),
+   fall back to the highest-ranked S/A member whose title does name AI/AX.
+   Every other member - regardless of its own grade - becomes a `related`
+   citation under that representative.
+6. Keep only groups whose representative is S or A (B is a demotion target
+   only - see classify.py - and is never published, regardless of
+   ulsan_score; an unclassified item just retries whenever it's re-collected).
+7. score = grade_points(S=100/A=70) + ulsan_score + core*10. Apply the
    daily cap (DAILY_CAP=200) across all sections by score desc, then newest
    first; then sort each section the same way.
 8. Write public/data.json with generation stats for the footer/status line.
@@ -34,10 +40,8 @@ import os
 import sys
 from datetime import datetime, timezone
 
-import yaml
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from classify import GRADE_POINTS, GRADES
+from classify import GRADE_POINTS, GRADES, has_ai_term
 from dedup import deduplicate_articles
 import llm_dedup
 from timewindow import KST, get_collection_hours, within_window
@@ -48,11 +52,9 @@ from dateutil import parser as dtparser
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CLASSIFIED_PATH = os.path.join(ROOT, "classified.json")
 DATA_PATH = os.path.join(ROOT, "public", "data.json")
-EVENT_MERGE_PATH = os.path.join(ROOT, "config", "event_merge.yaml")
 LOGS_DIR = os.path.join(ROOT, "logs")
 
 SECTION_LABELS = {1: "기업·현장", 2: "기술·인프라", 3: "정책·생태계·인재"}
-B_MIN_ULSAN_SCORE = 8
 DAILY_CAP = 200
 GRADE_ORDER = {"S": 5, "A": 4, "B": 3, "C": 2, "X": 1}
 
@@ -115,10 +117,9 @@ def _group_has_publishable_grade(item):
 
 
 def is_publishable(item) -> bool:
-    grade = item.get("grade")
-    if grade in ("S", "A"):
-        return True
-    return grade == "B" and (item.get("ulsan_score") or 0) >= B_MIN_ULSAN_SCORE
+    # Requirement 1: B is a demotion target only (classify.py) and is never
+    # published, regardless of ulsan_score.
+    return item.get("grade") in ("S", "A")
 
 
 def item_score(item) -> int:
@@ -130,59 +131,30 @@ def _sort_key(item):
     return (item_score(item), pub_dt.astimezone(timezone.utc).isoformat() if pub_dt else "")
 
 
-def load_event_rules(path=None, today_kst=None):
-    """Rules past their `until` date (KST, inclusive) are skipped, so a rule
-    written for one news event can't keep swallowing unrelated titles later."""
-    path = path or EVENT_MERGE_PATH
-    if not os.path.exists(path):
-        return []
-    with open(path, "r", encoding="utf-8") as f:
-        rules = (yaml.safe_load(f) or {}).get("events", []) or []
-    today = (today_kst or datetime.now(KST).date()).isoformat()
-    return [r for r in rules if not r.get("until") or str(r["until"]) >= today]
-
-
-def _matches_event(title: str, rule: dict) -> bool:
-    if any(term in title for term in rule.get("none_of", []) or []):
-        return False
-    groups = rule.get("all_of", []) or []
-    return bool(groups) and all(any(term in title for term in group) for group in groups)
-
-
-def apply_event_rules(items, rules):
-    """Collapse every top-level item whose title matches the same event rule
-    into one group (the first match hosts the rest in its `related`; the
-    highest-graded member is picked later by regrade_representatives).
-    Returns (items, {event name: groups merged})."""
-    stats = {}
-    for rule in rules:
-        host = None
-        result = []
-        merged = 0
-        for it in items:
-            if not _matches_event(it.get("title", ""), rule):
-                result.append(it)
-            elif host is None:
-                host = dict(it)
-                host["related"] = list(it.get("related", []) or [])
-                result.append(host)
-            else:
-                host["related"].append(it)
-                merged += 1
-        items = result
-        if merged:
-            stats[rule.get("name", "?")] = merged + 1
-    return items, stats
+def _member_rank(m):
+    """(grade rank, score) - the sort key used to pick a merged group's
+    representative (requirement 4: highest grade, then highest score)."""
+    return (GRADE_ORDER.get(m.get("grade"), 0), item_score(m))
 
 
 def regrade_representatives(items):
-    """Requirement 4: unify each merged group onto its single highest-graded
-    member's grade/section/etc. Every other member - whatever its own grade -
-    becomes a `related` citation under that representative."""
+    """Unify each merged group onto its single highest-graded, highest-scored
+    member's grade/section/etc (requirement 4). If that member is S/A but its
+    title doesn't itself name AI/AX - e.g. picked for an unrelated angle, like
+    "군함 건조" inside a summit-AX event group - fall back to the
+    highest-ranked S/A member whose title does name AI/AX, so the published
+    headline always reflects the event's AX content. Every other member -
+    whatever its own grade - becomes a `related` citation under that
+    representative."""
     result = []
     for item in items:
         members = _all_members(item)
-        best = max(members, key=lambda m: GRADE_ORDER.get(m.get("grade"), 0))
+        best = max(members, key=_member_rank)
+        if best.get("grade") in ("S", "A") and not has_ai_term(best.get("title", "")):
+            ax_titled = [m for m in members
+                         if m.get("grade") in ("S", "A") and has_ai_term(m.get("title", ""))]
+            if ax_titled:
+                best = max(ax_titled, key=_member_rank)
         seen_links = set()
         others = []
         for m in members:
@@ -234,25 +206,21 @@ def main():
 
     llm_dedup_log = {}
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-    all_clusters = llm_dedup.build_clusters(deduped)
-    # Cost cut: a cluster made entirely of C/X members will never get published
-    # regardless of how it's merged, so there's no point spending a Haiku call
-    # deciding how to group it.
-    clusters = [c for c in all_clusters if any(_group_has_publishable_grade(it) for it in c)]
-    llm_dedup_log["suspect_clusters"] = len(clusters)
-    llm_dedup_log["suspect_clusters_skipped_no_publishable_grade"] = len(all_clusters) - len(clusters)
-    llm_dedup_log["suspect_items"] = sum(len(c) for c in clusters)
-    if clusters and api_key:
+    # Cost cut: a group made entirely of B/C/X members will never get
+    # published regardless of how it's merged, so there's no point spending a
+    # Haiku call on grouping it - only groups that could still end up
+    # published (S or A somewhere in the group) go to the full-title pass.
+    merge_candidates = [it for it in deduped if _group_has_publishable_grade(it)]
+    llm_dedup_log["candidate_groups"] = len(merge_candidates)
+    llm_dedup_log["candidate_groups_skipped_no_publishable_grade"] = len(deduped) - len(merge_candidates)
+    if merge_candidates and api_key:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
-        merge_map = llm_dedup.llm_merge_clusters(client, clusters, llm_dedup_log)
+        merge_map = llm_dedup.llm_merge_candidates(client, merge_candidates, llm_dedup_log)
         deduped = llm_dedup.apply_merge_map(deduped, merge_map)
-    elif clusters:
-        print(f"  ANTHROPIC_API_KEY not set - skipping LLM dedup pass on {len(clusters)} suspect clusters")
+    elif merge_candidates:
+        print(f"  ANTHROPIC_API_KEY not set - skipping LLM dedup pass on {len(merge_candidates)} candidate groups")
     after_llm_dedup = len(deduped)
-
-    deduped, event_merge_stats = apply_event_rules(deduped, load_event_rules())
-    after_event_merge = len(deduped)
 
     regraded = regrade_representatives(deduped)
     published = [item for item in regraded if is_publishable(item)]
@@ -292,7 +260,7 @@ def main():
 
     run_log = load_latest_run_log() or {}
 
-    grade_counts = {"S": 0, "A": 0, "B": 0}
+    grade_counts = {"S": 0, "A": 0}
     for item in capped:
         grade_counts[item.get("grade")] = grade_counts.get(item.get("grade"), 0) + 1
 
@@ -308,8 +276,6 @@ def main():
             "before_algo_dedup": before_algo_dedup,
             "after_algo_dedup": after_algo_dedup,
             "after_llm_dedup": after_llm_dedup,
-            "after_event_merge": after_event_merge,
-            "event_merge": event_merge_stats,
             "dropped_not_published_after_regrade": dropped_not_published,
             "dropped_invalid_section": dropped_invalid_section,
             "publishable_before_cap": len(valid),
@@ -344,10 +310,9 @@ def main():
           f"(section1={len(sections['1'])}, section2={len(sections['2'])}, section3={len(sections['3'])})")
     print(f"  graded: {len(graded)}, exact-dedup: -{dropped_exact_dupe}, "
           f"window-filtered: -{dropped_out_of_window}, algo-dedup: {before_algo_dedup} -> {after_algo_dedup}, "
-          f"llm-dedup: -> {after_llm_dedup}, event-merge: -> {after_event_merge} {event_merge_stats}, "
-          f"not-published: -{dropped_not_published}")
+          f"llm-dedup: -> {after_llm_dedup}, not-published: -{dropped_not_published}")
     print(f"  cap: {len(valid)} publishable {pre_cap_section_counts} -> {len(capped)} (cap {DAILY_CAP})")
-    print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)} B={grade_counts.get('B', 0)}")
+    print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)}")
     print(f"  yield log: {yield_path} ({len(yield_log['rss'])} feeds, {len(yield_log['naver'])} queries)")
 
 
