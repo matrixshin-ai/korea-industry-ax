@@ -32,6 +32,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dedup import _choose_better
+from classify import INPUT_PRICE_PER_M, OUTPUT_PRICE_PER_M
 
 MODEL = "claude-haiku-4-5-20251001"
 MAX_TOKENS = 8000
@@ -109,14 +110,32 @@ def llm_merge_candidates(client, items: list, log: dict) -> dict:
     Splits into MAX_CHUNK_SIZE-item chunks and merges each chunk independently
     - no cross-chunk merging is possible since each item belongs to exactly
     one chunk. Returns a flat {absorbed_link: representative_link} merge map
-    across every chunk."""
+    across every chunk.
+
+    Always leaves log["chunk_count"]/["llm_dedup_input_tokens"]/
+    ["llm_dedup_output_tokens"]/["estimated_cost_usd"] set (0 if this pass
+    never actually called the API) - build.py pre-seeds the same defaults
+    for the case this function isn't called at all (no candidates, or no
+    ANTHROPIC_API_KEY), so a run's data.json always reports this pass's true
+    cost instead of silently omitting the field."""
+    log.setdefault("chunk_count", 0)
+    log.setdefault("llm_dedup_input_tokens", 0)
+    log.setdefault("llm_dedup_output_tokens", 0)
     if not items:
+        log["estimated_cost_usd"] = 0.0
         return {}
     chunks = _chunk(items, MAX_CHUNK_SIZE)
     log["chunk_count"] = len(chunks)
     merge_map = {}
     for c in chunks:
         merge_map.update(_merge_one_chunk(client, c, log))
+    # Synchronous Messages API only (no Message Batches API here - see module
+    # docstring) - full price, no batch discount.
+    log["estimated_cost_usd"] = round(
+        log["llm_dedup_input_tokens"] / 1_000_000 * INPUT_PRICE_PER_M
+        + log["llm_dedup_output_tokens"] / 1_000_000 * OUTPUT_PRICE_PER_M,
+        4,
+    )
     return merge_map
 
 

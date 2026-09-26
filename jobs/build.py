@@ -28,7 +28,15 @@ classified.json -> public/data.json
 7. score = grade_points(S=100/A=70) + ulsan_score + core*10. Apply the
    daily cap (DAILY_CAP=200) across all sections by score desc, then newest
    first; then sort each section the same way.
-8. Write public/data.json with generation stats for the footer/status line.
+8. Write public/data.json with generation stats for the footer/status line -
+   including published_merged_group_count/published_related_item_count (how
+   many published groups carry `related` citations) and
+   classify_cost_usd/llm_dedup_cost_usd/total_estimated_cost_usd (the
+   latter two read back from logs/classify_*.json and this run's own
+   llm_dedup pass) - added 2026-09-26 so a run's total cost and merge
+   activity are visible without re-parsing `related` arrays or hunting
+   across log files. stats.llm_dedup.ran distinguishes "pass skipped
+   (no API key)" from "pass ran, found nothing to merge".
 9. Write logs/yield_YYYYMMDD_HHMM.json: per-RSS-feed and per-Naver-query
    candidate counts and S/A counts (each candidate's own grade, before any
    dedup merging) - for a manual look after a week of runs at which sources
@@ -61,6 +69,16 @@ GRADE_ORDER = {"S": 5, "A": 4, "B": 3, "C": 2, "X": 1}
 
 def load_latest_run_log():
     pattern = os.path.join(LOGS_DIR, "run_*.json")
+    files = glob.glob(pattern)
+    if not files:
+        return None
+    latest = max(files, key=os.path.getmtime)
+    with open(latest, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_latest_classify_log():
+    pattern = os.path.join(LOGS_DIR, "classify_*.json")
     files = glob.glob(pattern)
     if not files:
         return None
@@ -204,7 +222,13 @@ def main():
     deduped = deduplicate_articles(windowed)
     after_algo_dedup = len(deduped)
 
-    llm_dedup_log = {}
+    # Defaults so this pass's cost/token/chunk fields are always present in
+    # data.json even when it's skipped below (no candidates, or no API key) -
+    # a run where this silently never ran (as happened 2026-09-26, run #2:
+    # the workflow's build step was missing ANTHROPIC_API_KEY) should be
+    # visible in the log, not indistinguishable from "ran, found nothing".
+    llm_dedup_log = {"ran": False, "chunk_count": 0, "llm_dedup_input_tokens": 0,
+                      "llm_dedup_output_tokens": 0, "estimated_cost_usd": 0.0}
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     # Cost cut: a group made entirely of B/C/X members will never get
     # published regardless of how it's merged, so there's no point spending a
@@ -216,6 +240,7 @@ def main():
     if merge_candidates and api_key:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
+        llm_dedup_log["ran"] = True
         merge_map = llm_dedup.llm_merge_candidates(client, merge_candidates, llm_dedup_log)
         deduped = llm_dedup.apply_merge_map(deduped, merge_map)
     elif merge_candidates:
@@ -259,10 +284,21 @@ def main():
             it.pop("finance_filtered", None)
 
     run_log = load_latest_run_log() or {}
+    classify_log = load_latest_classify_log() or {}
 
     grade_counts = {"S": 0, "A": 0}
     for item in capped:
         grade_counts[item.get("grade")] = grade_counts.get(item.get("grade"), 0) + 1
+
+    # Requirement 6 (2026-09-26 follow-up): merge-group visibility and total
+    # cost weren't previously in data.json's stats, forcing a manual re-parse
+    # of `related` arrays and a separate look at logs/classify_*.json to
+    # answer "how many merge groups, at what cost" - both now recorded here
+    # for every future run.
+    published_merged_group_count = sum(1 for it in capped if it.get("related"))
+    published_related_item_count = sum(len(it.get("related", [])) for it in capped)
+    classify_cost = classify_log.get("estimated_cost_usd", 0) or 0
+    llm_dedup_cost = llm_dedup_log.get("estimated_cost_usd", 0) or 0
 
     data = {
         "generated_at": datetime.now(KST).isoformat(),
@@ -286,6 +322,11 @@ def main():
             "rule_capped": sum(1 for c in classified if c.get("rule_capped_from")),
             "llm_dedup": llm_dedup_log,
             "published_grade_counts": grade_counts,
+            "published_merged_group_count": published_merged_group_count,
+            "published_related_item_count": published_related_item_count,
+            "classify_cost_usd": round(classify_cost, 4),
+            "llm_dedup_cost_usd": round(llm_dedup_cost, 4),
+            "total_estimated_cost_usd": round(classify_cost + llm_dedup_cost, 4),
             "rss": run_log.get("rss", {}),
             "naver": run_log.get("naver", {}),
         },
@@ -313,6 +354,12 @@ def main():
           f"llm-dedup: -> {after_llm_dedup}, not-published: -{dropped_not_published}")
     print(f"  cap: {len(valid)} publishable {pre_cap_section_counts} -> {len(capped)} (cap {DAILY_CAP})")
     print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)}")
+    print(f"  merge groups: {published_merged_group_count} (of {len(capped)} published, "
+          f"{published_related_item_count} related items folded in)")
+    print(f"  llm_dedup: ran={llm_dedup_log['ran']} chunks={llm_dedup_log['chunk_count']} "
+          f"cost=${llm_dedup_log['estimated_cost_usd']}")
+    print(f"  cost: classify=${round(classify_cost, 4)} llm_dedup=${round(llm_dedup_cost, 4)} "
+          f"total=${round(classify_cost + llm_dedup_cost, 4)}")
     print(f"  yield log: {yield_path} ({len(yield_log['rss'])} feeds, {len(yield_log['naver'])} queries)")
 
 

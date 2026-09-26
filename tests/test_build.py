@@ -311,6 +311,65 @@ def _setup_main(tmp_path, monkeypatch, classified):
     return data_path
 
 
+def test_build_main_reports_merge_group_and_cost_stats(tmp_path, monkeypatch):
+    # Requirement 6 follow-up (2026-09-26): data.json must self-report how
+    # many published groups carry `related` citations, plus this run's total
+    # cost (classify.py's own log + this run's llm_dedup cost) - previously
+    # neither was recorded anywhere, forcing a manual re-parse of `related`
+    # arrays and a separate look at logs/classify_*.json.
+    now = datetime.now(timezone.utc)
+    recent = _iso(now - timedelta(hours=1))
+    classified = [
+        {"title": "단독 S등급 기사", "link": "https://x.example.com/1", "source": "매체", "summary": "",
+         "published": recent, "grade": "S", "section": 1, "region": "울산", "loc": None,
+         "ulsan_score": 10, "industry": "조선", "tech": [], "core": 1},
+    ]
+    data_path = _setup_main(tmp_path, monkeypatch, classified)
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(exist_ok=True)
+    (logs_dir / "classify_20260101_0000.json").write_text(
+        json.dumps({"estimated_cost_usd": 0.5}), encoding="utf-8")
+
+    build.main()
+
+    result = json.loads(data_path.read_text(encoding="utf-8"))
+    stats = result["stats"]
+    # No API key -> llm_dedup never ran, and the one item has no duplicate.
+    assert stats["published_merged_group_count"] == 0
+    assert stats["published_related_item_count"] == 0
+    assert stats["llm_dedup"]["ran"] is False
+    assert stats["llm_dedup"]["estimated_cost_usd"] == 0.0
+    assert stats["classify_cost_usd"] == 0.5
+    assert stats["llm_dedup_cost_usd"] == 0.0
+    assert stats["total_estimated_cost_usd"] == 0.5
+
+
+def test_build_main_counts_published_merged_groups_from_algo_dedup(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    recent = _iso(now - timedelta(hours=1))
+    classified = [
+        {"title": "현대차 울산공장, AI 자율제조 라인에 3000억원 투자", "link": "https://a.example.com/1",
+         "source": "한국경제", "summary": "현대차가 울산 공장에 AI 자율제조 라인 구축을 위해 3000억원을 투자한다.",
+         "published": recent, "grade": "S", "section": 1, "region": "울산", "loc": None,
+         "ulsan_score": 10, "industry": "자동차", "tech": ["자율제조"], "core": 1},
+        {"title": "현대차, 울산 AI 자율제조 라인에 3000억 투입", "link": "https://b.example.com/2",
+         "source": "연합뉴스", "summary": "현대차가 울산 공장 AI 자율제조 라인에 3000억원을 투입하기로 했다.",
+         "published": recent, "grade": "A", "section": 1, "region": "울산", "loc": None,
+         "ulsan_score": 10, "industry": "자동차", "tech": ["자율제조"], "core": 1},
+        {"title": "무관 단독 기사", "link": "https://c.example.com/3", "source": "매체",
+         "summary": "", "published": recent, "grade": "A", "section": 2, "region": "전국", "loc": None,
+         "ulsan_score": 0, "industry": "기타", "tech": [], "core": 0},
+    ]
+    data_path = _setup_main(tmp_path, monkeypatch, classified)
+
+    build.main()
+
+    result = json.loads(data_path.read_text(encoding="utf-8"))
+    stats = result["stats"]
+    assert stats["published_merged_group_count"] == 1  # the algo-dedup'd pair
+    assert stats["published_related_item_count"] == 1
+
+
 def test_is_publishable_rules():
     # Requirement 1: only S/A publish. B never does, regardless of ulsan_score.
     assert build.is_publishable({"grade": "S", "ulsan_score": 0})

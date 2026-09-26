@@ -96,7 +96,36 @@ python -m http.server 8000 --directory public   # http://localhost:8000
   게시 후보 전체 제목 Haiku 1회 호출 방식으로 교체, 200건 단위 청크, 연쇄 병합 방지 로직
   유지, `config/event_merge.yaml`과 그 로딩 코드 삭제), 대표 기사 선정 로직 개선
   (최고 등급·점수 대표의 제목에 AI/AX가 없으면 그룹 내 다른 S·A 기사로 대표 교체).
+- 2026-09-26 (같은 날, GitHub Actions run #2 = commit `55039c1` 검증):
+  - **버그 발견·수정**: `.github/workflows/update.yml`의 "Build public/data.json" 스텝에
+    `ANTHROPIC_API_KEY`가 초기 커밋부터 누락돼 있었음 — build.py의 llm_dedup(전체-제목
+    Haiku 병합) 패스가 실제로는 **한 번도 실행된 적이 없었음** (classify 스텝에는 키가
+    있어 분류는 정상 작동, 병합만 항상 알고리즘 dedup.py로만 처리됨). 워크플로에
+    env 추가로 수정, 다음 실행부터 반영.
+  - **로그 보완**: `stats.llm_dedup.ran`(패스가 실제로 호출됐는지 여부 — 이번 버그처럼
+    "실행됐지만 병합 0건"과 "애초에 스킵됨"을 구분하기 위함), `estimated_cost_usd`
+    (llm_dedup 자체 비용, 이전엔 토큰 수만 있고 비용 환산이 없었음),
+    `stats.published_merged_group_count`/`published_related_item_count`(게시된
+    병합 그룹 수·흡수된 관련기사 수 — 이전엔 `related` 배열을 직접 훑어야만 알 수 있었음),
+    `stats.classify_cost_usd`/`llm_dedup_cost_usd`/`total_estimated_cost_usd`(classify
+    로그를 build.py가 읽어와 이번 실행 총비용을 data.json에 직접 기록) 추가.
+  - **run #2 (55039c1, PROMPT_VERSION v4 콜드스타트) 분석 결과**:
+    - 게시 43건 (상한 전 43건, 상한 미적용 — 200건 여유): 섹션1(기업·현장) 19,
+      섹션2(기술·인프라) 19, 섹션3(정책·생태계·인재) 5. 등급: S=0, A=43.
+    - **S=0건은 위 버그와 무관** — Haiku 원본 분류 단계(`rule_capped`=0, 즉 S→강등도
+      0건)부터 이미 S가 없었음. v4 프롬프트가 과도하게 보수적인지, 그날 후보군에
+      정말 S급이 없었는지는 이번 한 번으로는 판단 불가 — 다음 며칠 결과와 비교 필요.
+    - 병합 그룹 3건 (전부 dedup.py 알고리즘 병합, llm_dedup은 버그로 미실행이라 0건
+      기여): "SK하이닉스 솔리다임 IPO"(관련 2건), "전북 현대차 새만금 투자"(관련 1건),
+      "오픈AI·앤트로픽 피지컬AI 인재영입"(관련 1건).
+    - 비용: classify $0.2851(1,912건 콜드스타트 전량 재분류, batches API), llm_dedup
+      $0(미실행) → 이번 실행 총 $0.2851. 워크플로 수정 후 다음 실행부터는
+      `total_estimated_cost_usd`로 매번 자동 기록됨.
+    - pytest: 92개 전부 통과(신규 커버리지 2건 포함).
 - 남은 일 / 관찰 포인트:
+  - **다음 1~2회 실행에서 확인**: (1) llm_dedup이 이제 실제로 호출되는지
+    (`stats.llm_dedup.ran`=true), (2) S=0이 반복되는지 — 반복되면 v4 프롬프트의
+    S 기준이 지나치게 보수적인 것으로 보고 재검토.
   - 1주 운영 후 `logs/yield_*.json`으로 저수율 RSS·검색어 정리 ("산업 AI" 검색어는 1,000건 상한 포화).
   - 규칙 상한(`rule_capped`)과 금융 필터 탈락 건수를 로그로 보며 오탈락 여부 점검.
   - 2026-09-26: GitHub 공개 저장소 생성·push 완료. Actions Secrets 등록·Vercel 연결은 아직 (README 참고).

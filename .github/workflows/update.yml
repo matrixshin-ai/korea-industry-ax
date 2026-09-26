@@ -53,8 +53,16 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
+      # Needs the same key as the classify step: build.py's llm_dedup pass
+      # (jobs/llm_dedup.py) also calls Haiku, to merge same-event duplicates
+      # among the day's publishable (S/A) candidates. Without this, the pass
+      # is silently skipped (build.py falls back to algorithmic dedup only -
+      # see the "ANTHROPIC_API_KEY not set" print in its log) - found missing
+      # here on 2026-09-26 (run #2), fixed same day.
       - name: Build public/data.json
         run: python jobs/build.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Trim old logs (keep most recent 14 - ~2 weeks of daily runs)
         run: |
