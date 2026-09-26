@@ -1,0 +1,57 @@
+name: Export published articles to AX vault
+
+on:
+  # Runs after "Update industry AX briefing" (see update.yml) finishes, so it
+  # always reads that run's freshly-committed public/data.json.
+  workflow_run:
+    workflows: ["Update industry AX briefing"]
+    types: [completed]
+  workflow_dispatch: {}
+
+jobs:
+  export:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pin to the exact commit the source workflow produced (not just "main"
+      # at whatever moment this job happens to start), so the data.json read
+      # below is guaranteed to be that run's output.
+      - name: Checkout korea-industry-ax
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Checkout AX vault
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.VAULT_REPO }}
+          ssh-key: ${{ secrets.VAULT_DEPLOY_KEY }}
+          path: vault
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install trafilatura (full mode only)
+        if: ${{ (vars.EXPORT_MODE || 'summary') == 'full' }}
+        run: pip install trafilatura
+
+      - name: Export published articles to vault
+        run: python scripts/export_to_vault.py --data public/data.json --vault-dir vault
+        env:
+          EXPORT_MODE: ${{ vars.EXPORT_MODE || 'summary' }}
+
+      - name: Commit and push to vault
+        working-directory: vault
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add AX뉴스
+          git diff --staged --quiet || git commit -m "AX 뉴스 export $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase
+          git push

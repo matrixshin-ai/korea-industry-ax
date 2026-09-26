@@ -1,0 +1,193 @@
+"""
+public/data.json -> per-article Markdown files in a separate Obsidian vault repo.
+
+Run after the main pipeline (jobs/collect.py -> classify.py -> build.py) has
+produced public/data.json. This script only reads that file - it never
+touches candidates.json/classified.json or any jobs/ code.
+
+- Reads every item under data["sections"]["1"|"2"|"3"]["items"] (build.py only
+  ever publishes grade S/A - see jobs/build.py's is_publishable - but the
+  grade is still checked here defensively rather than trusted blindly).
+- One .md file per article at:
+    AX뉴스/YYYY/YYYY-MM-DD/<sanitized title>_<sha1(url)[:8]>.md
+  under --vault-dir (a separate git checkout, not this repo). YYYY/YYYY-MM-DD
+  come from the article's own `published` field (already KST, see
+  jobs/timewindow.py).
+- Skip-if-already-exported is ID-based (the sha1(url)[:8] suffix), not
+  content-based: collect_existing_ids() walks every .md file already under
+  <vault-dir>/AX뉴스 and extracts that suffix, so an article already exported
+  on a previous run (even from a different day's data.json - the collection
+  window can re-surface the same article) is never written twice, regardless
+  of file path or title changes.
+- EXPORT_MODE env var: "summary" (default) writes the title/source-link/
+  summary already in data.json. "full" additionally fetches the article and
+  extracts its body text via trafilatura (import is lazy - only needed, and
+  only required to be installed, in full mode).
+"""
+import argparse
+import hashlib
+import json
+import os
+import re
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import yaml
+from dateutil import parser as dtparser
+
+KST = timezone(timedelta(hours=9))
+
+VAULT_SUBDIR = "AX뉴스"
+TITLE_MAX_LEN = 80
+# Windows-forbidden filename characters, plus Obsidian-special # ^ [ ] (headings/
+# block refs/wikilinks) - all removed from the title before it's used as a filename.
+_FORBIDDEN_CHARS = '<>:"/\\|?*#^[]'
+_FORBIDDEN_RE = re.compile("[" + re.escape(_FORBIDDEN_CHARS) + "]")
+_CONTROL_RE = re.compile(r"[\x00-\x1f]")
+_EXISTING_ID_RE = re.compile(r"_([0-9a-f]{8})\.md$")
+
+
+def article_id(url: str) -> str:
+    return hashlib.sha1((url or "").encode("utf-8")).hexdigest()[:8]
+
+
+def sanitize_title(title: str) -> str:
+    t = _CONTROL_RE.sub("", title or "")
+    t = _FORBIDDEN_RE.sub("", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    t = t[:TITLE_MAX_LEN].rstrip(" .")  # Windows also disallows a trailing space/dot
+    return t or "untitled"
+
+
+def published_date_parts(published: str):
+    """(YYYY, YYYY-MM-DD) from the article's own `published` field, which is
+    already KST (see jobs/timewindow.py) - no timezone conversion needed. A
+    missing/unparseable value falls back to "now" so a malformed row still
+    gets filed somewhere instead of crashing the export."""
+    try:
+        dt = dtparser.parse(published) if published else None
+    except (ValueError, TypeError, OverflowError):
+        dt = None
+    dt = dt or datetime.now(KST)
+    return dt.strftime("%Y"), dt.strftime("%Y-%m-%d")
+
+
+def collect_existing_ids(ax_root: Path) -> set:
+    ids = set()
+    if not ax_root.exists():
+        return ids
+    for p in ax_root.rglob("*.md"):
+        m = _EXISTING_ID_RE.search(p.name)
+        if m:
+            ids.add(m.group(1))
+    return ids
+
+
+def build_frontmatter(item: dict, section_label: str) -> str:
+    industry = (item.get("industry") or "").strip()
+    tags = ["AX뉴스"]
+    if section_label:
+        tags.append(section_label.replace(" ", "_"))
+    if industry:
+        tags.append(industry.replace(" ", "_"))
+    fm = {
+        "title": item.get("title", ""),
+        "date": item.get("published", ""),
+        "source": item.get("source", ""),
+        "section": section_label,
+        "grade": item.get("grade", ""),
+        "industries": [industry] if industry else [],
+        "url": item.get("link", ""),
+        "tags": tags,
+    }
+    return yaml.safe_dump(fm, allow_unicode=True, sort_keys=False, default_flow_style=False)
+
+
+def extract_full_text(url: str):
+    """Lazy-imports trafilatura so summary mode never needs it installed.
+    Returns None (not raises) on any fetch/extract failure - one article's
+    network hiccup must not fail the whole export."""
+    import trafilatura
+
+    downloaded = trafilatura.fetch_url(url)
+    if not downloaded:
+        return None
+    return trafilatura.extract(
+        downloaded,
+        include_images=False,
+        include_comments=False,
+        include_links=False,
+    )
+
+
+def build_body(item: dict, mode: str) -> str:
+    lines = [f"# {item.get('title', '')}", "", f"출처: [{item.get('source', '')}]({item.get('link', '')})", ""]
+    if mode == "full":
+        text = None
+        try:
+            text = extract_full_text(item.get("link", ""))
+        except Exception as e:  # noqa: BLE001 - one article's extraction failing must not stop the export
+            print(f"    full-text extraction failed for {item.get('link')}: {e}")
+        if text and text.strip():
+            lines.append(text.strip())
+        else:
+            lines.append("> ⚠️ 본문 추출 실패 - 요약으로 대체")
+            lines.append("")
+            lines.append(item.get("summary") or "")
+    else:
+        lines.append(item.get("summary") or "")
+    return "\n".join(lines) + "\n"
+
+
+def export_item(item: dict, section_label: str, ax_root: Path, mode: str) -> Path:
+    year, day = published_date_parts(item.get("published"))
+    title_part = sanitize_title(item.get("title", ""))
+    aid = article_id(item.get("link", ""))
+    out_dir = ax_root / year / day
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"{title_part}_{aid}.md"
+
+    content = "---\n" + build_frontmatter(item, section_label) + "---\n\n" + build_body(item, mode)
+    out_path.write_text(content, encoding="utf-8")
+    return out_path
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data", default="public/data.json", help="Path to this repo's public/data.json")
+    parser.add_argument("--vault-dir", default="vault", help="Path to the AX vault repo checkout")
+    args = parser.parse_args()
+
+    mode = os.environ.get("EXPORT_MODE", "summary").strip().lower()
+    if mode not in ("summary", "full"):
+        print(f"Unknown EXPORT_MODE={mode!r} - falling back to summary")
+        mode = "summary"
+
+    with open(args.data, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    ax_root = Path(args.vault_dir) / VAULT_SUBDIR
+    existing_ids = collect_existing_ids(ax_root)
+
+    created = skipped = 0
+    for section in data.get("sections", {}).values():
+        label = section.get("label", "")
+        for item in section.get("items", []):
+            if item.get("grade") not in ("S", "A"):
+                # Defensive only - build.py never publishes anything else
+                # (see jobs/build.py's is_publishable).
+                continue
+            aid = article_id(item.get("link", ""))
+            if aid in existing_ids:
+                skipped += 1
+                continue
+            out_path = export_item(item, label, ax_root, mode)
+            existing_ids.add(aid)
+            created += 1
+            print(f"  wrote {out_path}")
+
+    print(f"Export done (mode={mode}): {created} created, {skipped} skipped (already exported)")
+
+
+if __name__ == "__main__":
+    main()
