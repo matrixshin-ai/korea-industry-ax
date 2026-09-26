@@ -193,6 +193,43 @@ def test_compute_yield_log_ignores_items_without_origin():
     assert result == {"rss": {}, "naver": {}}
 
 
+def test_channel_counts_splits_rss_naver_unknown():
+    items = [
+        {"collected_via": "rss"}, {"collected_via": "rss"},
+        {"collected_via": "naver"},
+        {"collected_via": "something_else"}, {},
+    ]
+    assert build._channel_counts(items) == {"rss": 2, "naver": 1, "unknown": 2}
+
+
+def test_build_main_reports_candidates_and_published_by_channel(tmp_path, monkeypatch):
+    now = datetime.now(timezone.utc)
+    recent = _iso(now - timedelta(hours=1))
+    classified = [
+        {"title": "RSS로 온 S등급", "link": "https://a.example.com/1", "source": "매체", "summary": "",
+         "published": recent, "grade": "S", "section": 1, "region": "울산", "loc": None,
+         "ulsan_score": 10, "industry": "조선", "tech": [], "core": 1, "collected_via": "rss"},
+        {"title": "네이버로 온 A등급", "link": "https://b.example.com/2", "source": "매체", "summary": "",
+         "published": recent, "grade": "A", "section": 2, "region": "전국", "loc": None,
+         "ulsan_score": 0, "industry": "기타", "tech": [], "core": 0, "collected_via": "naver"},
+        {"title": "네이버로 온 X등급", "link": "https://c.example.com/3", "source": "매체", "summary": "",
+         "published": recent, "grade": "X", "section": None, "region": None, "loc": None,
+         "ulsan_score": 0, "industry": None, "tech": [], "core": 0, "collected_via": "naver"},
+    ]
+    data_path = _setup_main(tmp_path, monkeypatch, classified)
+
+    build.main()
+
+    result = json.loads(data_path.read_text(encoding="utf-8"))
+    stats = result["stats"]
+    assert stats["candidates_by_channel"] == {"rss": 1, "naver": 2, "unknown": 0}
+    assert stats["published_by_channel"] == {"rss": 1, "naver": 1, "unknown": 0}
+    # collected_via is internal-only, like origin_feed/origin_query - must not leak.
+    for section in result["sections"].values():
+        for it in section["items"]:
+            assert "collected_via" not in it
+
+
 def test_build_main_writes_yield_log(tmp_path, monkeypatch):
     now = datetime.now(timezone.utc)
     recent = _iso(now - timedelta(hours=1))

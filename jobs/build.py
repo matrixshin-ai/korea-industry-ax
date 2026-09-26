@@ -36,7 +36,11 @@ classified.json -> public/data.json
    llm_dedup pass) - added 2026-09-26 so a run's total cost and merge
    activity are visible without re-parsing `related` arrays or hunting
    across log files. stats.llm_dedup.ran distinguishes "pass skipped
-   (no API key)" from "pass ran, found nothing to merge".
+   (no API key)" from "pass ran, found nothing to merge". Also
+   candidates_by_channel/published_by_channel ({"rss"/"naver"/"unknown": n},
+   from each candidate's collect.py-assigned `collected_via`) - this run's
+   and every future run's candidate/publish split by collection channel,
+   not reconstructable after the fact once collected_via is stripped below.
 9. Write logs/yield_YYYYMMDD_HHMM.json: per-RSS-feed and per-Naver-query
    candidate counts and S/A counts (each candidate's own grade, before any
    dedup merging) - for a manual look after a week of runs at which sources
@@ -120,6 +124,19 @@ def compute_yield_log(classified):
     return {"rss": rss, "naver": naver}
 
 
+def _channel_counts(items):
+    """{"rss": n, "naver": n, "unknown": n} by each item's `collected_via`
+    (set in collect.py) - "unknown" catches anything missing the field
+    (shouldn't happen for real candidates, but a test fixture or a malformed
+    row shouldn't crash this). Requirement 0 (2026-09-26): report candidates
+    and published articles by collection channel."""
+    counts = {"rss": 0, "naver": 0, "unknown": 0}
+    for it in items:
+        via = it.get("collected_via")
+        counts[via if via in ("rss", "naver") else "unknown"] += 1
+    return counts
+
+
 def _all_members(item):
     """Flatten item + any nested `related` members (from either dedup pass)
     into one flat list - a merged group can be nested one or two levels deep
@@ -199,6 +216,8 @@ def main():
 
     hours = get_collection_hours()
 
+    candidates_by_channel = _channel_counts(classified)
+
     graded = [c for c in classified if c.get("grade") in GRADES]
     dropped_unclassified = len(classified) - len(graded)
 
@@ -268,6 +287,8 @@ def main():
     capped = valid[:DAILY_CAP]
     dropped_over_cap = len(valid) - len(capped)
 
+    published_by_channel = _channel_counts(capped)  # before collected_via is popped below
+
     sections = {"1": [], "2": [], "3": []}
     for item in capped:  # already in final order - per-section lists stay sorted
         sections[str(item["section"])].append(item)
@@ -322,6 +343,8 @@ def main():
             "rule_capped": sum(1 for c in classified if c.get("rule_capped_from")),
             "llm_dedup": llm_dedup_log,
             "published_grade_counts": grade_counts,
+            "candidates_by_channel": candidates_by_channel,
+            "published_by_channel": published_by_channel,
             "published_merged_group_count": published_merged_group_count,
             "published_related_item_count": published_related_item_count,
             "classify_cost_usd": round(classify_cost, 4),
@@ -356,6 +379,8 @@ def main():
     print(f"  grades: S={grade_counts.get('S', 0)} A={grade_counts.get('A', 0)}")
     print(f"  merge groups: {published_merged_group_count} (of {len(capped)} published, "
           f"{published_related_item_count} related items folded in)")
+    print(f"  channel: candidates rss={candidates_by_channel['rss']} naver={candidates_by_channel['naver']}, "
+          f"published rss={published_by_channel['rss']} naver={published_by_channel['naver']}")
     print(f"  llm_dedup: ran={llm_dedup_log['ran']} chunks={llm_dedup_log['chunk_count']} "
           f"cost=${llm_dedup_log['estimated_cost_usd']}")
     print(f"  cost: classify=${round(classify_cost, 4)} llm_dedup=${round(llm_dedup_cost, 4)} "

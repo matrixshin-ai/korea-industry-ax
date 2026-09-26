@@ -20,6 +20,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Fails the whole run immediately if a required secret is unset/empty,
+      # instead of letting collect.py/classify.py/build.py silently degrade
+      # (skip Naver, leave candidates unclassified, skip the llm_dedup merge
+      # pass) with no failure signal - that silent-degradation path is
+      # exactly how the "Build public/data.json" step ran two full days
+      # without ANTHROPIC_API_KEY (added 2026-09-26 as a fix for the outage,
+      # not a secret being unset) before anyone noticed. Reads secrets into
+      # env vars rather than interpolating `${{ secrets.X }}` directly into
+      # the script, per GitHub's guidance for referencing secrets in `run:`.
+      - name: Verify required secrets are configured
+        run: |
+          missing=()
+          [ -z "$NAVER_CLIENT_ID" ] && missing+=(NAVER_CLIENT_ID)
+          [ -z "$NAVER_CLIENT_SECRET" ] && missing+=(NAVER_CLIENT_SECRET)
+          [ -z "$ANTHROPIC_API_KEY" ] && missing+=(ANTHROPIC_API_KEY)
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required repository secret(s): ${missing[*]} - set them in Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+          echo "All required secrets (NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, ANTHROPIC_API_KEY) are present."
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

@@ -122,10 +122,37 @@ python -m http.server 8000 --directory public   # http://localhost:8000
       $0(미실행) → 이번 실행 총 $0.2851. 워크플로 수정 후 다음 실행부터는
       `total_estimated_cost_usd`로 매번 자동 기록됨.
     - pytest: 92개 전부 통과(신규 커버리지 2건 포함).
+- 2026-09-26 (같은 날, 세 번째 점검 — 네이버 수집 검증 + 시크릿 전수 점검):
+  - **네이버 수집 확인**: run #2에서 정상 작동. `logs/run_20260926_1521.json`:
+    `naver.attempted=true`, 쿼리 56개·126콜, 후보 1,428건(RSS 530건, URL 중복 제거 후
+    합계 1,912건). RSS 피드 26개 전부 `status: ok`(설정된 26개 전부), 네이버 쿼리
+    에러 0건, "울산 AI" 1건만 1,000건 상한 포화. 수집 자체는 문제 없었음.
+  - **게시 기사의 출처별(RSS/네이버) 건수는 run #2에 대해 재구성 불가**: `collected_via`
+    필드가 build.py에서 최종 게시 직전에 제거되고, 그 중간 산출물(`classified.json`)은
+    커밋 대상이 아니라서 이미 사라짐. `public/data.json`이나 로그 어디에도 남아있지
+    않음 — 이번 실행분은 정확한 수치를 보고할 수 없음(등급별 카운트만 있었음).
+  - **수정**: `build.py`에 `stats.candidates_by_channel`/`stats.published_by_channel`
+    ({"rss"/"naver"/"unknown": n}) 추가 — `_channel_counts()`가 최종 게시 직전(pop 전)
+    `collected_via`를 집계. **다음 실행부터** data.json에서 바로 확인 가능.
+  - **시크릿 전수 점검**: `os.environ.get(...)`을 쓰는 곳은 collect.py(NAVER_CLIENT_ID/
+    SECRET), classify.py·build.py(ANTHROPIC_API_KEY)뿐(`dedup.py`의 `KEYWORD_RULES_JSON`은
+    비밀키 아닌 선택적 경로 오버라이드). 세 스텝 모두 이제 필요한 env를 선언 —
+    build 스텝 누락 건(위 참고) 외 다른 누락은 없었음.
+  - **워크플로에 시크릿 사전검증 스텝 추가**("Verify required secrets are configured",
+    Checkout 바로 다음): `NAVER_CLIENT_ID`/`NAVER_CLIENT_SECRET`/`ANTHROPIC_API_KEY` 중
+    하나라도 비어 있으면 즉시 `exit 1`로 워크플로 실패 처리(이전엔 스크립트들이
+    조용히 저하 모드로 동작해 이번 build 버그처럼 실패 신호 없이 넘어갈 수 있었음).
+    로컬 개발 시 키 없이 부분 실행하는 것은 각 스크립트 자체의 우아한 저하 동작으로
+    계속 지원됨(README "필요한 비밀키" 표) — 이 검증은 CI 워크플로에만 적용.
+  - pytest 94개 전부 통과(신규 커버리지 2건 추가).
+  - **수동 실행 권장**: 위 변경(사전검증 스텝, build 스텝 키, 채널별 통계) 확인을 위해
+    Actions 탭에서 "Update industry AX briefing" `Run workflow` 1회 권장. 확인 포인트:
+    (1) "Verify required secrets" 스텝 통과, (2) `stats.llm_dedup.ran=true`,
+    (3) `stats.candidates_by_channel`/`published_by_channel` 값 존재.
 - 남은 일 / 관찰 포인트:
-  - **다음 1~2회 실행에서 확인**: (1) llm_dedup이 이제 실제로 호출되는지
+  - **다음 실행에서 확인**: (1) llm_dedup이 이제 실제로 호출되는지
     (`stats.llm_dedup.ran`=true), (2) S=0이 반복되는지 — 반복되면 v4 프롬프트의
-    S 기준이 지나치게 보수적인 것으로 보고 재검토.
+    S 기준이 지나치게 보수적인 것으로 보고 재검토, (3) 채널별 통계값.
   - 1주 운영 후 `logs/yield_*.json`으로 저수율 RSS·검색어 정리 ("산업 AI" 검색어는 1,000건 상한 포화).
   - 규칙 상한(`rule_capped`)과 금융 필터 탈락 건수를 로그로 보며 오탈락 여부 점검.
   - 2026-09-26: GitHub 공개 저장소 생성·push 완료. Actions Secrets 등록·Vercel 연결은 아직 (README 참고).
