@@ -8,8 +8,9 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
 - 울산 중심 전국 산업 AX(AI 전환) 뉴스 공개 웹앱.
 - 독자: 중앙정부·울산시 정책 담당자, 울산 산업 AX 자문 전문가.
 - 판단 기준: "AI 도입이 실질적인가"가 아니라 "울산의 정책 판단에 쓸모가 있는가".
-- 로컬 폴더 `%USERPROFILE%\korea-industry-ax`, **로컬 git만 사용, push 안 함** (원격 없음,
-  브랜치 `master`. 워크플로는 `main`을 가정하므로 사용자가 push할 때 `git branch -M main`).
+- 로컬 폴더 `%USERPROFILE%\korea-industry-ax`, 원격 `origin` =
+  https://github.com/matrixshin-ai/korea-industry-ax (**공개 저장소**, 브랜치 `main`).
+  push는 사용자가 지시할 때만. 공개 저장소이므로 비밀키·.env·캐시가 커밋되지 않게 주의.
 - 원본 `ulsan-economy-dashboard`는 **절대 수정 금지** (dedup.py 등은 그쪽 코드를 참고해 복사한 것).
 
 ## 확정된 설계
@@ -80,4 +81,4 @@ python -m http.server 8000 --directory public   # http://localhost:8000
 - 남은 일 / 관찰 포인트:
   - 1주 운영 후 `logs/yield_*.json`으로 저수율 RSS·검색어 정리 ("산업 AI" 검색어는 1,000건 상한 포화).
   - 규칙 상한(`rule_capped`)과 금융 필터 탈락 건수를 로그로 보며 오탈락 여부 점검.
-  - GitHub push·Secrets·Vercel 연결은 아직 안 함 (README 참고).
+  - 2026-09-26: GitHub 공개 저장소 생성·push 완료. Actions Secrets 등록·Vercel 연결은 아직 (README 참고).
