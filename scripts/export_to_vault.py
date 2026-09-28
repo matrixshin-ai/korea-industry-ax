@@ -94,6 +94,14 @@ def latest_published(data: dict) -> str:
                 dt = dtparser.parse(raw)
             except (ValueError, TypeError, OverflowError):
                 continue
+            if dt.tzinfo is None:
+                # A naive value (no offset in the string) would otherwise
+                # blow up the `>` comparison below against an aware one
+                # (TypeError: can't compare offset-naive and offset-aware
+                # datetimes) - every `published` value is meant to be KST
+                # already (see jobs/timewindow.py), so that's the safe
+                # assumption for the rare naive one.
+                dt = dt.replace(tzinfo=KST)
             if latest_dt is None or dt > latest_dt:
                 latest_dt = dt
                 latest_raw = raw

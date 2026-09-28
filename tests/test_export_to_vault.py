@@ -182,6 +182,23 @@ def test_latest_published_no_items_returns_none():
     assert evt.latest_published({"sections": {"1": {"items": []}}}) is None
 
 
+def test_latest_published_handles_mixed_naive_and_aware_timestamps():
+    # A `published` value with no UTC offset (dateutil parses it as naive) must
+    # not crash the comparison against an aware one - this is what broke the
+    # 2026-09-28 verification run (TypeError: can't compare offset-naive and
+    # offset-aware datetimes), coming from a real RSS feed's date format.
+    data = {"sections": {"1": {"items": [
+        {"published": "2026-09-27T08:00:00"},  # naive - no offset
+        {"published": "2026-09-28T09:00:00+09:00"},  # aware
+    ]}}}
+    assert evt.latest_published(data) == "2026-09-28T09:00:00+09:00"
+
+
+def test_latest_published_naive_timestamp_alone_is_still_returned():
+    data = {"sections": {"1": {"items": [{"published": "2026-09-27T08:00:00"}]}}}
+    assert evt.latest_published(data) == "2026-09-27T08:00:00"
+
+
 def test_main_writes_github_output_when_env_var_set(tmp_path, monkeypatch):
     data = {"sections": {"1": {"label": "기업·현장", "items": [
         {"title": "기사", "published": "2026-09-28T09:00:00+09:00", "source": "매체",
