@@ -72,6 +72,43 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
   Vercel Git 연동(Root `public/`). 비밀키 이름: `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `ANTHROPIC_API_KEY`.
 - API 키 이상 징후는 사용자가 실시간으로 직접 감시함 — 키 교체·노출 문제를 다시 제기하지 말 것.
 
+### Vault export (`scripts/export_to_vault.py`, `.github/workflows/export-vault.yml`)
+- **흐름**: `Update industry AX briefing`(update.yml) 완료 → `workflow_run`(completed,
+  conclusion=success)로 `export-vault.yml` 트리거(그 run의 `head_sha`에 고정 체크아웃,
+  최신 `public/data.json`을 읽음) + `workflow_dispatch`로 수동 실행도 가능.
+- **두 개의 독립 job**(같은 트리거에서 병렬 실행, 서로 의존 없음):
+  - `export-summary`: **`matrixshin-ai/ax-vault`(public)**, `summary` 모드(data.json의
+    title/source/summary만 사용, 원문 fetch 안 함). `vars.VAULT_REPO`(저장소 지정) +
+    `secrets.VAULT_DEPLOY_KEY`(SSH 인증)로 체크아웃. `EXPORT_MODE`는 `vars.EXPORT_MODE`
+    (없으면 summary 기본값).
+  - `export-full`: **`matrixshin-ai/ax-vault-full`(**private**)**, 항상 `EXPORT_MODE=full`
+    (trafilatura로 원문 전문 추출, 이미지·댓글·링크 제외). 저장소명은 이 job에 하드코딩
+    (VAULT_REPO 변수 아님, 이 job 전용) + `secrets.VAULT_FULL_DEPLOY_KEY`(SSH 인증).
+  - 출력 경로 동일: `AX뉴스/YYYY/YYYY-MM-DD/<제목(80자, Windows·Obsidian 금지문자 제거)>_<sha1(url)
+    앞8자>.md`. 이미 존재하는 sha1 ID는 건너뜀(재실행해도 중복 생성 안 됨).
+- **🚫 금지사항 — public 저장소(`ax-vault`)에는 절대 `full` 모드로 내보내지 말 것.**
+  언론사 원문 전문을 public 저장소에 올리면 저작권 문제가 됨. `vars.EXPORT_MODE`를
+  `ax-vault`가 public인 동안 `full`로 바꾸지 말 것 — private 전환 후에만 검토.
+  (`ax-vault-full`은 이미 private이라 full이 안전함.)
+- **인증은 PAT가 아니라 SSH deploy key**: PAT 발급이 GitHub 화면 오류로 안 돼서 이 방식으로
+  전환. `ssh-keygen`으로 키 쌍 생성 → `gh repo deploy-key add --allow-write`로 해당 vault
+  저장소에 공개키 등록 → 개인키를 이 저장소의 Secret(`VAULT_DEPLOY_KEY`/`VAULT_FULL_DEPLOY_KEY`)
+  으로 등록 → 로컬 키 파일 삭제. 워크플로의 `actions/checkout`에는 `token` 대신
+  `ssh-key: ${{ secrets.VAULT_DEPLOY_KEY }}` 사용.
+- **빈 저장소는 checkout이 실패함**: `git ls-remote --symref ... HEAD`가 커밋이 하나도 없는
+  저장소에서는 참조할 HEAD가 없어 exit code 2로 실패(`gh repo create`만으로는 안 됨).
+  새 vault 저장소를 만들 때는 반드시 README 등으로 **초기 커밋을 먼저 만들어야** 워크플로가
+  체크아웃할 수 있음(ax-vault, ax-vault-full 둘 다 이 순서로 부트스트랩했음).
+- **`public/data.json`은 최근 게시분만 있음** — 과거 아카이브가 없어 이전에 게시됐던 기사를
+  소급해서 vault에 채워 넣을 수 없음(그 시점 이후로 `data.json`이 매일 덮어써짐). 새 vault를
+  만들 때 backfill은 그 시점에 `data.json`에 남아있는 것까지만 가능.
+- **Obsidian 쪽 설정**: 두 PC 모두 `ax-vault-full`(private)을 clone해서 Obsidian vault로 사용.
+  `ax-vault`(public, summary)는 별도로 열지 않음. 각 PC의 obsidian-git 플러그인은
+  **pull 전용으로 설정(자동 커밋 끔)** — vault 쪽에서 로컬 편집·커밋을 만들지 않고
+  GitHub Actions가 쓴 내용만 받아오는 단방향 흐름 유지.
+- **향후 검토 (2~3주 후, 대략 2026-10 중순)**: `ax-vault`(public, summary)를 계속 유지할지
+  결정. 계속 쓸모가 없다고 판단되면 `export-summary` job과 저장소를 정리.
+
 ## 로컬 실행·검증
 
 ```bash
@@ -149,6 +186,14 @@ python -m http.server 8000 --directory public   # http://localhost:8000
     Actions 탭에서 "Update industry AX briefing" `Run workflow` 1회 권장. 확인 포인트:
     (1) "Verify required secrets" 스텝 통과, (2) `stats.llm_dedup.ran=true`,
     (3) `stats.candidates_by_channel`/`published_by_channel` 값 존재.
+- 2026-09-26 (네 번째, 같은 날): **Vault export 파이프라인 추가**
+  (`scripts/export_to_vault.py` + `.github/workflows/export-vault.yml`, 기존
+  수집·분류·병합·게시 코드는 미변경). `matrixshin-ai/ax-vault`(public, summary)와
+  `matrixshin-ai/ax-vault-full`(private, full/trafilatura) 두 저장소를 SSH deploy key로
+  인증해 매일 게시된 S·A 기사를 기사당 md 1개로 자동 커밋. 상세 설계는 위
+  "Vault export" 절 참고. 수동 실행으로 두 저장소 모두 검증 완료(ax-vault 27건,
+  ax-vault-full 27건 — 후자는 trafilatura 원문 추출 확인). 신규 테스트 16개
+  (`tests/test_export_to_vault.py`) 포함 전체 pytest 통과.
 - 남은 일 / 관찰 포인트:
   - **다음 실행에서 확인**: (1) llm_dedup이 이제 실제로 호출되는지
     (`stats.llm_dedup.ran`=true), (2) S=0이 반복되는지 — 반복되면 v4 프롬프트의
@@ -156,3 +201,5 @@ python -m http.server 8000 --directory public   # http://localhost:8000
   - 1주 운영 후 `logs/yield_*.json`으로 저수율 RSS·검색어 정리 ("산업 AI" 검색어는 1,000건 상한 포화).
   - 규칙 상한(`rule_capped`)과 금융 필터 탈락 건수를 로그로 보며 오탈락 여부 점검.
   - 2026-09-26: GitHub 공개 저장소 생성·push 완료. Actions Secrets 등록·Vercel 연결은 아직 (README 참고).
+  - **2~3주 후 (대략 2026-10 중순)**: `ax-vault`(public, summary) 유지 여부 재검토 (위
+    "Vault export" 절의 향후 검토 참고).
