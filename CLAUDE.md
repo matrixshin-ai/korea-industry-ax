@@ -74,8 +74,12 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
 
 ### Vault export (`scripts/export_to_vault.py`, `.github/workflows/export-vault.yml`)
 - **흐름**: `Update industry AX briefing`(update.yml) 완료 → `workflow_run`(completed,
-  conclusion=success)로 `export-vault.yml` 트리거(그 run의 `head_sha`에 고정 체크아웃,
-  최신 `public/data.json`을 읽음) + `workflow_dispatch`로 수동 실행도 가능.
+  conclusion=success)로 `export-vault.yml` 트리거, `korea-industry-ax`는 **`ref` 고정 없이**
+  그냥 체크아웃(= 트리거 시점의 `main` 최신 — update.yml이 자기 데이터 커밋까지 다 끝낸
+  뒤에 이 이벤트가 발동하므로 항상 최신 `public/data.json`을 읽음) + `workflow_dispatch`로
+  수동 실행도 가능. (2026-09-28: `ref: github.event.workflow_run.head_sha`로 고정했다가
+  그 값이 "소스 워크플로가 시작한 시점의 커밋"이라 실제로는 하루 전 데이터를 계속
+  읽는 버그가 있었음 — 아래 진행 상태 참고, `ref` 고정을 없애 수정.)
 - **두 개의 독립 job**(같은 트리거에서 병렬 실행, 서로 의존 없음):
   - `export-summary`: **`matrixshin-ai/ax-vault`(public)**, `summary` 모드(data.json의
     title/source/summary만 사용, 원문 fetch 안 함). `vars.VAULT_REPO`(저장소 지정) +
@@ -99,6 +103,11 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
   저장소에서는 참조할 HEAD가 없어 exit code 2로 실패(`gh repo create`만으로는 안 됨).
   새 vault 저장소를 만들 때는 반드시 README 등으로 **초기 커밋을 먼저 만들어야** 워크플로가
   체크아웃할 수 있음(ax-vault, ax-vault-full 둘 다 이 순서로 부트스트랩했음).
+- **오래된 체크아웃 감지**: 각 job이 체크아웃한 커밋 SHA와 `public/data.json`의 최신 게시일을
+  로그에 출력하고, 그 최신 게시일이 오늘(KST)인데 이번 실행에서 생성된 파일이 0건이면
+  job을 실패(`exit 1`) 처리 — "성공"인데 실제로는 아무것도 안 한 상태(위 2026-09-28 버그)가
+  조용히 넘어가지 않도록 함. 단, 같은 날 재실행해서 이미 다 내보낸 뒤라면 정상적으로도
+  0건일 수 있어 그 경우엔 오탐(false positive)이 뜰 수 있음 — 의도된 트레이드오프.
 - **`public/data.json`은 최근 게시분만 있음** — 과거 아카이브가 없어 이전에 게시됐던 기사를
   소급해서 vault에 채워 넣을 수 없음(그 시점 이후로 `data.json`이 매일 덮어써짐). 새 vault를
   만들 때 backfill은 그 시점에 `data.json`에 남아있는 것까지만 가능.
@@ -194,6 +203,16 @@ python -m http.server 8000 --directory public   # http://localhost:8000
   "Vault export" 절 참고. 수동 실행으로 두 저장소 모두 검증 완료(ax-vault 27건,
   ax-vault-full 27건 — 후자는 trafilatura 원문 추출 확인). 신규 테스트 16개
   (`tests/test_export_to_vault.py`) 포함 전체 pytest 통과.
+- 2026-09-28: **export-vault.yml이 이틀째 조용히 실패**하고 있었음을 발견 — `ref:
+  github.event.workflow_run.head_sha`가 "소스 워크플로가 시작할 때의 커밋"(자기 데이터
+  커밋 이전)을 가리켜 매번 하루 전 `public/data.json`을 읽었고, 그래서 매일 "성공"인데
+  실제로는 0건 생성. `ref` 고정 제거로 수정, 재발 방지로 체크아웃 커밋 SHA·data.json
+  최신 게시일 로그 출력 + "최신 게시일=오늘인데 생성 0건"이면 job 실패 처리 추가.
+  수정 직후 검증 실행에서 두 번째 버그 발견(`latest_published()`가 naive/aware
+  datetime을 비교하다 `TypeError`로 두 job 모두 크래시 — 일부 RSS 피드의 `published`
+  값에 UTC 오프셋이 없어 발생) → naive면 KST로 간주하도록 수정. 재검증 결과 두 vault
+  모두 정상: 오늘 게시 93건 중 84건 신규 생성 + 9건은 이미 있던 것(48h 윈도우 중복,
+  정상) → skip, `Fail if...` 가드 스텝도 통과(생성>0이라 실패 안 함). pytest 117개 통과.
 - 남은 일 / 관찰 포인트:
   - **다음 실행에서 확인**: (1) llm_dedup이 이제 실제로 호출되는지
     (`stats.llm_dedup.ran`=true), (2) S=0이 반복되는지 — 반복되면 v4 프롬프트의
