@@ -23,6 +23,13 @@ touches candidates.json/classified.json or any jobs/ code.
   summary already in data.json. "full" additionally fetches the article and
   extracts its body text via trafilatura (import is lazy - only needed, and
   only required to be installed, in full mode).
+- If $GITHUB_OUTPUT is set (i.e. running as a GitHub Actions step), writes
+  created/skipped/latest_published so the workflow can fail the job when
+  data.json's newest article is from today but nothing was created - see
+  export-vault.yml's "Fail if today's articles weren't exported" step. This
+  is what catches a stale checkout (e.g. the 2026-09-28 incident: the workflow
+  pinned korea-industry-ax to a commit from before that run's own data
+  update, so it kept re-reading 2-day-old data and reported a false "success").
 """
 import argparse
 import hashlib
@@ -70,6 +77,27 @@ def published_date_parts(published: str):
         dt = None
     dt = dt or datetime.now(KST)
     return dt.strftime("%Y"), dt.strftime("%Y-%m-%d")
+
+
+def latest_published(data: dict) -> str:
+    """The most recent `published` value (raw ISO string, already KST) across
+    every item in data["sections"] - used by the CI workflow to check whether
+    today's articles were actually exported (see main()'s GITHUB_OUTPUT)."""
+    latest_dt = None
+    latest_raw = None
+    for section in data.get("sections", {}).values():
+        for item in section.get("items", []):
+            raw = item.get("published")
+            if not raw:
+                continue
+            try:
+                dt = dtparser.parse(raw)
+            except (ValueError, TypeError, OverflowError):
+                continue
+            if latest_dt is None or dt > latest_dt:
+                latest_dt = dt
+                latest_raw = raw
+    return latest_raw
 
 
 def collect_existing_ids(ax_root: Path) -> set:
@@ -166,6 +194,10 @@ def main():
     with open(args.data, "r", encoding="utf-8") as f:
         data = json.load(f)
 
+    latest = latest_published(data)
+    print(f"data.json generated_at: {data.get('generated_at', 'N/A')}")
+    print(f"data.json latest published article: {latest or 'N/A'}")
+
     ax_root = Path(args.vault_dir) / VAULT_SUBDIR
     existing_ids = collect_existing_ids(ax_root)
 
@@ -187,6 +219,18 @@ def main():
             print(f"  wrote {out_path}")
 
     print(f"Export done (mode={mode}): {created} created, {skipped} skipped (already exported)")
+
+    # Lets the CI workflow fail loudly instead of a silently-green "success"
+    # when this run actually did nothing (see .github/workflows/export-vault.yml's
+    # staleness check - this is what caught export-vault.yml reading a stale
+    # korea-industry-ax checkout on 2026-09-28: both jobs reported success
+    # while actually re-processing 2-day-old data, 0 created).
+    gh_output = os.environ.get("GITHUB_OUTPUT")
+    if gh_output:
+        with open(gh_output, "a", encoding="utf-8") as f:
+            f.write(f"created={created}\n")
+            f.write(f"skipped={skipped}\n")
+            f.write(f"latest_published={latest or ''}\n")
 
 
 if __name__ == "__main__":

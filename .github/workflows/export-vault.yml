@@ -17,13 +17,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Pin to the exact commit the source workflow produced (not just "main"
-      # at whatever moment this job happens to start), so the data.json read
-      # below is guaranteed to be that run's output.
+      # No `ref:` pin here on purpose (see the 2026-09-28 incident below) -
+      # plain checkout picks up whatever is on the default branch right now,
+      # which by the time this job starts already includes the source
+      # workflow's own data-update commit (workflow_run/completed fires only
+      # after that whole run, including its final commit+push step, is done).
+      #
+      # 2026-09-28 incident: this used to pin
+      # `ref: ${{ github.event.workflow_run.head_sha || github.sha }}`. That
+      # head_sha is the commit the SOURCE workflow started FROM, not the one
+      # it just pushed - update.yml's last step commits fresh data AFTER
+      # that SHA is already fixed. Both export jobs kept checking out
+      # yesterday's public/data.json and reported a false "success" (0 files
+      # created, matching the previous day's count exactly) with no failure
+      # signal. Fixed by dropping the pin; the "Show checked-out commit" and
+      # "Fail if today's articles weren't exported" steps below exist so a
+      # repeat of this (or anything else that ends up reading stale data)
+      # fails loudly instead of silently.
       - name: Checkout korea-industry-ax
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Show checked-out commit
+        run: |
+          echo "Checked out korea-industry-ax commit: $(git rev-parse HEAD)"
+          git log -1 --format='  %H %cI %s'
 
       - name: Checkout AX vault
         uses: actions/checkout@v4
@@ -45,6 +62,7 @@ jobs:
         run: pip install trafilatura
 
       - name: Export published articles to vault
+        id: export
         run: python scripts/export_to_vault.py --data public/data.json --vault-dir vault
         env:
           EXPORT_MODE: ${{ vars.EXPORT_MODE || 'summary' }}
@@ -59,6 +77,33 @@ jobs:
           git pull --rebase
           git push
 
+      # Guards against a repeat of the 2026-09-28 incident: if data.json's
+      # newest article is dated today (KST - the same boundary the rest of
+      # the pipeline uses, see jobs/timewindow.py) but this run created 0
+      # files, something is wrong (stale checkout, a vault-side issue, etc.)
+      # and the job should turn red instead of quietly reporting "success".
+      # Known limitation: re-running this workflow a second time on a day
+      # where everything from today was already exported by the first run
+      # will also trip this (0 created is then correct, not a bug) - that's
+      # an accepted trade-off for catching the silent-stale-data case.
+      - name: Fail if today's articles weren't exported
+        run: |
+          today_kst=$(TZ=Asia/Seoul date +%Y-%m-%d)
+          latest_date_kst=""
+          if [ -n "$LATEST_PUBLISHED" ]; then
+            latest_date_kst=$(TZ=Asia/Seoul date -d "$LATEST_PUBLISHED" +%Y-%m-%d 2>/dev/null || echo "")
+          fi
+          echo "Today (KST): $today_kst"
+          echo "data.json latest published article: ${LATEST_PUBLISHED:-N/A} (date: ${latest_date_kst:-N/A})"
+          echo "Created this run: ${CREATED:-0}"
+          if [ "$latest_date_kst" = "$today_kst" ] && [ "${CREATED:-0}" = "0" ]; then
+            echo "::error::data.json's most recent article is dated today ($today_kst KST) but this run created 0 files - export likely read stale data. Check the 'Show checked-out commit' step above."
+            exit 1
+          fi
+        env:
+          LATEST_PUBLISHED: ${{ steps.export.outputs.latest_published }}
+          CREATED: ${{ steps.export.outputs.created }}
+
   # Private full-text vault (matrixshin-ai/ax-vault-full) - always EXPORT_MODE
   # full (trafilatura-extracted article body), independent of vars.EXPORT_MODE
   # above. Repo name is hardcoded here since this job is dedicated to this one
@@ -68,10 +113,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # See export-summary's checkout step above for why there is no `ref:` pin.
       - name: Checkout korea-industry-ax
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Show checked-out commit
+        run: |
+          echo "Checked out korea-industry-ax commit: $(git rev-parse HEAD)"
+          git log -1 --format='  %H %cI %s'
 
       - name: Checkout AX vault (full)
         uses: actions/checkout@v4
@@ -92,6 +141,7 @@ jobs:
         run: pip install trafilatura
 
       - name: Export published articles to vault (full text)
+        id: export
         run: python scripts/export_to_vault.py --data public/data.json --vault-dir vault-full
         env:
           EXPORT_MODE: full
@@ -105,3 +155,23 @@ jobs:
           git diff --staged --quiet || git commit -m "AX 뉴스 export (full) $(date -u +'%Y-%m-%d %H:%M UTC')"
           git pull --rebase
           git push
+
+      # See export-summary's equivalent step above for the rationale and the
+      # known same-day-rerun limitation.
+      - name: Fail if today's articles weren't exported
+        run: |
+          today_kst=$(TZ=Asia/Seoul date +%Y-%m-%d)
+          latest_date_kst=""
+          if [ -n "$LATEST_PUBLISHED" ]; then
+            latest_date_kst=$(TZ=Asia/Seoul date -d "$LATEST_PUBLISHED" +%Y-%m-%d 2>/dev/null || echo "")
+          fi
+          echo "Today (KST): $today_kst"
+          echo "data.json latest published article: ${LATEST_PUBLISHED:-N/A} (date: ${latest_date_kst:-N/A})"
+          echo "Created this run: ${CREATED:-0}"
+          if [ "$latest_date_kst" = "$today_kst" ] && [ "${CREATED:-0}" = "0" ]; then
+            echo "::error::data.json's most recent article is dated today ($today_kst KST) but this run created 0 files - export likely read stale data. Check the 'Show checked-out commit' step above."
+            exit 1
+          fi
+        env:
+          LATEST_PUBLISHED: ${{ steps.export.outputs.latest_published }}
+          CREATED: ${{ steps.export.outputs.created }}

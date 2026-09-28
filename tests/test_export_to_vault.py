@@ -157,3 +157,55 @@ def test_main_unknown_export_mode_falls_back_to_summary(tmp_path, monkeypatch, c
     out = capsys.readouterr().out
     assert "falling back to summary" in out
     assert "mode=summary" in out
+
+
+def test_latest_published_picks_max_across_all_sections():
+    data = {
+        "sections": {
+            "1": {"items": [{"published": "2026-09-26T10:00:00+09:00"}]},
+            "2": {"items": [{"published": "2026-09-28T09:00:00+09:00"},
+                             {"published": "2026-09-27T08:00:00+09:00"}]},
+        }
+    }
+    assert evt.latest_published(data) == "2026-09-28T09:00:00+09:00"
+
+
+def test_latest_published_ignores_missing_or_unparseable_values():
+    data = {"sections": {"1": {"items": [
+        {"published": None}, {}, {"published": "not-a-date"},
+        {"published": "2026-09-27T08:00:00+09:00"},
+    ]}}}
+    assert evt.latest_published(data) == "2026-09-27T08:00:00+09:00"
+
+
+def test_latest_published_no_items_returns_none():
+    assert evt.latest_published({"sections": {"1": {"items": []}}}) is None
+
+
+def test_main_writes_github_output_when_env_var_set(tmp_path, monkeypatch):
+    data = {"sections": {"1": {"label": "기업·현장", "items": [
+        {"title": "기사", "published": "2026-09-28T09:00:00+09:00", "source": "매체",
+         "grade": "S", "industry": "조선", "link": "https://example.com/1", "summary": "요약"},
+    ]}}}
+    data_path = tmp_path / "data.json"
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+    output_path = tmp_path / "gh_output.txt"
+
+    monkeypatch.setattr(sys, "argv", ["export_to_vault.py", "--data", str(data_path), "--vault-dir", str(tmp_path / "vault")])
+    monkeypatch.delenv("EXPORT_MODE", raising=False)
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output_path))
+    evt.main()
+
+    content = output_path.read_text(encoding="utf-8")
+    assert "created=1" in content
+    assert "skipped=0" in content
+    assert "latest_published=2026-09-28T09:00:00+09:00" in content
+
+
+def test_main_no_github_output_env_does_not_create_file(tmp_path, monkeypatch):
+    data = {"sections": {"1": {"label": "기업·현장", "items": []}}}
+    data_path = tmp_path / "data.json"
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["export_to_vault.py", "--data", str(data_path), "--vault-dir", str(tmp_path / "vault")])
+    monkeypatch.delenv("GITHUB_OUTPUT", raising=False)
+    evt.main()  # must not raise despite no GITHUB_OUTPUT being set (local/manual runs)
