@@ -25,6 +25,16 @@ catches a hallucinated response that repeats an id).
 
 Only call this on the deduped, still-graded (S/A/B/C/X) set - never before
 dedup.py's algorithmic pass has already run.
+
+A malformed/truncated response for one chunk must not silently drop that
+whole chunk's worth of merges (up to MAX_CHUNK_SIZE articles) - found on
+2026-09-29 when one 200-item chunk's response failed to parse and every
+duplicate in it (a same-event story republished by ~20 outlets) went
+unmerged with zero visible error beyond a log entry nobody was watching.
+_merge_one_chunk now halves and retries on any failure, down to a floor of
+MIN_CHUNK_SPLIT_SIZE, mirroring classify.py's halve-and-retry fallback -
+smaller chunks are both less likely to trip whatever caused the failure and
+lose less work if they still do.
 """
 import json
 import os
@@ -37,6 +47,7 @@ from classify import INPUT_PRICE_PER_M, OUTPUT_PRICE_PER_M
 MODEL = "claude-haiku-4-5-20251001"
 MAX_TOKENS = 8000
 MAX_CHUNK_SIZE = 200  # requirement 3: split candidates into chunks of this size, one Haiku call per chunk
+MIN_CHUNK_SPLIT_SIZE = 20  # floor for the halve-and-retry fallback on a failed chunk
 
 SYSTEM_PROMPT = """당신은 한국어 뉴스 동일 사건 판별기입니다.
 입력은 JSON 배열이며, 각 원소는 {"i": id, "t": 제목, "s": 매체명}입니다. 이 기사
@@ -65,7 +76,11 @@ def _parse_json_array(text: str):
 
 def _merge_one_chunk(client, chunk_items: list, log: dict) -> dict:
     """Ask Haiku to partition one chunk (<= MAX_CHUNK_SIZE items) by full
-    title. Returns {absorbed_link: representative_link} for this chunk only."""
+    title. Returns {absorbed_link: representative_link} for this chunk only.
+
+    On a truncated (max_tokens) or unparseable response, halves the chunk and
+    retries recursively down to MIN_CHUNK_SPLIT_SIZE, rather than dropping the
+    whole chunk's merges (see module docstring)."""
     id_to_item = dict(enumerate(chunk_items))
     payload = [{"i": i, "t": it.get("title", ""), "s": it.get("source", "")} for i, it in id_to_item.items()]
 
@@ -78,10 +93,20 @@ def _merge_one_chunk(client, chunk_items: list, log: dict) -> dict:
         )
         log["llm_dedup_input_tokens"] = log.get("llm_dedup_input_tokens", 0) + response.usage.input_tokens
         log["llm_dedup_output_tokens"] = log.get("llm_dedup_output_tokens", 0) + response.usage.output_tokens
+
+        if response.stop_reason == "max_tokens":
+            raise ValueError(f"response truncated at max_tokens ({MAX_TOKENS})")
+
         text = "".join(b.text for b in response.content if b.type == "text")
         groups = _parse_json_array(text)
-    except Exception as e:  # noqa: BLE001 - this pass failing must not break the run
-        log.setdefault("llm_dedup_errors", []).append(str(e))
+    except Exception as e:  # noqa: BLE001 - a bad chunk must not stop the run
+        if len(chunk_items) > MIN_CHUNK_SPLIT_SIZE:
+            mid = len(chunk_items) // 2
+            log.setdefault("split_retries", []).append({"original_size": len(chunk_items), "error": str(e)})
+            merge_map = _merge_one_chunk(client, chunk_items[:mid], log)
+            merge_map.update(_merge_one_chunk(client, chunk_items[mid:], log))
+            return merge_map
+        log.setdefault("llm_dedup_errors", []).append({"chunk_size": len(chunk_items), "error": str(e)})
         return {}
 
     merge_map = {}

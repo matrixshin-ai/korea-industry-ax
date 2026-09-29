@@ -1,3 +1,4 @@
+import json
 from unittest.mock import MagicMock
 
 import llm_dedup
@@ -100,6 +101,82 @@ def test_llm_merge_candidates_splits_into_chunks_of_max_chunk_size(monkeypatch):
     assert merge_map == {}
     assert log["chunk_count"] == 3  # ceil(5/2)
     assert client.messages.create.call_count == 3
+
+
+def test_llm_merge_candidates_splits_and_retries_on_malformed_response():
+    # 2026-09-29 incident: a chunk's response fails to parse - instead of
+    # losing that whole chunk's merges, halve it and retry. Simulate 24 items
+    # (all the same event, so every group of them should merge into one) with
+    # the full-size call returning malformed JSON, and both halves succeeding.
+    items = [_article(f"삼성 6개사, 헬릭스에 10억달러 투자 {i}",
+                       f"https://x.example.com/{i}", f"매체{i}") for i in range(24)]
+    call_sizes = []
+
+    def fake_create(**kwargs):
+        payload = json.loads(kwargs["messages"][0]["content"])
+        call_sizes.append(len(payload))
+        if len(payload) == 24:
+            return _text_response("이것은 잘못된 JSON입니다")
+        ids = [item["i"] for item in payload]
+        return _text_response(json.dumps([ids]))
+
+    client = MagicMock()
+    client.messages.create.side_effect = fake_create
+
+    log = {}
+    merge_map = llm_dedup.llm_merge_candidates(client, items, log)
+
+    assert call_sizes == [24, 12, 12]  # 1 failed full attempt + 2 successful half-size attempts
+    assert len(log["split_retries"]) == 1
+    assert "llm_dedup_errors" not in log
+    # Both halves fully merged internally (12 items -> 1 rep + 11 absorbed each half).
+    assert len(merge_map) == 22
+
+
+def test_llm_merge_candidates_gives_up_at_floor_size_after_repeated_failure():
+    items = [_article(f"기사{i}", f"https://x.example.com/{i}", "매체") for i in range(21)]
+    client = MagicMock()
+    client.messages.create.return_value = _text_response("항상 잘못된 응답")
+
+    log = {}
+    merge_map = llm_dedup.llm_merge_candidates(client, items, log)
+
+    assert merge_map == {}
+    # 21 splits to 10+11 (both <= MIN_CHUNK_SPLIT_SIZE=20) - no further splitting,
+    # each logs its own final failure.
+    assert len(log["llm_dedup_errors"]) == 2
+    assert len(log["split_retries"]) == 1
+
+
+def test_llm_merge_candidates_truncated_max_tokens_response_triggers_retry():
+    items = [_article(f"기사{i}", f"https://x.example.com/{i}", "매체") for i in range(30)]
+
+    def fake_create(**kwargs):
+        payload = json.loads(kwargs["messages"][0]["content"])
+        if len(payload) == 30:
+            return _text_response('[[0', usage_in=100, usage_out=50)  # will be marked truncated below
+        ids = [item["i"] for item in payload]
+        return _text_response(json.dumps([ids]))
+
+    client = MagicMock()
+    client.messages.create.side_effect = fake_create
+    # Patch stop_reason per-call: only the first (full-size) response is "max_tokens".
+    original_side_effect = client.messages.create.side_effect
+
+    def fake_create_with_stop_reason(**kwargs):
+        response = original_side_effect(**kwargs)
+        payload = json.loads(kwargs["messages"][0]["content"])
+        response.stop_reason = "max_tokens" if len(payload) == 30 else "end_turn"
+        return response
+
+    client.messages.create.side_effect = fake_create_with_stop_reason
+
+    log = {}
+    merge_map = llm_dedup.llm_merge_candidates(client, items, log)
+
+    assert len(log["split_retries"]) == 1
+    assert "max_tokens" in log["split_retries"][0]["error"]
+    assert len(merge_map) == 28  # both 15-item halves fully merged internally
 
 
 def test_llm_merge_candidates_ignores_duplicate_id_across_groups_in_one_response():
