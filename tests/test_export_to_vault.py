@@ -44,17 +44,45 @@ def test_published_date_parts_missing_value_falls_back_to_now():
     assert len(day) == 10
 
 
-def test_collect_existing_ids_finds_ids_from_nested_files(tmp_path):
+def test_collect_existing_files_finds_ids_from_nested_files(tmp_path):
     ax_root = tmp_path / "AX뉴스"
     (ax_root / "2026" / "2026-09-26").mkdir(parents=True)
-    (ax_root / "2026" / "2026-09-26" / "기사_a6046ebe.md").write_text("x", encoding="utf-8")
-    (ax_root / "2026" / "2026-09-25" / "다른기사_14e0c0d1.md").parent.mkdir(parents=True, exist_ok=True)
-    (ax_root / "2026" / "2026-09-25" / "다른기사_14e0c0d1.md").write_text("y", encoding="utf-8")
-    assert evt.collect_existing_ids(ax_root) == {"a6046ebe", "14e0c0d1"}
+    p1 = ax_root / "2026" / "2026-09-26" / "기사_a6046ebe.md"
+    p1.write_text("x", encoding="utf-8")
+    (ax_root / "2026" / "2026-09-25").mkdir(parents=True, exist_ok=True)
+    p2 = ax_root / "2026" / "2026-09-25" / "다른기사_14e0c0d1.md"
+    p2.write_text("y", encoding="utf-8")
+    result = evt.collect_existing_files(ax_root)
+    assert result == {"a6046ebe": p1, "14e0c0d1": p2}
 
 
-def test_collect_existing_ids_missing_dir_returns_empty_set(tmp_path):
-    assert evt.collect_existing_ids(tmp_path / "does_not_exist") == set()
+def test_collect_existing_files_missing_dir_returns_empty_dict():
+    assert evt.collect_existing_files(Path("/does/not/exist")) == {}
+
+
+def test_collect_absorbed_ids_gathers_every_related_links_id():
+    data = {"sections": {
+        "1": {"items": [
+            {"link": "https://a.example.com/1", "related": [
+                {"source": "매체", "link": "https://b.example.com/2"},
+                {"source": "매체", "link": "https://c.example.com/3"},
+            ]},
+        ]},
+        "2": {"items": [
+            {"link": "https://d.example.com/4", "related": []},
+        ]},
+    }}
+    result = evt.collect_absorbed_ids(data)
+    assert result == {evt.article_id("https://b.example.com/2"), evt.article_id("https://c.example.com/3")}
+    # The top-level representative's own id, and an id from an item with no
+    # related, must not be swept in.
+    assert evt.article_id("https://a.example.com/1") not in result
+    assert evt.article_id("https://d.example.com/4") not in result
+
+
+def test_collect_absorbed_ids_no_related_anywhere_returns_empty_set():
+    data = {"sections": {"1": {"items": [{"link": "https://a.example.com/1", "related": []}]}}}
+    assert evt.collect_absorbed_ids(data) == set()
 
 
 def test_build_frontmatter_includes_requested_fields_and_replaces_spaces_in_tags():
@@ -145,6 +173,89 @@ def test_main_skips_items_not_graded_s_or_a_and_writes_only_publishable(tmp_path
     assert "S등급" in written[0].name
     out = capsys.readouterr().out
     assert "1 created, 0 skipped" in out
+
+
+def test_main_removes_file_for_article_absorbed_into_related(tmp_path, monkeypatch, capsys):
+    # The article at https://b.example.com/2 was exported on a previous run
+    # as its own card; today's data.json shows it folded into
+    # https://a.example.com/1's `related` (e.g. a merge-rule fix caught it
+    # after the fact) - its old file must be deleted, not left stale.
+    absorbed_link = "https://b.example.com/2"
+    absorbed_id = evt.article_id(absorbed_link)
+    data = {
+        "sections": {
+            "1": {"label": "기업·현장", "items": [
+                {"title": "대표 기사", "published": "2026-09-30T09:00:00+09:00", "source": "매체A",
+                 "grade": "A", "industry": "조선", "link": "https://a.example.com/1", "summary": "요약",
+                 "related": [{"source": "매체B", "link": absorbed_link}]},
+            ]},
+        }
+    }
+    data_path = tmp_path / "data.json"
+    data_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    vault_dir = tmp_path / "vault"
+    stale_dir = vault_dir / "AX뉴스" / "2026" / "2026-09-29"
+    stale_dir.mkdir(parents=True)
+    stale_path = stale_dir / f"흡수될 기사_{absorbed_id}.md"
+    stale_path.write_text("old content", encoding="utf-8")
+    # An unrelated existing file (different id) must survive untouched.
+    keep_path = stale_dir / "무관한 기사_ffffffff.md"
+    keep_path.write_text("keep me", encoding="utf-8")
+
+    monkeypatch.setattr(sys, "argv", ["export_to_vault.py", "--data", str(data_path), "--vault-dir", str(vault_dir)])
+    monkeypatch.delenv("EXPORT_MODE", raising=False)
+    monkeypatch.delenv("GITHUB_OUTPUT", raising=False)
+    evt.main()
+
+    assert not stale_path.exists()
+    assert keep_path.exists()
+    out = capsys.readouterr().out
+    assert "1 removed" in out
+    assert "removed (absorbed into another article's related)" in out
+
+
+def test_main_writes_removed_count_to_github_output(tmp_path, monkeypatch):
+    absorbed_link = "https://b.example.com/2"
+    absorbed_id = evt.article_id(absorbed_link)
+    data = {"sections": {"1": {"label": "기업·현장", "items": [
+        {"title": "대표 기사", "published": "2026-09-30T09:00:00+09:00", "source": "매체A",
+         "grade": "A", "industry": "조선", "link": "https://a.example.com/1", "summary": "요약",
+         "related": [{"source": "매체B", "link": absorbed_link}]},
+    ]}}}
+    data_path = tmp_path / "data.json"
+    data_path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    vault_dir = tmp_path / "vault"
+    stale_dir = vault_dir / "AX뉴스" / "2026" / "2026-09-29"
+    stale_dir.mkdir(parents=True)
+    (stale_dir / f"흡수될 기사_{absorbed_id}.md").write_text("old", encoding="utf-8")
+    output_path = tmp_path / "gh_output.txt"
+
+    monkeypatch.setattr(sys, "argv", ["export_to_vault.py", "--data", str(data_path), "--vault-dir", str(vault_dir)])
+    monkeypatch.delenv("EXPORT_MODE", raising=False)
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output_path))
+    evt.main()
+
+    assert "removed=1" in output_path.read_text(encoding="utf-8")
+
+
+def test_main_leaves_files_alone_when_id_not_in_data_json_at_all(tmp_path, monkeypatch):
+    # An id that's neither top-level nor related in today's data.json (e.g.
+    # it simply aged out of the collection window) must be left untouched -
+    # only a confirmed "now related elsewhere" triggers deletion.
+    data = {"sections": {"1": {"label": "기업·현장", "items": []}}}
+    data_path = tmp_path / "data.json"
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+    vault_dir = tmp_path / "vault"
+    stale_dir = vault_dir / "AX뉴스" / "2026" / "2026-09-20"
+    stale_dir.mkdir(parents=True)
+    old_path = stale_dir / "오래된 기사_deadbeef.md"
+    old_path.write_text("old", encoding="utf-8")
+
+    monkeypatch.setattr(sys, "argv", ["export_to_vault.py", "--data", str(data_path), "--vault-dir", str(vault_dir)])
+    monkeypatch.delenv("EXPORT_MODE", raising=False)
+    evt.main()
+
+    assert old_path.exists()
 
 
 def test_main_unknown_export_mode_falls_back_to_summary(tmp_path, monkeypatch, capsys):

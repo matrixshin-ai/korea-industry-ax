@@ -14,11 +14,24 @@ touches candidates.json/classified.json or any jobs/ code.
   come from the article's own `published` field (already KST, see
   jobs/timewindow.py).
 - Skip-if-already-exported is ID-based (the sha1(url)[:8] suffix), not
-  content-based: collect_existing_ids() walks every .md file already under
+  content-based: collect_existing_files() walks every .md file already under
   <vault-dir>/AX뉴스 and extracts that suffix, so an article already exported
   on a previous run (even from a different day's data.json - the collection
   window can re-surface the same article) is never written twice, regardless
   of file path or title changes.
+- Absorbed-article cleanup (2026-09-30): an article previously exported as
+  its own top-level card can later get merged into another article's
+  `related` list (jobs/build.py's dedup - e.g. a same-event duplicate that
+  a fixed/relaxed merge rule now catches, as happened with the 2026-09-29
+  "삼성 6개사 ... 헬릭스" duplication). When that happens, this run's
+  data.json no longer carries it as its own item - it's a
+  {"source","link"} entry nested under someone else's `related`. Every run
+  collects every such related link's id and deletes any existing file whose
+  id matches (collect_absorbed_ids()), so the vault never keeps a stale
+  standalone card for an article that's since been folded into another
+  one's related list. An id absent from data.json entirely (neither
+  top-level nor related - e.g. simply aged out of the collection window) is
+  left alone; only a confirmed "now it's related elsewhere" is removed.
 - EXPORT_MODE env var: "summary" (default) writes the title/source-link/
   summary already in data.json. "full" additionally fetches the article and
   extracts its body text via trafilatura (import is lazy - only needed, and
@@ -108,14 +121,30 @@ def latest_published(data: dict) -> str:
     return latest_raw
 
 
-def collect_existing_ids(ax_root: Path) -> set:
-    ids = set()
+def collect_existing_files(ax_root: Path) -> dict:
+    """{id: Path} for every already-exported .md file under ax_root, keyed by
+    the sha1(url)[:8] suffix embedded in its filename."""
+    files = {}
     if not ax_root.exists():
-        return ids
+        return files
     for p in ax_root.rglob("*.md"):
         m = _EXISTING_ID_RE.search(p.name)
         if m:
-            ids.add(m.group(1))
+            files[m.group(1)] = p
+    return files
+
+
+def collect_absorbed_ids(data: dict) -> set:
+    """ids of every article that appears in *someone else's* `related` list
+    in this data.json - i.e. no longer published as its own top-level card.
+    Used to delete any existing file for one of these (see module docstring)."""
+    ids = set()
+    for section in data.get("sections", {}).values():
+        for item in section.get("items", []):
+            for r in item.get("related", []) or []:
+                link = r.get("link", "")
+                if link:
+                    ids.add(article_id(link))
     return ids
 
 
@@ -207,7 +236,16 @@ def main():
     print(f"data.json latest published article: {latest or 'N/A'}")
 
     ax_root = Path(args.vault_dir) / VAULT_SUBDIR
-    existing_ids = collect_existing_ids(ax_root)
+    existing_files = collect_existing_files(ax_root)
+    existing_ids = set(existing_files.keys())
+
+    removed = 0
+    for aid in collect_absorbed_ids(data) & existing_ids:
+        path = existing_files[aid]
+        path.unlink()
+        existing_ids.discard(aid)
+        removed += 1
+        print(f"  removed (absorbed into another article's related): {path}")
 
     created = skipped = 0
     for section in data.get("sections", {}).values():
@@ -226,7 +264,8 @@ def main():
             created += 1
             print(f"  wrote {out_path}")
 
-    print(f"Export done (mode={mode}): {created} created, {skipped} skipped (already exported)")
+    print(f"Export done (mode={mode}): {created} created, {skipped} skipped (already exported), "
+          f"{removed} removed (absorbed into another article's related)")
 
     # Lets the CI workflow fail loudly instead of a silently-green "success"
     # when this run actually did nothing (see .github/workflows/export-vault.yml's
@@ -238,6 +277,7 @@ def main():
         with open(gh_output, "a", encoding="utf-8") as f:
             f.write(f"created={created}\n")
             f.write(f"skipped={skipped}\n")
+            f.write(f"removed={removed}\n")
             f.write(f"latest_published={latest or ''}\n")
 
 

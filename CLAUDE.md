@@ -111,6 +111,13 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
     (VAULT_REPO 변수 아님, 이 job 전용) + `secrets.VAULT_FULL_DEPLOY_KEY`(SSH 인증).
   - 출력 경로 동일: `AX뉴스/YYYY/YYYY-MM-DD/<제목(80자, Windows·Obsidian 금지문자 제거)>_<sha1(url)
     앞8자>.md`. 이미 존재하는 sha1 ID는 건너뜀(재실행해도 중복 생성 안 됨).
+  - **흡수된 기사 삭제(2026-09-30)**: 예전에 독립 카드로 내보낸 기사가 이후 실행에서
+    다른 기사의 `related`로 흡수되면(사건 병합 규칙이 나중에 고쳐져서 뒤늦게 하나로
+    묶이는 경우 등) 그 기사의 md 파일을 두 vault에서 삭제. `collect_absorbed_ids()`가
+    이번 data.json의 모든 `related` 링크의 id를 모아, 기존에 내보낸 파일 중 그 id와
+    일치하는 것만 지움 — data.json에 아예 없는 id(수집 기간이 지나서 빠진 것 등)는
+    건드리지 않음. **주의**: obsidian-git이 pull-only(자동 커밋 끔)이므로 vault
+    쪽에서 이 md를 로컬에서 편집해뒀더라도 다음 pull에서 사라질 수 있음.
 - **🚫 금지사항 — public 저장소(`ax-vault`)에는 절대 `full` 모드로 내보내지 말 것.**
   언론사 원문 전문을 public 저장소에 올리면 저작권 문제가 됨. `vars.EXPORT_MODE`를
   `ax-vault`가 public인 동안 `full`로 바꾸지 말 것 — private 전환 후에만 검토.
