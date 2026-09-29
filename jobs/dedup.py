@@ -234,38 +234,55 @@ def _extract_policy_names(text: str) -> Set[str]:
     return policies
 
 
+NO_ORG_TITLE_SIM_THRESHOLD = 0.5  # requirement 1 (2026-09-29): relaxed gate below
+
 def _check_gate_conditions(item_a: dict, item_b: dict) -> Tuple[bool, str]:
     """
     Check strong signal gate conditions (D-1).
     Returns (passed, reason) tuple.
-    
-    Gate requires: organization match + one of (number/quote/policy) match.
+
+    Gate requires: organization match + one of (number/quote/policy) match -
+    OR (requirement 1, 2026-09-29), when there's no organization match at
+    all: the same amount/number token in both AND title similarity clears
+    NO_ORG_TITLE_SIM_THRESHOLD (0.5 - well above the normal title_threshold
+    used later in deduplicate_articles, 0.20 by default). This exists
+    because ORGANIZATIONS is a fixed, necessarily-incomplete list (e.g. it
+    took the 2026-09-29 "삼성 6개사, ... 헬릭스에 10억달러 투자" duplication
+    - 22 near-identical titles that shared no listed org string - to notice
+    "삼성" alone was missing) - a shared specific number plus a strict title
+    bar is a second, independent signal that doesn't depend on that list
+    being complete, at the cost of requiring a much higher title match than
+    the org-gated path does.
     """
     text_a = _get_combined_text(item_a)
     text_b = _get_combined_text(item_b)
-    
+
     orgs_a = _extract_organizations(text_a)
     orgs_b = _extract_organizations(text_b)
     orgs_common = orgs_a & orgs_b
-    
-    if not orgs_common:
-        return False, "no_org_match"
-    
+
     nums_a = _extract_non_date_numbers(text_a)
     nums_b = _extract_non_date_numbers(text_b)
-    if nums_a & nums_b:
+    nums_common = nums_a & nums_b
+
+    if not orgs_common:
+        if nums_common and _title_similarity(item_a, item_b) >= NO_ORG_TITLE_SIM_THRESHOLD:
+            return True, "number+high_title_sim_no_org"
+        return False, "no_org_match"
+
+    if nums_common:
         return True, "org+number"
-    
+
     quotes_a = _extract_quoted_phrases(text_a)
     quotes_b = _extract_quoted_phrases(text_b)
     if quotes_a & quotes_b:
         return True, "org+quote"
-    
+
     policies_a = _extract_policy_names(text_a)
     policies_b = _extract_policy_names(text_b)
     if policies_a & policies_b:
         return True, "org+policy"
-    
+
     return False, "org_only"
 
 

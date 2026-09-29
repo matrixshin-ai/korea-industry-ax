@@ -89,6 +89,44 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
+      # A chunk that still fails after llm_dedup.py's halve-and-retry (see
+      # jobs/llm_dedup.py) means some real duplicates for that chunk likely
+      # weren't merged - stats.llm_dedup.llm_dedup_errors is the only record
+      # of that, and nobody was checking it (2026-09-29 incident). Surfacing
+      # it in the run summary makes it visible without having to know to
+      # look inside data.json.
+      - name: Warn if llm_dedup had unrecoverable chunk failures
+        run: |
+          python - <<'PYEOF'
+          import json
+          import os
+
+          with open("public/data.json", encoding="utf-8") as f:
+              data = json.load(f)
+          errors = data.get("stats", {}).get("llm_dedup", {}).get("llm_dedup_errors") or []
+
+          if not errors:
+              print("llm_dedup: no unrecoverable chunk failures.")
+          else:
+              lines = [
+                  f"### ⚠️ llm_dedup: {len(errors)}개 청크가 재시도 후에도 최종 실패",
+                  "",
+                  "해당 청크에 속한 기사들의 동일 사건 병합이 누락됐을 수 있습니다.",
+                  "",
+              ]
+              for e in errors:
+                  if isinstance(e, dict):
+                      lines.append(f"- chunk_size={e.get('chunk_size')}: {e.get('error')}")
+                  else:
+                      lines.append(f"- {e}")
+              summary = "\n".join(lines) + "\n"
+              print(summary)
+              summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+              if summary_path:
+                  with open(summary_path, "a", encoding="utf-8") as f:
+                      f.write(summary)
+          PYEOF
+
       - name: Trim old logs (keep most recent 14 - ~2 weeks of daily runs)
         run: |
           cd logs

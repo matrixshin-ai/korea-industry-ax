@@ -56,3 +56,40 @@ def test_unrelated_articles_stay_separate_with_empty_related():
 
 def test_empty_input():
     assert deduplicate_articles([]) == []
+
+
+def test_no_org_match_but_shared_number_and_high_title_similarity_still_merges():
+    # Requirement 1 (2026-09-29): ORGANIZATIONS is a fixed list and will
+    # always miss some real company name (that's exactly what happened with
+    # bare "삼성") - a fictitious company name here isolates that no-org path.
+    a = _article(
+        "그린에너지코리아 6개사, 美 AI 인프라 기업 '헬릭스'에 10억달러 투자",
+        "그린에너지코리아 계열사들이 미국 AI 인프라 기업 헬릭스에 10억달러를 투자한다.",
+        "https://h.example.com/1", "매체A",
+    )
+    b = _article(
+        "그린에너지코리아 6개사, 美 AI 인프라 기업 헬릭스에 10억달러 투자…데이터센터 생태계 참여",
+        "그린에너지코리아 계열사들이 헬릭스에 10억달러를 투자하며 AI 데이터센터 생태계에 참여한다.",
+        "https://i.example.com/2", "매체B",
+    )
+    result = deduplicate_articles([a, b])
+    assert len(result) == 1
+    assert len(result[0]["related"]) == 1
+
+
+def test_no_org_match_and_low_title_similarity_still_does_not_merge():
+    # Same shared number ("10억달러") as the pair above, but titles about
+    # unrelated topics - the relaxed path must not merge these just because
+    # a generic amount happens to coincide (guard against false positives).
+    a = _article(
+        "그린에너지코리아, 신규 사업에 10억달러 투자 검토",
+        "그린에너지코리아가 신규 사업 확대를 위해 10억달러 투자를 검토 중이다.",
+        "https://j.example.com/1", "매체A",
+    )
+    b = _article(
+        "블루오션테크, 해외 진출 위해 10억달러 규모 펀드 조성",
+        "블루오션테크가 해외 진출을 위한 10억달러 규모 펀드를 조성한다고 밝혔다.",
+        "https://k.example.com/2", "매체B",
+    )
+    result = deduplicate_articles([a, b])
+    assert len(result) == 2

@@ -46,7 +46,9 @@ from classify import INPUT_PRICE_PER_M, OUTPUT_PRICE_PER_M
 
 MODEL = "claude-haiku-4-5-20251001"
 MAX_TOKENS = 8000
-MAX_CHUNK_SIZE = 200  # requirement 3: split candidates into chunks of this size, one Haiku call per chunk
+MAX_CHUNK_SIZE = 100  # lowered from 200 on 2026-09-29 - a smaller chunk both lowers the
+# odds of hitting whatever caused the 2026-09-29 parse failure and (with the
+# halve-and-retry fallback above) loses less work per failure either way
 MIN_CHUNK_SPLIT_SIZE = 20  # floor for the halve-and-retry fallback on a failed chunk
 
 SYSTEM_PROMPT = """당신은 한국어 뉴스 동일 사건 판별기입니다.
