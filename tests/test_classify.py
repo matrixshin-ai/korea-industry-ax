@@ -346,6 +346,33 @@ def test_classify_via_batches_api_timeout_cancels_and_falls_back_to_sync():
     client.messages.create.assert_called_once()
 
 
+def test_classify_via_batches_api_results_fetch_error_falls_back_to_sync():
+    # 2026-09-29 incident: a batch that timed out AND never finished
+    # canceling in time has no results_url - client.messages.batches.results()
+    # itself raises (AnthropicError in production), which must not crash the
+    # whole run. Every group should fall back to sync instead.
+    client = MagicMock()
+    in_progress = type("B", (), {"id": "batch_3", "processing_status": "in_progress"})()
+    client.messages.batches.create.return_value = in_progress
+    client.messages.batches.retrieve.return_value = in_progress
+    client.messages.batches.results.side_effect = RuntimeError(
+        "No `results_url` for the given batch; Has it finished processing? canceling"
+    )
+    client.messages.create.return_value = _text_response('[{"i":0,"g":"X"}]')
+
+    items = [{"id": 0, "title": "t0", "summary": "s0", "source": "src"}]
+    log = {"failed_batches": []}
+
+    results = classify.classify_via_batches_api(
+        client, items, log, timeout_seconds=0.05, poll_interval=0.01, cancel_wait_seconds=0.05,
+    )
+
+    assert "batches_api_results_error" in log
+    assert log["batches_api_fallback_item_count"] == 1
+    assert results[0]["grade"] == "X"
+    client.messages.create.assert_called_once()
+
+
 def test_main_uses_cache_and_skips_api_call(tmp_path, monkeypatch):
     now = datetime.now(timezone.utc)
     candidates = [

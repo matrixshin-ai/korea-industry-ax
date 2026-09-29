@@ -23,6 +23,10 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
 ### 분류 (`jobs/classify.py`)
 - 모델 Haiku 4.5 (`claude-haiku-4-5-20251001`), Message Batches API, 배치 80건.
   90분 내 미완료분은 동기 API로, 파싱 실패·max_tokens 절단 시 절반씩 쪼개 재시도(최소 10).
+  타임아웃 후 취소한 배치가 `cancel_wait_seconds` 내에 "ended"로 안 넘어가면
+  `results_url` 자체가 없어 `client.messages.batches.results()`가 예외를 던짐 —
+  2026-09-29 실제로 발생(배치가 90분 넘게 안 끝나고 취소도 제때 안 끝남, 전체 실행
+  크래시). try/except로 감싸 그런 경우 모든 그룹을 동기 API로 폴백하도록 수정.
 - 입력은 제목·요약·매체명만 (본문 수집 안 함).
 - 출력 필드: 등급 g(S/A/B/C/X), 주제성 m(주제/부분/언급), 섹션 s(1/2/3), 지역 r(울산/타지자체/전국/해외)
   ·loc(타지자체일 때 시도명), 울산점수 u(10/8/0), 업종 ind, 기술 tech, core, 근거 e.

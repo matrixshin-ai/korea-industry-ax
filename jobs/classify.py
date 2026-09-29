@@ -561,7 +561,18 @@ def classify_via_batches_api(client, items, log, timeout_seconds=BATCH_TIMEOUT_S
             time.sleep(min(5, poll_interval))
             message_batch = client.messages.batches.retrieve(message_batch.id)
 
-    results_by_custom_id = {r.custom_id: r for r in client.messages.batches.results(message_batch.id)}
+    try:
+        batch_results = list(client.messages.batches.results(message_batch.id))
+    except Exception as e:  # noqa: BLE001 - e.g. a canceled batch that never
+        # reached "ended" has no results_url at all and raises here (found
+        # 2026-09-29: a batch that both timed out AND didn't finish
+        # canceling within cancel_wait_seconds). Every group falls back to
+        # sync below (results_by_custom_id stays empty, so the per-group
+        # loop's "else: fallback_groups.append(group)" branch catches all of
+        # them) instead of crashing the whole run.
+        log["batches_api_results_error"] = str(e)
+        batch_results = []
+    results_by_custom_id = {r.custom_id: r for r in batch_results}
 
     id_to_result = {}
     fallback_groups = []
