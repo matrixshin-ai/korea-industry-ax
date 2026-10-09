@@ -65,6 +65,11 @@ _FORBIDDEN_CHARS = '<>:"/\\|?*#^[]'
 _FORBIDDEN_RE = re.compile("[" + re.escape(_FORBIDDEN_CHARS) + "]")
 _CONTROL_RE = re.compile(r"[\x00-\x1f]")
 _EXISTING_ID_RE = re.compile(r"_([0-9a-f]{8})\.md$")
+# classify.py fields carried into the frontmatter (2026-10-10) so a downstream
+# re-index (public-ax) can filter on the web app's own 울산 judgement instead of
+# title keywords. Written only when the item has a value: None/""/[] are
+# skipped, but 0 is kept (ulsan_score 0 / core 0 are real judgements).
+_OPTIONAL_CLASSIFY_FIELDS = ("region", "loc", "ulsan_score", "core", "tech", "evidence")
 
 
 def article_id(url: str) -> str:
@@ -165,6 +170,11 @@ def build_frontmatter(item: dict, section_label: str) -> str:
         "url": item.get("link", ""),
         "tags": tags,
     }
+    for key in _OPTIONAL_CLASSIFY_FIELDS:
+        value = item.get(key)
+        if value is None or value == "" or value == []:
+            continue
+        fm[key] = value
     return yaml.safe_dump(fm, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
 

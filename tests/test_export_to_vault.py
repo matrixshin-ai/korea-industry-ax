@@ -110,6 +110,40 @@ def test_build_frontmatter_empty_industry_yields_empty_industries_and_no_extra_t
     assert fm["tags"] == ["AX뉴스", "정책"]
 
 
+def test_build_frontmatter_includes_classify_fields_when_present():
+    item = {"title": "t", "published": "", "source": "s", "grade": "S", "industry": "조선", "link": "l",
+            "region": "울산", "loc": None, "ulsan_score": 10, "core": 1,
+            "tech": ["피지컬AI", "로봇"], "evidence": "주체-AI 내용-장소"}
+    import yaml
+    fm = yaml.safe_load(evt.build_frontmatter(item, "기업·현장"))
+    assert fm["region"] == "울산"
+    assert fm["ulsan_score"] == 10
+    assert fm["core"] == 1
+    assert fm["tech"] == ["피지컬AI", "로봇"]
+    assert fm["evidence"] == "주체-AI 내용-장소"
+    assert "loc" not in fm  # None -> omitted
+
+
+def test_build_frontmatter_omits_empty_classify_fields_but_keeps_zero():
+    item = {"title": "t", "published": "", "source": "s", "grade": "A", "industry": "", "link": "l",
+            "region": "", "ulsan_score": 0, "core": 0, "tech": [], "evidence": None}
+    import yaml
+    fm = yaml.safe_load(evt.build_frontmatter(item, "정책"))
+    assert fm["ulsan_score"] == 0
+    assert fm["core"] == 0
+    for key in ("region", "loc", "tech", "evidence"):
+        assert key not in fm
+    # The original 8 fields are unchanged and still lead the frontmatter.
+    assert list(fm)[:8] == ["title", "date", "source", "section", "grade", "industries", "url", "tags"]
+
+
+def test_build_frontmatter_without_classify_fields_matches_original_8_keys():
+    item = {"title": "t", "published": "", "source": "s", "grade": "A", "industry": "기타", "link": "l"}
+    import yaml
+    fm = yaml.safe_load(evt.build_frontmatter(item, "정책"))
+    assert list(fm) == ["title", "date", "source", "section", "grade", "industries", "url", "tags"]
+
+
 def test_build_body_summary_mode_uses_title_source_link_and_summary():
     item = {"title": "제목", "source": "매체", "link": "https://example.com/1", "summary": "요약 내용"}
     body = evt.build_body(item, "summary")

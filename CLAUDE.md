@@ -145,6 +145,12 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
   GitHub Actions가 쓴 내용만 받아오는 단방향 흐름 유지.
 - **향후 검토 (2~3주 후, 대략 2026-10 중순)**: `ax-vault`(public, summary)를 계속 유지할지
   결정. 계속 쓸모가 없다고 판단되면 `export-summary` job과 저장소를 정리.
+  → **2026-10-10 결정·반영**: `ax-vault`는 폐기(private 전환 + archive). `export-summary`
+  job은 삭제하지 않고 `if: false && (...)`로 비활성화. `ax-vault-full`(export-full)만 유지.
+- **frontmatter 분류 필드 (2026-10-10)**: 기존 8개(title/date/source/section/grade/
+  industries/url/tags) 뒤에 `region`/`loc`/`ulsan_score`/`core`/`tech`/`evidence`를
+  item에 값이 있을 때만 추가(None·""·[]는 생략, 0은 유지). 공개 앵커 저장소 `public-ax`가
+  웹앱의 울산 판정으로 필터링하기 위함. 이미 내보낸 파일은 소급 갱신 안 됨(ID 기준 skip).
 
 ## 로컬 실행·검증
 

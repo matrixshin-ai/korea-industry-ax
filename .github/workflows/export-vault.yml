@@ -12,8 +12,15 @@ jobs:
   # Public vault (matrixshin-ai/ax-vault) - summary + link only, per
   # vars.EXPORT_MODE (defaults to "summary" - kept that way deliberately
   # while this vault is public; see export-full below for the private one).
+  #
+  # DISABLED 2026-10-10: matrixshin-ai/ax-vault is deprecated - switched to
+  # private and archived (read-only), so its push step would fail every run.
+  # ax-vault-full (export-full below) is the only vault kept going forward.
+  # The job is kept rather than deleted for reference; `false &&` stops it
+  # from running on both workflow_run and workflow_dispatch. Remove the
+  # `false &&` only if ax-vault is unarchived and revived.
   export-summary:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: false && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
 
     steps:
