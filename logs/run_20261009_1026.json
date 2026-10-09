@@ -1,9 +1,9 @@
 {
-  "started_at": "2026-10-06T01:53:19.667849+00:00",
+  "started_at": "2026-10-09T01:26:03.997604+00:00",
   "collection_hours": 24,
   "rss": {
     "feed_count": 26,
-    "candidates": 1091,
+    "candidates": 1089,
     "feeds": [
       {
         "source": "한국경제",
@@ -31,7 +31,7 @@
         "url": "https://www.khan.co.kr/rss/rssdata/economy_news.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 44
+        "within_window": 50
       },
       {
         "source": "국민일보",
@@ -45,7 +45,7 @@
         "url": "https://www.mbn.co.kr/rss/economy/",
         "status": "ok",
         "entries": 30,
-        "within_window": 12
+        "within_window": 21
       },
       {
         "source": "연합뉴스",
@@ -59,14 +59,14 @@
         "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml",
         "status": "ok",
         "entries": 100,
-        "within_window": 91
+        "within_window": 95
       },
       {
         "source": "서울신문",
         "url": "https://www.seoul.co.kr/xml/rss/google_economy.xml",
         "status": "ok",
-        "entries": 36,
-        "within_window": 36
+        "entries": 39,
+        "within_window": 38
       },
       {
         "source": "세계일보",
@@ -80,28 +80,28 @@
         "url": "https://www.iusm.co.kr/rss/allArticle.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 49
+        "within_window": 0
       },
       {
         "source": "울산신문",
         "url": "https://www.ulsanpress.net/rss/allArticle.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 50
+        "within_window": 1
       },
       {
         "source": "경상일보",
         "url": "https://www.ksilbo.co.kr/rss/allArticle.xml",
         "status": "ok",
-        "entries": 50,
-        "within_window": 0
+        "entries": 200,
+        "within_window": 111
       },
       {
         "source": "울산제일일보",
         "url": "http://www.ujeil.com/rss/allArticle.xml",
         "status": "ok",
         "entries": 100,
-        "within_window": 71
+        "within_window": 0
       },
       {
         "source": "뉴시스",
@@ -114,166 +114,167 @@
         "source": "뉴시스",
         "url": "https://www.newsis.com/RSS/health.xml",
         "status": "ok",
-        "entries": 79,
-        "within_window": 76
+        "entries": 62,
+        "within_window": 54
       },
       {
         "source": "서울경제",
         "url": "https://www.sedaily.com/rss/economy",
-        "status": "fail",
-        "error": "parse failed: <unknown>:54:2: mismatched tag"
+        "status": "ok",
+        "entries": 50,
+        "within_window": 28
       },
       {
         "source": "이데일리",
         "url": "http://rss.edaily.co.kr/edaily_news.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 47
+        "within_window": 48
       },
       {
         "source": "헤럴드경제",
         "url": "https://biz.heraldcorp.com/rss/google/economy",
         "status": "ok",
-        "entries": 27,
-        "within_window": 22
+        "entries": 88,
+        "within_window": 48
       },
       {
         "source": "파이낸셜뉴스",
         "url": "https://www.fnnews.com/rss/r20/fn_realnews_economy.xml",
         "status": "ok",
-        "entries": 13,
-        "within_window": 13
+        "entries": 17,
+        "within_window": 17
       },
       {
         "source": "전자신문",
         "url": "http://rss.etnews.com/Section901.xml",
-        "status": "ok",
-        "entries": 30,
-        "within_window": 30
+        "status": "fail",
+        "error": "parse failed: <urlopen error [Errno 110] Connection timed out>"
       },
       {
         "source": "AI타임스",
         "url": "https://www.aitimes.com/rss/allArticle.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 29
+        "within_window": 27
       },
       {
         "source": "로봇신문",
         "url": "https://www.irobotnews.com/rss/allArticle.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 23
+        "within_window": 21
       },
       {
         "source": "헬로티",
         "url": "https://www.hellot.net/data/rss/news.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 5
+        "within_window": 22
       },
       {
         "source": "산업일보",
         "url": "https://kidd.co.kr/xml/news_rss.php",
         "status": "ok",
         "entries": 10,
-        "within_window": 4
+        "within_window": 8
       },
       {
         "source": "인더스트리뉴스",
         "url": "https://www.industrynews.co.kr/rss/allArticle.xml",
         "status": "ok",
         "entries": 50,
-        "within_window": 39
+        "within_window": 50
       }
     ]
   },
   "naver": {
     "attempted": true,
     "query_count": 56,
-    "candidates": 2766,
-    "total_calls": 149,
+    "candidates": 4426,
+    "total_calls": 178,
     "saturated_queries": [
+      "산업 AI",
       "산업 데이터",
       "AI 데이터센터"
     ],
     "queries": [
       {
         "query": "\"AI 전환\"",
-        "calls": 3,
-        "results_in_window": 179,
+        "calls": 5,
+        "results_in_window": 367,
         "saturated": false
       },
       {
         "query": "\"산업 AX\"",
         "calls": 2,
-        "results_in_window": 8,
+        "results_in_window": 18,
         "saturated": false
       },
       {
         "query": "\"제조 AX\"",
         "calls": 2,
-        "results_in_window": 5,
+        "results_in_window": 32,
         "saturated": false
       },
       {
         "query": "AX 전략",
-        "calls": 2,
-        "results_in_window": 39,
+        "calls": 5,
+        "results_in_window": 127,
         "saturated": false
       },
       {
         "query": "\"AI 드라이브\"",
         "calls": 2,
-        "results_in_window": 2,
+        "results_in_window": 1,
         "saturated": false
       },
       {
         "query": "\"제조 AI\"",
         "calls": 2,
-        "results_in_window": 27,
+        "results_in_window": 19,
         "saturated": false
       },
       {
         "query": "산업 AI",
-        "calls": 1,
-        "results_in_window": 85,
-        "saturated": false
+        "calls": 10,
+        "results_in_window": 864,
+        "saturated": true
       },
       {
         "query": "AI 공장",
-        "calls": 5,
-        "results_in_window": 306,
+        "calls": 8,
+        "results_in_window": 468,
         "saturated": false
       },
       {
         "query": "AI 팩토리",
-        "calls": 3,
-        "results_in_window": 62,
+        "calls": 4,
+        "results_in_window": 136,
         "saturated": false
       },
       {
         "query": "생성형 AI 제조",
         "calls": 2,
-        "results_in_window": 29,
+        "results_in_window": 23,
         "saturated": false
       },
       {
         "query": "자율제조",
-        "calls": 1,
-        "results_in_window": 42,
+        "calls": 4,
+        "results_in_window": 113,
         "saturated": false
       },
       {
         "query": "자율공장",
         "calls": 2,
-        "results_in_window": 8,
+        "results_in_window": 12,
         "saturated": false
       },
       {
         "query": "자율생산",
-        "calls": 3,
-        "results_in_window": 63,
+        "calls": 5,
+        "results_in_window": 109,
         "saturated": false
       },
       {
@@ -284,20 +285,20 @@
       },
       {
         "query": "AIDF",
-        "calls": 2,
+        "calls": 1,
         "results_in_window": 0,
         "saturated": false
       },
       {
         "query": "스마트팩토리",
         "calls": 2,
-        "results_in_window": 8,
+        "results_in_window": 17,
         "saturated": false
       },
       {
         "query": "스마트공장",
         "calls": 3,
-        "results_in_window": 30,
+        "results_in_window": 57,
         "saturated": false
       },
       {
@@ -308,44 +309,44 @@
       },
       {
         "query": "\"디지털 트윈\"",
-        "calls": 3,
-        "results_in_window": 106,
+        "calls": 2,
+        "results_in_window": 55,
         "saturated": false
       },
       {
         "query": "예지보전",
         "calls": 2,
-        "results_in_window": 1,
+        "results_in_window": 0,
         "saturated": false
       },
       {
         "query": "무인화 공장",
         "calls": 2,
-        "results_in_window": 2,
+        "results_in_window": 0,
         "saturated": false
       },
       {
         "query": "피지컬 AI",
-        "calls": 5,
-        "results_in_window": 154,
+        "calls": 7,
+        "results_in_window": 232,
         "saturated": false
       },
       {
         "query": "휴머노이드",
         "calls": 4,
-        "results_in_window": 78,
+        "results_in_window": 64,
         "saturated": false
       },
       {
         "query": "지능형 로봇",
         "calls": 2,
-        "results_in_window": 5,
+        "results_in_window": 2,
         "saturated": false
       },
       {
         "query": "산업용 로봇 AI",
         "calls": 2,
-        "results_in_window": 4,
+        "results_in_window": 6,
         "saturated": false
       },
       {
@@ -357,25 +358,25 @@
       {
         "query": "제조 파운데이션 모델",
         "calls": 2,
-        "results_in_window": 7,
+        "results_in_window": 2,
         "saturated": false
       },
       {
         "query": "산업 데이터",
         "calls": 10,
-        "results_in_window": 618,
+        "results_in_window": 471,
         "saturated": true
       },
       {
         "query": "AI 데이터센터",
         "calls": 10,
-        "results_in_window": 395,
+        "results_in_window": 448,
         "saturated": true
       },
       {
         "query": "AIDC",
-        "calls": 3,
-        "results_in_window": 15,
+        "calls": 2,
+        "results_in_window": 6,
         "saturated": false
       },
       {
@@ -393,7 +394,7 @@
       {
         "query": "AI 비전 검사",
         "calls": 2,
-        "results_in_window": 25,
+        "results_in_window": 7,
         "saturated": false
       },
       {
@@ -404,26 +405,26 @@
       },
       {
         "query": "제조 AI 지원사업",
-        "calls": 2,
-        "results_in_window": 31,
+        "calls": 3,
+        "results_in_window": 16,
         "saturated": false
       },
       {
         "query": "AI 바우처",
         "calls": 2,
-        "results_in_window": 9,
+        "results_in_window": 29,
         "saturated": false
       },
       {
         "query": "산업 AI 예산",
-        "calls": 4,
-        "results_in_window": 114,
+        "calls": 5,
+        "results_in_window": 137,
         "saturated": false
       },
       {
         "query": "AI 실증",
-        "calls": 5,
-        "results_in_window": 98,
+        "calls": 7,
+        "results_in_window": 226,
         "saturated": false
       },
       {
@@ -435,49 +436,49 @@
       {
         "query": "FDE",
         "calls": 2,
-        "results_in_window": 1,
+        "results_in_window": 0,
         "saturated": false
       },
       {
         "query": "AI 해커톤",
         "calls": 2,
-        "results_in_window": 8,
+        "results_in_window": 50,
         "saturated": false
       },
       {
         "query": "AI 부트캠프",
         "calls": 2,
-        "results_in_window": 5,
+        "results_in_window": 6,
         "saturated": false
       },
       {
         "query": "AX 인재",
         "calls": 2,
-        "results_in_window": 6,
+        "results_in_window": 17,
         "saturated": false
       },
       {
         "query": "제조 AI 교육",
         "calls": 3,
-        "results_in_window": 19,
+        "results_in_window": 26,
         "saturated": false
       },
       {
         "query": "AI 재교육",
         "calls": 2,
-        "results_in_window": 1,
+        "results_in_window": 2,
         "saturated": false
       },
       {
         "query": "울산 AI",
-        "calls": 3,
-        "results_in_window": 87,
+        "calls": 4,
+        "results_in_window": 51,
         "saturated": false
       },
       {
         "query": "울산 AX",
         "calls": 2,
-        "results_in_window": 2,
+        "results_in_window": 0,
         "saturated": false
       },
       {
@@ -489,25 +490,25 @@
       {
         "query": "울산 로봇",
         "calls": 2,
-        "results_in_window": 1,
+        "results_in_window": 2,
         "saturated": false
       },
       {
         "query": "UNIST AI",
         "calls": 2,
-        "results_in_window": 3,
+        "results_in_window": 6,
         "saturated": false
       },
       {
         "query": "울산 데이터센터",
         "calls": 2,
-        "results_in_window": 0,
+        "results_in_window": 1,
         "saturated": false
       },
       {
         "query": "조선 AI",
-        "calls": 4,
-        "results_in_window": 59,
+        "calls": 5,
+        "results_in_window": 170,
         "saturated": false
       },
       {
@@ -518,23 +519,23 @@
       },
       {
         "query": "석유화학 AI",
-        "calls": 2,
-        "results_in_window": 2,
+        "calls": 3,
+        "results_in_window": 16,
         "saturated": false
       },
       {
         "query": "배터리 AI 공정",
         "calls": 2,
-        "results_in_window": 2,
+        "results_in_window": 5,
         "saturated": false
       },
       {
         "query": "정유 AI",
         "calls": 2,
-        "results_in_window": 11,
+        "results_in_window": 6,
         "saturated": false
       }
     ]
   },
-  "combined_candidates": 3746
+  "combined_candidates": 5413
 }
