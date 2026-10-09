@@ -1,0 +1,42 @@
+name: Monitor AX vault export
+
+# Opens a GitHub Issue when ax-vault-full export produced 0 files or failed on
+# the last 2 collection days (Mon-Sat KST) in a row - see
+# scripts/check_vault_export.py for the exact rule. Added 2026-10-10 after a
+# suspected export gap could only be ruled out by reading run logs by hand.
+#
+# Two triggers on purpose:
+# - workflow_run: right after every export run (including ones skipped because
+#   update.yml failed), so a bad day is judged as soon as it happens.
+# - schedule: daily 15:00 KST, so the check still runs when nothing upstream
+#   ran at all (e.g. the update schedule stopped firing) - a workflow_run
+#   trigger alone would stay silent in exactly that case.
+on:
+  workflow_run:
+    workflows: ["Export published articles to AX vault"]
+    types: [completed]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  actions: read
+  issues: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout korea-industry-ax
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check last collection days and open/close alert issue
+        run: python scripts/check_vault_export.py
+        env:
+          GH_TOKEN: ${{ github.token }}

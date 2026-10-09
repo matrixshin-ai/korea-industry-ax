@@ -151,6 +151,14 @@ Claude Code가 새 세션을 시작할 때 자동으로 읽는 맥락 파일. �
   industries/url/tags) 뒤에 `region`/`loc`/`ulsan_score`/`core`/`tech`/`evidence`를
   item에 값이 있을 때만 추가(None·""·[]는 생략, 0은 유지). 공개 앵커 저장소 `public-ax`가
   웹앱의 울산 판정으로 필터링하기 위함. 이미 내보낸 파일은 소급 갱신 안 됨(ID 기준 skip).
+- **export 감시 (2026-10-10, `.github/workflows/vault-export-monitor.yml` +
+  `scripts/check_vault_export.py`)**: 최근 2 수집일(월~토 KST) 연속으로 export-full이
+  0건·실패·skipped·미실행이면 `vault-export-alert` 라벨 Issue를 자동 생성(열린 게 있으면 댓글),
+  정상으로 돌아오면 복구 댓글을 달고 닫음. 하루 판정은 그날 export-full 로그의
+  `Export done (mode=full): N created`가 N>0인 실행이 하나라도 있으면 정상(같은 날 수동 재실행
+  성공도 인정). 트리거는 export 완료 직후(workflow_run) + 매일 15:00 KST(schedule, 앞단이 아예
+  안 돌 때 대비). 오늘은 14시 KST 이후이거나 이미 정상 실행이 있을 때만 판정에 포함.
+  로컬 점검: `python scripts/check_vault_export.py --dry-run`.
 
 ## 로컬 실행·검증
 
@@ -272,6 +280,19 @@ python -m http.server 8000 --directory public   # http://localhost:8000
   `llm_dedup_errors` 최종 실패 시 GITHUB_STEP_SUMMARY 경고 스텝 추가. 신규 테스트
   3개 포함 pytest 122개 통과. (4) 커밋 후 "Update industry AX briefing" 수동
   실행으로 헬릭스 사건이 1건+related로 묶이는지 확인 — 결과는 아래 참고.
+- 2026-10-10: **"ax-vault-full 전송이 일정 기간 안 됐다"는 의심 점검 → 끊김 없음 확인.**
+  (1) 최근 14일 실행: update.yml은 09-29 수동 실행 4건 실패(Batches `results_url` 없음 1건,
+  Anthropic API 500 3건 — 같은 날 15:05 수동 재실행 성공) 외 전부 성공. export-vault.yml은
+  09-29 이후 매 수집일 workflow_run으로 성공, export-full created 78~198건/일. 0건은 09-28
+  아침 1건뿐(위 stale checkout 사건, 같은 날 수동 재실행으로 84건). skipped 4건은 09-29 update
+  실패에 딸린 것. (2) ax-vault-full 원격: 날짜 폴더 2026-09-25~10-09 빠짐없이 존재(1,441개),
+  export 커밋 매 수집일 있음(10-04 일요일은 실행 없음 = 정상, 그날 게시분은 10-05 48h 창으로
+  들어옴). (3) export-vault.yml 최근 변경(bd5e9dd)은 export-summary `if:`에 `false &&`만
+  추가 — workflow_run 트리거·export-full 조건·staleness 가드 스텝 그대로. bd5e9dd 이후 실행은
+  아직 없음(다음 자동 실행에서 export-summary=skipped 확인 필요). (4) 로컬 vault: 원격과
+  동일(7b18e9e), `.obsidian/`만 untracked. (5) 현재 data.json(10-08~10-09 게시 105건) 전부
+  vault에 있음 → 수동 export로 채울 것 없음. 소급 불가 범위: vault 생성(09-26) 전 게시분
+  (09-24 이전)뿐이며 그 외 누락 없음. 재발 방지로 위 "export 감시" 추가.
 - 남은 일 / 관찰 포인트:
   - **삼성SDI 'DCWA 2026' 중복**(위 참고): 제목에 금액이 없는 발표성 기사라 현재
     병합 경로 어느 것도 안 걸림. 필요시 quote/policy 패턴 확장 검토.
