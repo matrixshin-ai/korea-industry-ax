@@ -304,5 +304,5 @@ python -m http.server 8000 --directory public   # http://localhost:8000
   - 1주 운영 후 `logs/yield_*.json`으로 저수율 RSS·검색어 정리 ("산업 AI" 검색어는 1,000건 상한 포화).
   - 규칙 상한(`rule_capped`)과 금융 필터 탈락 건수를 로그로 보며 오탈락 여부 점검.
   - 2026-09-26: GitHub 공개 저장소 생성·push 완료. Actions Secrets 등록·Vercel 연결은 아직 (README 참고).
-  - **2~3주 후 (대략 2026-10 중순)**: `ax-vault`(public, summary) 유지 여부 재검토 (위
-    "Vault export" 절의 향후 검토 참고).
+  - ~~2~3주 후 `ax-vault` 유지 여부 재검토~~ → 2026-10-10 폐기로 결정·반영 완료 (위
+    "Vault export" 절의 향후 검토 참고). 남은 확인: 다음 자동 실행에서 export-summary=skipped.
