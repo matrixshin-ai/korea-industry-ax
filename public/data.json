@@ -1,86 +1,86 @@
 {
-  "generated_at": "2026-10-09T10:30:28.849704+09:00",
+  "generated_at": "2026-10-10T10:11:59.481336+09:00",
   "collection_hours": 24,
-  "article_count": 105,
+  "article_count": 37,
   "stats": {
-    "classified_total": 5413,
+    "classified_total": 1741,
     "dropped_unclassified": 0,
-    "dropped_exact_duplicate": 22,
+    "dropped_exact_duplicate": 16,
     "dropped_out_of_window": 0,
-    "before_algo_dedup": 5391,
-    "after_algo_dedup": 4929,
-    "after_llm_dedup": 4821,
-    "dropped_not_published_after_regrade": 4716,
+    "before_algo_dedup": 1725,
+    "after_algo_dedup": 1654,
+    "after_llm_dedup": 1584,
+    "dropped_not_published_after_regrade": 1547,
     "dropped_invalid_section": 0,
-    "publishable_before_cap": 105,
+    "publishable_before_cap": 37,
     "publishable_before_cap_by_section": {
-      "1": 36,
-      "2": 39,
-      "3": 30
+      "1": 12,
+      "2": 16,
+      "3": 9
     },
     "daily_cap": 200,
     "dropped_over_cap": 0,
-    "finance_title_filtered": 335,
-    "rule_capped": 0,
+    "finance_title_filtered": 175,
+    "rule_capped": 3,
     "llm_dedup": {
       "ran": true,
-      "chunk_count": 3,
-      "llm_dedup_input_tokens": 12338,
-      "llm_dedup_output_tokens": 651,
-      "estimated_cost_usd": 0.0156,
-      "candidate_groups": 213,
-      "candidate_groups_skipped_no_publishable_grade": 4716
+      "chunk_count": 2,
+      "llm_dedup_input_tokens": 6667,
+      "llm_dedup_output_tokens": 327,
+      "estimated_cost_usd": 0.0083,
+      "candidate_groups": 107,
+      "candidate_groups_skipped_no_publishable_grade": 1547
     },
     "published_grade_counts": {
-      "S": 6,
-      "A": 99
+      "S": 4,
+      "A": 33
     },
     "candidates_by_channel": {
-      "rss": 1089,
-      "naver": 4324,
+      "rss": 541,
+      "naver": 1200,
       "unknown": 0
     },
     "published_by_channel": {
-      "rss": 9,
-      "naver": 96,
+      "rss": 3,
+      "naver": 34,
       "unknown": 0
     },
-    "published_merged_group_count": 44,
-    "published_related_item_count": 244,
-    "classify_cost_usd": 0.8146,
-    "llm_dedup_cost_usd": 0.0156,
-    "total_estimated_cost_usd": 0.8302,
+    "published_merged_group_count": 6,
+    "published_related_item_count": 72,
+    "classify_cost_usd": 0.1966,
+    "llm_dedup_cost_usd": 0.0083,
+    "total_estimated_cost_usd": 0.2049,
     "rss": {
       "feed_count": 26,
-      "candidates": 1089,
+      "candidates": 541,
       "feeds": [
         {
           "source": "한국경제",
           "url": "https://www.hankyung.com/feed/economy",
           "status": "ok",
           "entries": 50,
-          "within_window": 50
+          "within_window": 49
         },
         {
           "source": "아시아경제",
           "url": "https://www.asiae.co.kr/rss/industry-IT.htm",
           "status": "ok",
           "entries": 100,
-          "within_window": 100
+          "within_window": 23
         },
         {
           "source": "동아일보",
           "url": "https://rss.donga.com/economy.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 50
+          "within_window": 29
         },
         {
           "source": "경향신문",
           "url": "https://www.khan.co.kr/rss/rssdata/economy_news.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 50
+          "within_window": 18
         },
         {
           "source": "국민일보",
@@ -94,28 +94,28 @@
           "url": "https://www.mbn.co.kr/rss/economy/",
           "status": "ok",
           "entries": 30,
-          "within_window": 21
+          "within_window": 7
         },
         {
           "source": "연합뉴스",
           "url": "https://www.yna.co.kr/rss/economy.xml",
           "status": "ok",
           "entries": 120,
-          "within_window": 120
+          "within_window": 47
         },
         {
           "source": "조선일보",
           "url": "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml",
           "status": "ok",
           "entries": 100,
-          "within_window": 95
+          "within_window": 57
         },
         {
           "source": "서울신문",
           "url": "https://www.seoul.co.kr/xml/rss/google_economy.xml",
           "status": "ok",
           "entries": 39,
-          "within_window": 38
+          "within_window": 27
         },
         {
           "source": "세계일보",
@@ -136,14 +136,14 @@
           "url": "https://www.ulsanpress.net/rss/allArticle.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 1
+          "within_window": 0
         },
         {
           "source": "경상일보",
           "url": "https://www.ksilbo.co.kr/rss/allArticle.xml",
           "status": "ok",
           "entries": 200,
-          "within_window": 111
+          "within_window": 13
         },
         {
           "source": "울산제일일보",
@@ -156,179 +156,176 @@
           "source": "뉴시스",
           "url": "https://www.newsis.com/RSS/industry.xml",
           "status": "ok",
-          "entries": 100,
-          "within_window": 100
+          "entries": 68,
+          "within_window": 64
         },
         {
           "source": "뉴시스",
           "url": "https://www.newsis.com/RSS/health.xml",
           "status": "ok",
-          "entries": 62,
-          "within_window": 54
+          "entries": 28,
+          "within_window": 23
         },
         {
           "source": "서울경제",
           "url": "https://www.sedaily.com/rss/economy",
           "status": "ok",
           "entries": 50,
-          "within_window": 28
+          "within_window": 13
         },
         {
           "source": "이데일리",
           "url": "http://rss.edaily.co.kr/edaily_news.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 48
+          "within_window": 47
         },
         {
           "source": "헤럴드경제",
           "url": "https://biz.heraldcorp.com/rss/google/economy",
           "status": "ok",
-          "entries": 88,
-          "within_window": 48
+          "entries": 51,
+          "within_window": 20
         },
         {
           "source": "파이낸셜뉴스",
           "url": "https://www.fnnews.com/rss/r20/fn_realnews_economy.xml",
           "status": "ok",
-          "entries": 17,
-          "within_window": 17
+          "entries": 0,
+          "within_window": 0
         },
         {
           "source": "전자신문",
           "url": "http://rss.etnews.com/Section901.xml",
-          "status": "fail",
-          "error": "parse failed: <urlopen error [Errno 110] Connection timed out>"
+          "status": "ok",
+          "entries": 14,
+          "within_window": 14
         },
         {
           "source": "AI타임스",
           "url": "https://www.aitimes.com/rss/allArticle.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 27
+          "within_window": 24
         },
         {
           "source": "로봇신문",
           "url": "https://www.irobotnews.com/rss/allArticle.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 21
+          "within_window": 0
         },
         {
           "source": "헬로티",
           "url": "https://www.hellot.net/data/rss/news.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 22
+          "within_window": 2
         },
         {
           "source": "산업일보",
           "url": "https://kidd.co.kr/xml/news_rss.php",
           "status": "ok",
           "entries": 10,
-          "within_window": 8
+          "within_window": 4
         },
         {
           "source": "인더스트리뉴스",
           "url": "https://www.industrynews.co.kr/rss/allArticle.xml",
           "status": "ok",
           "entries": 50,
-          "within_window": 50
+          "within_window": 30
         }
       ]
     },
     "naver": {
       "attempted": true,
       "query_count": 56,
-      "candidates": 4426,
-      "total_calls": 178,
-      "saturated_queries": [
-        "산업 AI",
-        "산업 데이터",
-        "AI 데이터센터"
-      ],
+      "candidates": 1243,
+      "total_calls": 121,
+      "saturated_queries": [],
       "queries": [
         {
           "query": "\"AI 전환\"",
-          "calls": 5,
-          "results_in_window": 367,
+          "calls": 2,
+          "results_in_window": 49,
           "saturated": false
         },
         {
           "query": "\"산업 AX\"",
           "calls": 2,
-          "results_in_window": 18,
+          "results_in_window": 2,
           "saturated": false
         },
         {
           "query": "\"제조 AX\"",
           "calls": 2,
-          "results_in_window": 32,
+          "results_in_window": 5,
           "saturated": false
         },
         {
           "query": "AX 전략",
-          "calls": 5,
-          "results_in_window": 127,
+          "calls": 2,
+          "results_in_window": 21,
           "saturated": false
         },
         {
           "query": "\"AI 드라이브\"",
-          "calls": 2,
-          "results_in_window": 1,
+          "calls": 1,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "\"제조 AI\"",
           "calls": 2,
-          "results_in_window": 19,
+          "results_in_window": 4,
           "saturated": false
         },
         {
           "query": "산업 AI",
-          "calls": 10,
-          "results_in_window": 864,
-          "saturated": true
+          "calls": 9,
+          "results_in_window": 735,
+          "saturated": false
         },
         {
           "query": "AI 공장",
-          "calls": 8,
-          "results_in_window": 468,
+          "calls": 4,
+          "results_in_window": 74,
           "saturated": false
         },
         {
           "query": "AI 팩토리",
-          "calls": 4,
-          "results_in_window": 136,
+          "calls": 2,
+          "results_in_window": 6,
           "saturated": false
         },
         {
           "query": "생성형 AI 제조",
           "calls": 2,
-          "results_in_window": 23,
+          "results_in_window": 6,
           "saturated": false
         },
         {
           "query": "자율제조",
-          "calls": 4,
-          "results_in_window": 113,
+          "calls": 2,
+          "results_in_window": 14,
           "saturated": false
         },
         {
           "query": "자율공장",
           "calls": 2,
-          "results_in_window": 12,
+          "results_in_window": 4,
           "saturated": false
         },
         {
           "query": "자율생산",
-          "calls": 5,
-          "results_in_window": 109,
+          "calls": 2,
+          "results_in_window": 13,
           "saturated": false
         },
         {
           "query": "다크팩토리",
-          "calls": 2,
+          "calls": 1,
           "results_in_window": 0,
           "saturated": false
         },
@@ -341,30 +338,30 @@
         {
           "query": "스마트팩토리",
           "calls": 2,
-          "results_in_window": 17,
+          "results_in_window": 5,
           "saturated": false
         },
         {
           "query": "스마트공장",
-          "calls": 3,
-          "results_in_window": 57,
+          "calls": 2,
+          "results_in_window": 12,
           "saturated": false
         },
         {
           "query": "소프트웨어 정의 공장",
           "calls": 2,
-          "results_in_window": 1,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "\"디지털 트윈\"",
           "calls": 2,
-          "results_in_window": 55,
+          "results_in_window": 2,
           "saturated": false
         },
         {
           "query": "예지보전",
-          "calls": 2,
+          "calls": 1,
           "results_in_window": 0,
           "saturated": false
         },
@@ -376,26 +373,26 @@
         },
         {
           "query": "피지컬 AI",
-          "calls": 7,
-          "results_in_window": 232,
+          "calls": 2,
+          "results_in_window": 13,
           "saturated": false
         },
         {
           "query": "휴머노이드",
-          "calls": 4,
-          "results_in_window": 64,
+          "calls": 2,
+          "results_in_window": 31,
           "saturated": false
         },
         {
           "query": "지능형 로봇",
           "calls": 2,
-          "results_in_window": 2,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "산업용 로봇 AI",
           "calls": 2,
-          "results_in_window": 6,
+          "results_in_window": 0,
           "saturated": false
         },
         {
@@ -407,25 +404,25 @@
         {
           "query": "제조 파운데이션 모델",
           "calls": 2,
-          "results_in_window": 2,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "산업 데이터",
-          "calls": 10,
-          "results_in_window": 471,
-          "saturated": true
+          "calls": 5,
+          "results_in_window": 72,
+          "saturated": false
         },
         {
           "query": "AI 데이터센터",
-          "calls": 10,
-          "results_in_window": 448,
-          "saturated": true
+          "calls": 4,
+          "results_in_window": 87,
+          "saturated": false
         },
         {
           "query": "AIDC",
           "calls": 2,
-          "results_in_window": 6,
+          "results_in_window": 0,
           "saturated": false
         },
         {
@@ -437,48 +434,48 @@
         {
           "query": "엣지 AI 제조",
           "calls": 2,
-          "results_in_window": 2,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "AI 비전 검사",
           "calls": 2,
-          "results_in_window": 7,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "M.AX",
           "calls": 2,
-          "results_in_window": 0,
+          "results_in_window": 1,
           "saturated": false
         },
         {
           "query": "제조 AI 지원사업",
-          "calls": 3,
-          "results_in_window": 16,
+          "calls": 2,
+          "results_in_window": 3,
           "saturated": false
         },
         {
           "query": "AI 바우처",
           "calls": 2,
-          "results_in_window": 29,
+          "results_in_window": 5,
           "saturated": false
         },
         {
           "query": "산업 AI 예산",
-          "calls": 5,
-          "results_in_window": 137,
+          "calls": 2,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "AI 실증",
-          "calls": 7,
-          "results_in_window": 226,
+          "calls": 2,
+          "results_in_window": 15,
           "saturated": false
         },
         {
           "query": "스마트공장 보급사업",
-          "calls": 2,
+          "calls": 1,
           "results_in_window": 0,
           "saturated": false
         },
@@ -491,37 +488,37 @@
         {
           "query": "AI 해커톤",
           "calls": 2,
-          "results_in_window": 50,
+          "results_in_window": 4,
           "saturated": false
         },
         {
           "query": "AI 부트캠프",
           "calls": 2,
-          "results_in_window": 6,
+          "results_in_window": 2,
           "saturated": false
         },
         {
           "query": "AX 인재",
           "calls": 2,
-          "results_in_window": 17,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "제조 AI 교육",
-          "calls": 3,
-          "results_in_window": 26,
+          "calls": 2,
+          "results_in_window": 1,
           "saturated": false
         },
         {
           "query": "AI 재교육",
           "calls": 2,
-          "results_in_window": 2,
+          "results_in_window": 1,
           "saturated": false
         },
         {
           "query": "울산 AI",
-          "calls": 4,
-          "results_in_window": 51,
+          "calls": 2,
+          "results_in_window": 15,
           "saturated": false
         },
         {
@@ -539,25 +536,25 @@
         {
           "query": "울산 로봇",
           "calls": 2,
-          "results_in_window": 2,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "UNIST AI",
           "calls": 2,
-          "results_in_window": 6,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "울산 데이터센터",
           "calls": 2,
-          "results_in_window": 1,
+          "results_in_window": 0,
           "saturated": false
         },
         {
           "query": "조선 AI",
-          "calls": 5,
-          "results_in_window": 170,
+          "calls": 2,
+          "results_in_window": 35,
           "saturated": false
         },
         {
@@ -568,20 +565,20 @@
         },
         {
           "query": "석유화학 AI",
-          "calls": 3,
-          "results_in_window": 16,
+          "calls": 2,
+          "results_in_window": 1,
           "saturated": false
         },
         {
           "query": "배터리 AI 공정",
           "calls": 2,
-          "results_in_window": 5,
+          "results_in_window": 1,
           "saturated": false
         },
         {
           "query": "정유 AI",
           "calls": 2,
-          "results_in_window": 6,
+          "results_in_window": 3,
           "saturated": false
         }
       ]
@@ -592,67 +589,11 @@
       "label": "기업·현장",
       "items": [
         {
-          "title": "울산시, 240억 원 규모 'AI 대전환 사업' 성과 공유회 개최",
-          "summary": "울산시는 지난해 10월 자동차부품·조선기자재·정밀화학 분야 AI 전환 계획으로 경남·대구·전남·제주와 함께 중소벤처기업부 공모에 선정됐다. 울산테크노파크가 사업을 주관하고 울산정보산업진흥원...",
-          "link": "https://www.news1.kr/local/ulsan/6313844",
-          "source": "뉴스1",
-          "published": "2026-10-08T09:19:00+09:00",
-          "grade": "S",
-          "m": "주제",
-          "section": 1,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "자동차",
-          "tech": [
-            "기타"
-          ],
-          "core": 1,
-          "evidence": "울산시-자동차부품·조선기자재·정밀화학 AX-울산",
-          "related": [
-            {
-              "source": "cnbnews.com",
-              "link": "https://www.cnbnews.com/news/articleView.html?idxno=1018751"
-            },
-            {
-              "source": "연합뉴스",
-              "link": "https://www.yna.co.kr/view/AKR20261007204300057?input=1195m"
-            }
-          ],
-          "score": 118
-        },
-        {
-          "title": "울산시, 지역 주도형 AI 대전환 사업 점검",
-          "summary": "지역 특성에 맞는 인공지능 활용과 확산을 위한 대전환 사업에는 모두 240억 6천만 원이 투입돼 중소기업의 인공지능 도입과 실증·확산까지 전 주기 지원 체계를 구축합니다. 울산시는 중소기업의 디지털 대전환을 위해...",
-          "link": "https://www.usmbc.co.kr/NewsArticle/866464",
-          "source": "울산MBC",
-          "published": "2026-10-08T21:26:00+09:00",
-          "grade": "S",
-          "m": "주제",
-          "section": 1,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 10,
-          "industry": "기타",
-          "tech": [
-            "LLM·에이전트"
-          ],
-          "core": 0,
-          "evidence": "울산시-AI대전환사업-중소기업도입",
-          "related": [
-            {
-              "source": "헤럴드경제",
-              "link": "https://biz.heraldcorp.com/article/10897313?ref=naver"
-            }
-          ],
-          "score": 110
-        },
-        {
-          "title": "울산시, '지역 주도형 AI 대전환 사업' 박차.. 4대 핵심 분야 속도전",
-          "summary": "이번 사업을 통해 지역 중소기업들은 고가의 인공지능 도입 부담을 덜어내는 동시에, 제조 현장에 최적화된 맞춤형 AI 솔루션을 수혜받게 된다. 실제로 AI 기술 검증과 해결책을 지원받은 참여 기업들 사이에서는...",
-          "link": "https://www.fnnews.com/news/202610081535225697",
-          "source": "파이낸셜뉴스",
-          "published": "2026-10-08T16:11:00+09:00",
+          "title": "울산광역시, 240억 규모 '지역 주도형 AI 대전환' 사업 점검",
+          "summary": "울산광역시가 지역이 주도하는 인공지능(AI) 대전환 사업 추진 성과를 점검하고 지역 중소기업의 AI 전환 확산에 나선다. 울산시는 지난 8일 롯데호텔 울산에서 '지역 주도형 AI 대전환 사업 성과공유회 및...",
+          "link": "https://www.epnc.co.kr/news/articleView.html?idxno=407971",
+          "source": "epnc.co.kr",
+          "published": "2026-10-09T11:32:00+09:00",
           "grade": "S",
           "m": "주제",
           "section": 1,
@@ -664,47 +605,51 @@
             "기타"
           ],
           "core": 0,
-          "evidence": "울산시-제조AI 솔루션 지원-지역 중소기업",
-          "related": [
-            {
-              "source": "viva100.com",
-              "link": "https://www.viva100.com/article/20261008500521"
-            },
-            {
-              "source": "국민일보",
-              "link": "https://www.kmib.co.kr/article/view.asp?arcid=9000020904&cp=nv"
-            },
-            {
-              "source": "enewstoday.co.kr",
-              "link": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2478330"
-            },
-            {
-              "source": "nocutnews.co.kr",
-              "link": "https://www.nocutnews.co.kr/news/6588764?utm_source=naver&utm_medium=article&utm_campaign=20261008105435"
-            }
-          ],
+          "evidence": "울산시-지역주도형 AI 대전환-중소기업",
+          "related": [],
           "score": 108
         },
         {
-          "title": "울산형 AX, S-OIL 협력사로 확산",
-          "summary": "울산시가 인공지능(AI) 시대를 대비하기 위해 추진 중인 AI대전환 사업의 성과가 S-OIL 울산공장과 그 협력사에 적용될 전망이다. 중소벤처기업진흥공단 울산지역본부(본부장 박미정)는 7일 S-OIL 울산공장에서 S-OIL, 울산시, 마엇 등과 함께 ‘S-OIL 협력사 AI설루션 보급 관련 간담회’를 개최했다고 밝혔다. 이날 간담회에는 김수영 중진공 제조AI지원처장과 박미정 울산지역 본부장, 울산시 상생지원과 관계자, 홍승표 S-OIL CSO 및 관계자, AI 안전·보건관리 설루션 공급기업인 마엇 등이 참석했다. 이번 간담회는 중진",
-          "link": "https://www.ksilbo.co.kr/news/articleView.html?idxno=1069101",
-          "source": "경상일보",
-          "published": "2026-10-08T00:00:02",
+          "title": "배 만드는 HD현대重, '전력 공장' 짓는다",
+          "summary": "AI 산업의 급성장으로 데이터센터가 빠르게 늘면서 안정적인 전력 공급에 대한 수요도 커지고 있다. HD현대중공업은 이 같은 전력 수요 확대를 겨냥해 육상 발전엔진 생산능력을 확대하고 관련 시장 공략에 나선다는...",
+          "link": "https://www.newsway.co.kr/news/view?ud=2026100815451602227",
+          "source": "newsway.co.kr",
+          "published": "2026-10-10T08:02:00+09:00",
           "grade": "A",
           "m": "주제",
           "section": 1,
           "region": "울산",
           "loc": null,
-          "ulsan_score": 10,
-          "industry": "석유화학",
+          "ulsan_score": 8,
+          "industry": "조선",
           "tech": [
             "기타"
           ],
           "core": 1,
-          "evidence": "S-OIL-AI솔루션-협력사보급",
+          "evidence": "HD현대중공업-발전엔진공장-전력공급",
           "related": [],
-          "score": 90
+          "score": 88
+        },
+        {
+          "title": "\"선박엔진도 데이터센터 발전기로\"…발전·조선업계, AI 전력시장 쟁탈...",
+          "summary": "[두산에너빌리티]  인공지능(AI) 데이터센터의 전력 수요가 급증하면서 미국을 중심으로 데이터센터 내... 신규 산업용 전력 수요 25.5GW에 달한다. 이 가운데 데이터센터가 22.5GW로 88%를 차지할 것으로 전망됐다. 같은...",
+          "link": "https://www.ziksir.com/news/articleView.html?idxno=148578",
+          "source": "ziksir.com",
+          "published": "2026-10-10T06:00:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "에너지",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 1,
+          "evidence": "발전기-AI데이터센터전력-선박엔진",
+          "related": [],
+          "score": 80
         },
         {
           "title": "車 넘어 로봇으로…6년 전 승부수, '피지컬 AI'로 결실[정의선 회장 취임 6년 변화·혁신③]",
@@ -729,58 +674,32 @@
           "score": 80
         },
         {
-          "title": "울산시, 중소기업 AI 도입에 240억 투입…제조 현장 지원 확대",
-          "summary": "기술이 실제 현장에서 작동하는지 확인하는 검증 사업은 15곳, 실시간 데이터 연결은 30곳을 지원한다. AI... 울산정보산업진흥원과 울산과학기술원(UNIST), 울산대학교, 울산창조경제혁신센터 등이 참여한다. 이날...",
-          "link": "https://www.mhns.co.kr/news/articleView.html?idxno=763322",
-          "source": "mhns.co.kr",
-          "published": "2026-10-08T15:22:00+09:00",
+          "title": "[단독] 보스턴다이내믹스 '스팟', 日 맥주공장 투입…\"연 650시간 절감\"",
+          "summary": "10일(현지시간) 로봇 및 제조업계에 따르면 보스턴다이내믹스와 일본 총판 파트너인 도호쿠엔터프라이즈(TECO)는 일본 홋카이도에 위치한 기린맥주 치토세 공장에 스팟을 활용한 자율 순찰 점검 시스템을 구축해...",
+          "link": "https://www.the-today.com/news/articleView.html?idxno=91466",
+          "source": "the-today.com",
+          "published": "2026-10-10T08:08:00+09:00",
           "grade": "A",
           "m": "주제",
           "section": 1,
-          "region": "울산",
+          "region": "해외",
           "loc": null,
-          "ulsan_score": 10,
+          "ulsan_score": 0,
           "industry": "기타",
           "tech": [
-            "기타"
+            "로봇"
           ],
           "core": 0,
-          "evidence": "울산시-중소기업 AI 도입 지원-제조 현장",
-          "related": [
-            {
-              "source": "서울신문",
-              "link": "https://www.seoul.co.kr/news/publicnews/2026/10/08/20261008500066?wlog_tag3=naver"
-            }
-          ],
-          "score": 80
-        },
-        {
-          "title": "'울산 중소기업 AI 대전환 어디까지 왔나' 성과 공유회",
-          "summary": "이를 위해 AI 체험 전시실(쇼룸), AI아카데미 및 연결망(네트워킹) 라운지 구축, 최신 그래픽처리장치(GPU) 협력지구(클러스터) 도입, 15개사 기술 실증 지원, AI 활용 플랫폼 서비스 운영, 150개사 기업 진단 및 컨설팅...",
-          "link": "https://www.newsis.com/view/NISX20261007_0003818052",
-          "source": "뉴시스",
-          "published": "2026-10-08T13:05:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 10,
-          "industry": "기타",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "울산-중소기업 AI 도입-15개사 실증",
+          "evidence": "보스턴다이내믹스스팟-기린맥주공장-자율순찰",
           "related": [],
-          "score": 80
+          "score": 70
         },
         {
-          "title": "현대글로비스, 신조선 10척에 AI 자율운항 도입…18척 적용",
-          "summary": "신규 자동차운반선에 아비커스 '하이나스 컨트롤' 탑재 2028년까지 순차 인도…실증서 최대 3.9% 연료 절감 ▲ [현대글로비스] 현대글로비스가 신규 자동차운반선 10척에 인공지능(AI) 자율운항 시스템을 도입한다....",
-          "link": "http://sateconomy.co.kr/news/view/1065572002673351",
-          "source": "sateconomy.co.kr",
-          "published": "2026-10-08T09:16:00+09:00",
+          "title": "호황기 맞은 K조선, 상선 넘어 비선박으로…체질 개선 속도",
+          "summary": "특히 육상 전력 시장, 방위산업, 해양 신기술 등 선박 외 다양한 분야로 체질을 다변화하는 모습이 눈에 띈다. ◇AI 전력난·해양방산·부유식 기술…3사 3색 전략 HD현대의 조선 계열사는 최근 팽창 중인 인공지능(AI)...",
+          "link": "https://www.sentv.co.kr/article/view/sentv202610080129",
+          "source": "sentv.co.kr",
+          "published": "2026-10-10T08:02:00+09:00",
           "grade": "A",
           "m": "주제",
           "section": 1,
@@ -789,1151 +708,155 @@
           "ulsan_score": 0,
           "industry": "조선",
           "tech": [
-            "자율제조"
-          ],
-          "core": 1,
-          "evidence": "현대글로비스-AI 자율운항 시스템-신조선 10척",
-          "related": [],
-          "score": 80
-        },
-        {
-          "title": "백승렬 UNIST 교수팀, 비전 AI로 농업·로봇·의료 현장 혁신",
-          "summary": "백 교수팀은 이를 특정 분야에 한정하지 않고 실제 산업과 의료 현장에서 활용할 수 있는 기술로 확장하는... 로봇 학습에 필요한 시범 데이터와 학습 시간을 줄일 수 있는 가능성을 보여준 것이다. ■보행 분석으로 의료...",
-          "link": "https://www.koit.co.kr/news/articleView.html?idxno=209412",
-          "source": "koit.co.kr",
-          "published": "2026-10-08T14:56:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "UNIST 백승렬-비전AI-농업·로봇·의료",
-          "related": [],
-          "score": 78
-        },
-        {
-          "title": "\"변압기 슈퍼사이클 아닌 '뉴노멀'\"..HD현대일렉 글로벌 시장 잡는다",
-          "summary": "AI 데이터센터와 노후 교체 수요 등이 불을 붙였다\"고 말했다. HD현대일렉트릭은 북미 시장을 중심으로 늘어나는 변압기 수요에 대응하기 위해 생산능력 확대와 영업 전략 강화에 나서고 있다. 올 4분기 울산 공장...",
-          "link": "https://www.mt.co.kr/industry/2026/10/08/2026100714420243542",
-          "source": "머니투데이",
-          "published": "2026-10-08T13:30:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "에너지",
-          "tech": [
             "기타"
           ],
           "core": 0,
-          "evidence": "HD현대일렉-변압기-울산공장증설",
-          "related": [
-            {
-              "source": "news2day.co.kr",
-              "link": "https://www.news2day.co.kr/article/20261008500260"
-            },
-            {
-              "source": "newsworks.co.kr",
-              "link": "https://www.newsworks.co.kr/news/articleView.html?idxno=855997"
-            }
-          ],
-          "score": 78
-        },
-        {
-          "title": "조립 끝나자마자 스스로 걸어 나온 휴머노이드… 車 회사는 어떻게 로봇...",
-          "summary": "물리적 AI 역량이 서로 다른 신체에 확장된 것”이라고 했다. 샤오펑은 2014년 설립된 중국의 대표적인 전기차 전문 기업이다. 샤오펑은 니오(웨이라이)·리오토(리샹)와 함께 중국 전기차 산업의 ‘3대 신세력’으로...",
-          "link": "https://biz.chosun.com/industry/company/2026/10/09/NY656BXQZZD7JGSRPCMQM3NP4E/?utm_source=naver&utm_medium=original&utm_campaign=biz",
-          "source": "조선일보",
-          "published": "2026-10-09T06:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "샤오펑-휴머노이드 로봇 생산-자동차 제조",
+          "evidence": "HD현대-AI 전력난 대응-발전엔진",
           "related": [],
           "score": 70
         },
         {
-          "title": "SKT, 통신·AI 묶어 '성장 엔진' 재편 … 토큰 경제 선점 나선다",
-          "summary": "SK텔레콤이 통신과 인공지능(AI)을 별개의 사업 영역이 아닌 하나의 성장 체계로 묶고 AI 전환(AX)을 기반으로 새로운 사업 기회를 발굴한다. 통신·AI 서비스·AI 인프라를 유기적으로 연결해 급성장하는 '토큰 경제'의...",
-          "link": "http://www.worktoday.co.kr/news/articleView.html?idxno=90221",
-          "source": "worktoday.co.kr",
-          "published": "2026-10-09T00:00:00+09:00",
+          "title": "물류센터로 들어오는 휴머노이드…현장 실증 '속도'",
+          "summary": "지난 3월 열린 '2026 스마트공장·자동화산업전'에서 피지컬 AI를 접목한 물류 자동화 기술을 선보였다. 자율주행 이동로봇(AMR)과 상품을 집어 올리는 피킹 로봇 등을 통합 제어 플랫폼 '오르카(ORCA)'로 연동하는 방식이다....",
+          "link": "https://www.sentv.co.kr/article/view/sentv202610080132",
+          "source": "sentv.co.kr",
+          "published": "2026-10-10T08:02:00+09:00",
           "grade": "A",
           "m": "주제",
           "section": 1,
           "region": "전국",
           "loc": null,
           "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
+          "industry": "물류",
           "tech": [
-            "데이터센터"
+            "피지컬AI",
+            "로봇"
           ],
           "core": 0,
-          "evidence": "SK텔레콤-통신·AI인프라 연계-토큰경제",
+          "evidence": "물류센터-피킹로봇·AMR 통합제어-자동화",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "\"당신 자리도 사라진다\" 섬뜩한 변화…폭증한다는 로봇 동작 훈련 알바[테크토크]",
+          "summary": "편집자주AI, 반도체, 통신, 바이오에 이르기까지 우리 생활에 꼭 필요하지만 너무나 생소한 기술 이야기를 쉽게 풀어 전해 드립니다 거대한 공장 내부에 길게 늘어선 휴머노이드 로봇들. 이들 옆에는 특수 장비를 쓴 사람이 온갖 동작을 취하고 있습니다. 해당 공장은 중국 베이징에 위치한 로봇 교육 시설입니다. 모션 캡처 장비를 착용한 인간이 물건 집기, 상자 포장, 옷감 접기 등 동작을 수행하면 로봇이 이를 학습하는 곳이지요.  휴머노이드가 연구 단계를 넘어 대량 생산 및 상업화를 가늠하면서 로봇 동작 훈련 데이터 수요도 폭증하고 있습니",
+          "link": "https://view.asiae.co.kr/article/2026100610463089921",
+          "source": "아시아경제",
+          "published": "2026-10-10T07:21:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "해외",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "로봇"
+          ],
+          "core": 0,
+          "evidence": "중국 로봇교육시설-동작학습 데이터 수집-휴머노이드 훈련",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "창립 43주년 맞은 SK하이닉스…HBM 넘어 차세대 AI 메모리 시장 넘본다",
+          "summary": "<p><img src=\"https://image.newsis.com/2026/07/29/NISI20260729_0021381469_web.jpg?rnd=20260729145720\" /></p>[서울=뉴시스] 홍세희 기자 = SK하이닉스가 10일 창립 43주년을 맞았다.<br /><br />SK하이닉스는 올해 사상 최대 실적 행진을 이어가는 한편, 미국 나스닥 상장과 시가총액 1조 달러 돌파 등 의미 있는 기록을 내고 있다.<br /><br />SK하이닉스는 업계 최초로 개발한 고대역폭메모리(HBM) 시장을 넘어 인공지능(AI) 메모리 시장을 선도하는 기업으로 도약한다는 계획이다.<br /><br />10일 업계에 따르면 SK하이닉스는 창립기념식 등 별도의 행사는 진행하지 않는 것으로 전해졌다.<br /><br />앞서 SK하이닉스는 2023년 창립 40주년을 맞아 곽노정 대표이사 사장과 구성원 간의 특별 대담을 사내방송을 통해 방영한 바 있다.<br /><br />창립 43주년을 맞...",
+          "link": "https://www.newsis.com/view/NISX20261007_0003817543",
+          "source": "뉴시스",
+          "published": "2026-10-10T05:00:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "반도체",
+          "tech": [
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "SK하이닉스-HBM·AI메모리 시장 선도-차세대 제품",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "[현장] 中 로봇 기업 '유비테크'를 가다…휴머노이드 로봇의 진화",
+          "summary": "신질 생산력은 기술혁신을 바탕으로 생산성과 산업 경쟁력을 높이려는 중국의 경제·산업정책 개념이다. AI와 로봇, 첨단 제조업 등이 대표적인 분야로 꼽힌다. 탄민 CBO는 산업현장에서 로봇이 실제 작업을 수행하며...",
+          "link": "https://www.dongponews.net/news/articleView.html?idxno=60977",
+          "source": "dongponews.net",
+          "published": "2026-10-10T00:14:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "해외",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "피지컬AI",
+            "로봇"
+          ],
+          "core": 0,
+          "evidence": "중국 유비테크-휴머노이드 로봇 산업현장 투입-자동화",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "SK 최태원 \"호남권 반도체 클러스터, 속도감 있게 투자할 것\"",
+          "summary": "특히 AI 확산에 따른 메모리 수요 증가를 감안해 생산시설 확충을 서둘러야 한다고 강조했다. 앞서 최... 전남광주에서 공장을 병행 건설해야 할 수도 있다\"고 밝혔다. 이어 \"이번 방문은 전남광주에서 얼마나 빠른...",
+          "link": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=494046",
+          "source": "pinpointnews.co.kr",
+          "published": "2026-10-09T16:42:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 1,
+          "region": "타지자체",
+          "loc": "광주",
+          "ulsan_score": 0,
+          "industry": "반도체",
+          "tech": [],
+          "core": 0,
+          "evidence": "SK-AI메모리수요-호남반도체투자",
           "related": [
+            {
+              "source": "segyebiz.com",
+              "link": "http://www.segyebiz.com/newsView/20261009506411?OutUrl=naver"
+            },
             {
               "source": "파이낸셜뉴스",
-              "link": "https://www.fnnews.com/news/202610082117322203"
-            },
-            {
-              "source": "thedailypost.kr",
-              "link": "https://www.thedailypost.kr/news/articleView.html?idxno=116107"
-            },
-            {
-              "source": "세계일보",
-              "link": "https://www.segye.com/newsView/20261008517518?OutUrl=naver"
-            },
-            {
-              "source": "insight.co.kr",
-              "link": "https://www.insight.co.kr/news/577097"
-            },
-            {
-              "source": "techm.kr",
-              "link": "https://www.techm.kr/news/articleView.html?idxno=155959"
-            },
-            {
-              "source": "ebn.co.kr",
-              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727238"
-            },
-            {
-              "source": "meconomynews.com",
-              "link": "https://www.meconomynews.com/news/articleView.html?idxno=202374"
-            },
-            {
-              "source": "seoultimes.news",
-              "link": "https://www.seoultimes.news/news/article.html?no=2000100699"
-            },
-            {
-              "source": "dealsite.co.kr",
-              "link": "https://dealsite.co.kr/articles/170400"
-            },
-            {
-              "source": "이데일리",
-              "link": "https://www.edaily.co.kr/News/Read?newsId=05703926645610952&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article"
+              "link": "https://www.fnnews.com/news/202610091511302368"
             }
           ],
           "score": 70
         },
         {
-          "title": "남양주시, 지역기업 AI 전환 지원…지·산·학 협력으로 자족경제 키운...",
-          "summary": "최현덕 시장은 “급변하는 산업환경 속에서 지역기업들이 AI와 디지털 전환에 대응하고 경쟁력을 높일 수 있도록 적극 지원하겠다”고 밝혔다. 이어 “왕숙 도시첨단산업단지와 와부읍 농생명·바이오 클러스터를...",
-          "link": "https://www.viva100.com/article/20261008500859",
-          "source": "viva100.com",
-          "published": "2026-10-08T17:40:00+09:00",
+          "title": "대구·경북 로봇특화단지, 투자·산업전환·청년 일자리 연계 실행전략...",
+          "summary": "경북도는 ‘제조 AX 혁신을 견인하는 K-로봇 메가 클러스터’를 비전으로 제시했다. 유해복 경북도 첨단산업과장은 \"제품 30종 이상 개발, 기업 150개사 육성, 현장 적용 100건 이상, 전문인력 3070명 이상 확보를 목표로 하는...",
+          "link": "https://www.pressian.com/pages/articles/2026100913202965817?utm_source=naver&utm_medium=search",
+          "source": "pressian.com",
+          "published": "2026-10-09T13:45:00+09:00",
           "grade": "A",
           "m": "주제",
           "section": 1,
           "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [],
-          "core": 0,
-          "evidence": "남양주시-지역기업 AI 전환 지원-지산학협력",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "충남도, 당진 철강산업 경쟁력 강화·AI 전환·교통망 확충에 행정력 집...",
-          "summary": "제조업의 AI 전환을 위해서는 제조 AX 산학혁신파크를 활용해 기업 현장 과제 해결과 전문인력 양성을 지원한다. 철강산업의 공정 최적화와 품질관리 등을 위한 AX 실증산단과 AI 융합 실증 허브 구축 관련 정부 공모에도...",
-          "link": "https://www.pointdaily.co.kr/news/articleView.html?idxno=321782",
-          "source": "pointdaily.co.kr",
-          "published": "2026-10-08T17:38:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "충남",
-          "ulsan_score": 0,
-          "industry": "철강·기계",
-          "tech": [],
-          "core": 0,
-          "evidence": "당진철강-공정최적화·품질관리-AX실증산단",
-          "related": [
-            {
-              "source": "daily.hankooki.com",
-              "link": "https://daily.hankooki.com/news/articleView.html?idxno=1413342"
-            },
-            {
-              "source": "ajunews.com",
-              "link": "https://www.ajunews.com/view/20261008094146753"
-            },
-            {
-              "source": "ccdailynews.com",
-              "link": "https://www.ccdailynews.com/news/articleView.html?idxno=2445322"
-            },
-            {
-              "source": "paxetv.com",
-              "link": "http://www.paxetv.com/news/articleView.html?idxno=283704"
-            },
-            {
-              "source": "newsprime.co.kr",
-              "link": "http://www.newsprime.co.kr/news/article.html?no=750376"
-            },
-            {
-              "source": "연합뉴스",
-              "link": "https://www.yna.co.kr/view/AKR20261008153900063?input=1195m"
-            },
-            {
-              "source": "asiatoday.co.kr",
-              "link": "https://www.asiatoday.co.kr/kn/view.php?key=20261008010002594"
-            },
-            {
-              "source": "뉴스1",
-              "link": "https://www.news1.kr/local/daejeon-chungnam/6314607"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "美·中 'AI 조선소' 경쟁 본격화…\"K-조선도 국가 지원책 강화해야\"",
-          "summary": "양종서 서울대 조선해양공학과 객원교수는 \"한국과 비교했을 때 중국은 정부가 직접 산업 발전 계획을 세우고 자동화·로보틱스·AI 관련 산업을 육성한 뒤 이를 조선업에도 적용하는 방식으로 빠르게 전환하고 있다\"며...",
-          "link": "https://www.ddaily.co.kr/page/view/2026100816472625038",
-          "source": "ddaily.co.kr",
-          "published": "2026-10-08T17:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "조선",
-          "tech": [
-            "자율제조"
-          ],
-          "core": 0,
-          "evidence": "중국-자동화·로봇·AI 조선업 적용-조선산업",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "마스오토, 美 교통부와 자율주행 트럭 상용화 논의",
-          "summary": "정책과 산업 발전을 선도해 나가겠다”고 말했다. 마스오토는 카메라 기반 엔드투엔드(E2E) 인공지능(AI) 자율주행 시스템을 대형트럭에 적용해 한국과 미국에서 화물을 운송하고 있다. 국내에서는 2023년 자율주행 유상...",
-          "link": "https://www.ksg.co.kr/news/main_newsView.jsp?pNum=148220",
-          "source": "ksg.co.kr",
-          "published": "2026-10-08T17:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "자율제조"
-          ],
-          "core": 0,
-          "evidence": "마스오토-E2E AI 자율주행-트럭",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "엑스와이지, 'FLY ASIA 2026'서 연사 참여",
-          "summary": "토론회는 로봇, 제조, 물류 등 현실 세계와 결합한 피지컬 AI의 산업 적용 사례를 살펴보고 산업 변화와 새로운 비즈니스 기회를 논의하는 데 목적을 두고 있다. 피지컬 AI를 실제 산업에 적용하려면 환경을 인식하고...",
-          "link": "https://www.klnews.co.kr/news/articleView.html?idxno=323006",
-          "source": "klnews.co.kr",
-          "published": "2026-10-08T17:12:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "피지컬AI-로봇·제조·물류 산업적용-현장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "[이슈국감] 박상진 산은 회장 \"피지컬 AI, 3~4년 내 전환 기대\"",
-          "summary": "피지컬 AI 전환의 중요성을 강조했다. 박 회장은 국내 제조업의 높은 자동화 수준에 비해 AI 도입은 낮다고 진단했다. 그는 \"우리나라가 자동화율은 높지만 AI 도입률은 굉장히 낮고, 특히 피지컬 AI는 갈길이 멀다\"고...",
-          "link": "http://www.hansbiz.co.kr/news/articleView.html?idxno=871312",
-          "source": "hansbiz.co.kr",
-          "published": "2026-10-08T16:56:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "산업은행-피지컬AI전환-제조업고도화",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "이억원 \"가계대출, 서민·실수요자 공급과 조화 이루도록 관리\"",
-          "summary": "박상진 산업은행 회장은 \"우리나라는 제조업 기반으로 사는 나라인 만큼 피지컬 AI 전환을 잘해야 글로벌 경쟁에서 살아남을 수 있다\"며 \"반도체와 AI에 먼저 투자되더라도 향후 피지컬 AI로 전환되기를 희망하고 있다\"고...",
-          "link": "https://news.einfomax.co.kr/news/articleView.html?idxno=4438397",
-          "source": "news.einfomax.co.kr",
-          "published": "2026-10-08T16:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "산업은행-피지컬AI전환-제조경쟁력",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "박수현 충남지사 \"발전공기업 통합본사 유치전 과열 경계해야\"",
-          "summary": "한편 박 지사는 이날 당진의 발전 방향으로 철강산업의 AI 전환과 해양·자연 자원을 활용한 치유·휴양도시 조성을 제시했다. 또 제2서해대교의 국가계획 반영을 추진하고, 경제자유구역 지정 심의는 올해 말까지...",
-          "link": "https://www.newspim.com/news/view/20261008001161",
-          "source": "newspim.com",
-          "published": "2026-10-08T16:03:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "충남",
-          "ulsan_score": 0,
-          "industry": "철강·기계",
-          "tech": [],
-          "core": 0,
-          "evidence": "당진철강-AI전환-산업경쟁력강화",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "\"GPU와 경쟁 아닌 공존\"…딥엑스, '피지컬 AI' K-NPU로 글로벌 정조준",
-          "summary": "조 상무는 \"국내 최초로 피지컬 AI 반도체 양산에 성공해 상반기에만 10개국 8개 산업군에 1300만개 이상을 수출했다\"며 \"현대자동차 로보틱스랩의 로봇(DAL-e)과 중국 바이두의 스마트 팩토리 장비 등에 우리 NPU가...",
-          "link": "https://zdnet.co.kr/view/?no=20261008153014",
-          "source": "지디넷코리아",
-          "published": "2026-10-08T15:42:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "딥엑스-K-NPU-로봇스마트팩토리",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "GS칼텍스, DAX 전환 가속…정유 공정에서 사내 업무까지 AI 적용",
-          "summary": "GS칼텍스는 지속가능한 성장을 추구하는 ‘딥 트랜스포메이션’ 전략의 핵심 축으로 디지털·AI 전환(DAX)을 설정하고, 허세홍 부회장 주도로 AI 기술 확산과 디지털 전환에 주력하고 있다. 허 부회장은 ‘AI와 데이터를...",
-          "link": "https://www.ceoscoredaily.com/page/view/2026100815255930729",
-          "source": "ceoscoredaily.com",
-          "published": "2026-10-08T15:36:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "석유화학",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "GS칼텍스-정유공정·사내업무 AI-여수공장",
-          "related": [
-            {
-              "source": "e-platform.net",
-              "link": "http://www.e-platform.net/news/articleView.html?idxno=106015"
-            },
-            {
-              "source": "news.bizwatch.co.kr",
-              "link": "https://news.bizwatch.co.kr/article/industry/2026/10/08/0028"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "[Biz-inside,China] 76초마다 차량 1대 생산...中 베이징 이좡, ‘혁신 산...",
-          "summary": "샤오미 자동차 공장부터 휴머노이드 로봇 검증 플랫폼까지...베이징 이좡(亦莊)이 첨단 기업을 발판 삼아... 7월에는 기업의 인공지능(AI) 모델 서비스 이용료를 지원하는 '모델 바우처'를 지급하는 플랫폼도 선보였다....",
-          "link": "https://www.joongang.co.kr/article/25468191",
-          "source": "중앙일보",
-          "published": "2026-10-08T15:17:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "샤오미-자동차공장AI-베이징이좡",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "“GPU·전력 다음은 메모리”…SK하이퍼 정석근, ‘AI 토큰 팩토리’ 시...",
-          "summary": "이날 '지능 생산 공장으로서 AI 데이터센터'를 주제로 기조강연에 나선 정 대표는 AI 데이터센터(AIDC)를 'AI 토큰 팩토리(AI Token Factory)'로 정의했다. 데이터를 저장·처리하는 시설에서 AI 모델을 활용해 지능을 대규모로...",
-          "link": "https://www.ddaily.co.kr/page/view/2026100815144712624",
-          "source": "ddaily.co.kr",
-          "published": "2026-10-08T15:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "SK하이닉스-AI데이터센터-메모리토큰팩토리",
-          "related": [
-            {
-              "source": "뉴스1",
-              "link": "https://www.news1.kr/it-science/cc-newmedia/6313993"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "인천환경공단, AI로 산업현장 위험 잡는다",
-          "summary": "인천환경공단이 생성형 인공지능(AI)을 산업현장 안전관리에 본격 접목한다. 경험과 직관에 의존하던... 기존 위험성평가 결과의 편차를 AI로 분석하고, 아차사고 데이터를 교차 분석해 기존 평가에서 빠졌던 위험요인을...",
-          "link": "https://www.viva100.com/article/20261008500632",
-          "source": "viva100.com",
-          "published": "2026-10-08T15:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "인천",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "LLM·에이전트"
-          ],
-          "core": 0,
-          "evidence": "인천환경공단-AI 위험평가·안전관리-산업현장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "피지컬 AI 최대 난제 '로봇손'… 옵티머스 vs 아틀라스 승부 가른다",
-          "summary": "피지컬 인공지능(AI) 시대가 다가오며 기업들의 경쟁력이 로봇의 '손'에 달렸다는 말이 나온다. 휴머노이드... 현대차그룹은 미국 조지아주(州)에 위치한 공장 현대차그룹 메타플랜트 아메리카(HMGMA)를 아틀라스의 주요 실증...",
-          "link": "http://www.the-biz.co.kr/news/articleView.html?idxno=728967",
-          "source": "the-biz.co.kr",
-          "published": "2026-10-08T13:18:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "현대차-휴머노이드아틀라스-공장실증",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "LG전자, 185개국 청소년 로봇대회 후원…피지컬 AI 가치 공유",
-          "summary": "LG전자는 로봇 플랫폼과 로봇 지능, 데이터 역량을 결합해 로보틱스를 피지컬 인공지능(AI) 기반 미래... 최근에는 로봇 학습과 운영에 필요한 데이터를 수집·관리하는 LG데이터팩토리를 운영하고 있다. 수집한 데이터를...",
-          "link": "https://www.ezyeconomy.com/news/articleView.html?idxno=240601",
-          "source": "ezyeconomy.com",
-          "published": "2026-10-08T11:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
+          "loc": "경북",
           "ulsan_score": 0,
           "industry": "기타",
           "tech": [
             "로봇"
           ],
           "core": 0,
-          "evidence": "LG-로봇데이터팩토리-피지컬AI",
+          "evidence": "경북도-K-로봇 메가클러스터-제조 AX 혁신",
           "related": [
-            {
-              "source": "koreareport.co.kr",
-              "link": "https://www.koreareport.co.kr/news/articleView.html?idxno=53521"
-            },
-            {
-              "source": "gpkorea.com",
-              "link": "https://www.gpkorea.com/news/articleView.html?idxno=147385"
-            },
-            {
-              "source": "이데일리",
-              "link": "https://www.edaily.co.kr/News/Read?newsId=02896246645610952&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article"
-            },
-            {
-              "source": "조선일보",
-              "link": "https://biz.chosun.com/it-science/ict/2026/10/08/2HOA37FQYZD7FL43VP4YDYTHDQ/?utm_source=naver&utm_medium=original&utm_campaign=biz"
-            },
-            {
-              "source": "ddaily.co.kr",
-              "link": "https://www.ddaily.co.kr/page/view/2026100809032544425"
-            },
-            {
-              "source": "g-enews.com",
-              "link": "https://www.g-enews.com/view.php?ud=202610080846537583084322ec9_1"
-            },
-            {
-              "source": "biz.newdaily.co.kr",
-              "link": "https://biz.newdaily.co.kr/site/data/html/2026/10/08/2026100800069.html"
-            },
-            {
-              "source": "nextdaily.co.kr",
-              "link": "https://www.nextdaily.co.kr/news/articleView.html?idxno=253671"
-            },
-            {
-              "source": "lcnews.co.kr",
-              "link": "https://www.lcnews.co.kr/news/articleView.html?idxno=209386"
-            },
-            {
-              "source": "ajunews.com",
-              "link": "https://www.ajunews.com/view/20261008083311428"
-            },
-            {
-              "source": "ebn.co.kr",
-              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727117"
-            },
-            {
-              "source": "asiaa.co.kr",
-              "link": "https://www.asiaa.co.kr/news/articleView.html?idxno=265514"
-            },
-            {
-              "source": "뉴스1",
-              "link": "https://www.news1.kr/industry/general-industry/6313731"
-            },
-            {
-              "source": "dailian.co.kr",
-              "link": "https://www.dailian.co.kr/news/view/1699274/?sc=Naver"
-            },
-            {
-              "source": "popcornnews.net",
-              "link": "http://www.popcornnews.net/news/articleView.html?idxno=135319"
-            },
-            {
-              "source": "etoday.co.kr",
-              "link": "https://www.etoday.co.kr/news/view/2633633"
-            },
-            {
-              "source": "newsdream.kr",
-              "link": "http://www.newsdream.kr/news/articleView.html?idxno=119580"
-            },
-            {
-              "source": "socialvalue.kr",
-              "link": "https://www.socialvalue.kr/news/view/1065571702726367"
-            },
-            {
-              "source": "newsinside.kr",
-              "link": "https://www.newsinside.kr/news/articleView.html?idxno=5019606"
-            },
-            {
-              "source": "cwn.kr",
-              "link": "https://www.cwn.kr/news/articleView.html?idxno=58711"
-            },
-            {
-              "source": "seoultimes.news",
-              "link": "https://www.seoultimes.news/news/article.html?no=2000100687"
-            },
-            {
-              "source": "thepowernews.co.kr",
-              "link": "https://www.thepowernews.co.kr/view.php?ud=202610081408079721de3f0aa1be_7"
-            },
-            {
-              "source": "dizzotv.com",
-              "link": "https://www.dizzotv.com/site/data/html_dir/2026/10/08/2026100880080.html"
-            },
-            {
-              "source": "worktoday.co.kr",
-              "link": "http://www.worktoday.co.kr/news/articleView.html?idxno=90189"
-            },
             {
               "source": "sentv.co.kr",
-              "link": "https://www.sentv.co.kr/article/view/sentv202610080050"
-            },
-            {
-              "source": "weeklytoday.com",
-              "link": "http://www.weeklytoday.com/news/articleView.html?idxno=797346"
-            },
-            {
-              "source": "businessplus.kr",
-              "link": "https://www.businessplus.kr/news/articleView.html?idxno=117883"
-            },
-            {
-              "source": "ftoday.co.kr",
-              "link": "http://www.ftoday.co.kr/news/articleView.html?idxno=366898"
-            },
-            {
-              "source": "megaeconomy.co.kr",
-              "link": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065586039102465"
-            },
-            {
-              "source": "aitimes.kr",
-              "link": "https://www.aitimes.kr/news/articleView.html?idxno=42224"
-            },
-            {
-              "source": "e-science.co.kr",
-              "link": "https://www.e-science.co.kr/news/articleView.html?idxno=136971"
-            },
-            {
-              "source": "finomy.com",
-              "link": "http://www.finomy.com/news/articleView.html?idxno=263173"
-            },
-            {
-              "source": "인더스트리뉴스",
-              "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=87205"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "케이엔에스, 안성 신공장 증설 결정",
-          "summary": "피지컬 AI 분야의 다양한 무인자동화 장비 수요에도 대응할 계획이다. 케이엔에스 관계자는 \"신공장은 46파이 계열 원통형 배터리 장비와 신규 에너지저장장치(ESS) 솔루션 장비, 무인자동화 설비 수요 증가에...",
-          "link": "https://www.newsis.com/view/NISX20261008_0003818738",
-          "source": "뉴시스",
-          "published": "2026-10-08T10:23:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "배터리",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "케이엔에스-무인자동화장비-배터리팩토리",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "영호남 경계 없앤 소부장 동맹",
-          "summary": "영호남을 대표하는 대구시와 전남광주통합특별시가 손을 잡고 공장 내부를 스스로 누비며 작업하는 자율주행 제조 모빌리티 개발에 나선다. 지역의 한계를 넘어 각 지역 산업의 강점을 결합하는 초광역 소부장(소재...",
-          "link": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3077791",
-          "source": "newsclaim.co.kr",
-          "published": "2026-10-08T10:10:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "대구",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "대구·전남광주-자율주행 공정 모빌리티-제조현장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "도요타도 포기했던 사우디 땅에 ‘1111마력 괴물차’가 나타나다[딥다이...",
-          "summary": "엑소봇은 내년 1월부터 사우디의 킹 압둘라 경제도시(KAEC)에 있는 공장에서 양산되고요. 2027년 3월부터... AI 기반의 자동화 로봇이 용접, 도장, 핵심 부품 조립에 적용되죠. 스마트 팩토리 구축은 독일 지멘스가...",
-          "link": "https://www.donga.com/news/Economy/article/all/20261007/134799491/1",
-          "source": "동아일보",
-          "published": "2026-10-08T10:01:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "엑소봇-AI로봇 용접도장조립-사우디공장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "대구시, 전남광주와 모빌리티 핵심부품 기술 개발",
-          "summary": "이에 따라 대구시와 전남광주시는 2030년까지 국비 200억 원을 들여 제조 현장에서 부품과 자재를 운반하고... 플랫폼 제작을 담당하고, 전남광주는 라이다를 포함한 자율주행 제어 소프트웨어 개발을 맡을 예정입니다.",
-          "link": "https://www.tbc.co.kr/news/view?pno=20261007165614AE06533&id=211851",
-          "source": "tbc.co.kr",
-          "published": "2026-10-08T09:42:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "타지자체",
-          "loc": "대구",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "대구·전남광주-자율주행 공정모빌리티 핵심부품-제조현장",
-          "related": [
-            {
-              "source": "mhns.co.kr",
-              "link": "https://www.mhns.co.kr/news/articleView.html?idxno=763164"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "킨텍스, '2026 한국건설·안전박람회', '2026 도시안전기술 박람회' 동시...",
-          "summary": "AI·딥러닝 기반 재난 데이터 분석과 조기경보, 디지털트윈 기반 도시 인프라 통합관제 등을 통해 도시의 위험을 사전에 파악하고 대응하는 방안을 선보인다. 여기에 GIS 기반 다중이용시설 사고예측과 AI·IoT 기반...",
-          "link": "https://www.joongangenews.com/news/articleView.html?idxno=553424",
-          "source": "joongangenews.com",
-          "published": "2026-10-08T09:06:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "건설",
-          "tech": [
-            "로봇",
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "건설·안전박람회-AX·Physical AI-산업현장",
-          "related": [
-            {
-              "source": "munhwa.com",
-              "link": "https://www.munhwa.com/article/11622110?ref=naver"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "두산로보틱스, 국산 AI 반도체로 한국형 피지컬 AI 구현 나선다",
-          "summary": "두산로보틱스 두산로보틱스가 피지컬 AI(Physical AI) 관련 국책과제 2건을 잇달아 수주하며 협동로봇 지능화와 제조 현장 혁신에 본격적으로 나선다. 두산로보틱스는 산업통상부와 한국산업기술기획평가원이 공동으로...",
-          "link": "http://robotzine.co.kr/entry/279246",
-          "source": "robotzine.co.kr",
-          "published": "2026-10-08T09:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "로봇",
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "두산로보틱스-협동로봇·용접AI-K-온디바이스",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "삼성전자, 분기 영업익 100조 시대 개막…한국 산업 역사 새로 썼다",
-          "summary": "AI 시대 반도체 호황이 일등공신 이러한 눈부신 실적 배경에는 범용 인공지능(AGI) 시대 개막에 따른 글로벌... 반면 파운드리를 포함한 비메모리 분야와 완제품(DX) 부문은 원가 상승 및 해외 공장 가동 비용 부담...",
-          "link": "https://www.pointe.co.kr/news/articleView.html?idxno=85765",
-          "source": "pointe.co.kr",
-          "published": "2026-10-08T08:44:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "삼성전자-AI반도체-메모리",
-          "related": [
-            {
-              "source": "아시아경제",
-              "link": "https://view.asiae.co.kr/article/2026100808413440057"
-            },
-            {
-              "source": "digitaltoday.co.kr",
-              "link": "https://www.digitaltoday.co.kr/news/articleView.html?idxno=705815"
-            },
-            {
-              "source": "greened.kr",
-              "link": "https://www.greened.kr/news/articleView.html?idxno=351655"
-            },
-            {
-              "source": "cnbizm.com",
-              "link": "https://www.cnbizm.com/news/articleView.html?idxno=317428"
-            },
-            {
-              "source": "inews24.com",
-              "link": "http://www.inews24.com/view/2012989"
-            },
-            {
-              "source": "newsdream.kr",
-              "link": "http://www.newsdream.kr/news/articleView.html?idxno=119576"
-            },
-            {
-              "source": "busan.com",
-              "link": "https://www.busan.com/view/busan/view.php?code=2026100809372409981"
-            },
-            {
-              "source": "widedaily.com",
-              "link": "https://www.widedaily.com/news/articleView.html?idxno=301794"
-            },
-            {
-              "source": "ezyeconomy.com",
-              "link": "https://www.ezyeconomy.com/news/articleView.html?idxno=240579"
-            },
-            {
-              "source": "뉴시스",
-              "link": "https://www.newsis.com/view/NISX20261008_0003818483"
-            },
-            {
-              "source": "moneystorm.kr",
-              "link": "https://www.moneystorm.kr/news/articleView.html?idxno=7117"
-            },
-            {
-              "source": "조선일보",
-              "link": "https://it.chosun.com/news/articleView.html?idxno=2023092171625"
-            },
-            {
-              "source": "newscj.com",
-              "link": "https://www.newscj.com/news/articleView.html?idxno=3438732"
-            },
-            {
-              "source": "4th.kr",
-              "link": "http://www.4th.kr/news/articleView.html?idxno=2119386"
-            },
-            {
-              "source": "theopiniontimes.news",
-              "link": "https://theopiniontimes.news/%ec%82%bc%ec%84%b1%ec%a0%84%ec%9e%90-3%eb%b6%84%ea%b8%b0-%ec%98%81%ec%97%85%ec%9d%b4%ec%9d%b5-107%ec%a1%b0%ea%b5%ad%eb%82%b4-%ea%b8%b0%ec%97%85-%ec%b2%ab-%eb%b6%84%ea%b8%b0-100%ec%a1%b0/"
-            },
-            {
-              "source": "newsian.co.kr",
-              "link": "http://www.newsian.co.kr/news/articleView.html?idxno=96719"
-            },
-            {
-              "source": "etoday.co.kr",
-              "link": "https://www.etoday.co.kr/news/view/2633680"
-            },
-            {
-              "source": "econonews.co.kr",
-              "link": "http://www.econonews.co.kr/news/articleView.html?idxno=445423"
-            },
-            {
-              "source": "hansbiz.co.kr",
-              "link": "http://www.hansbiz.co.kr/news/articleView.html?idxno=870961"
-            },
-            {
-              "source": "ziksir.com",
-              "link": "https://www.ziksir.com/news/articleView.html?idxno=148706"
-            },
-            {
-              "source": "ebn.co.kr",
-              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727094"
-            },
-            {
-              "source": "중앙일보",
-              "link": "https://www.joongang.co.kr/article/25468080"
-            },
-            {
-              "source": "todayeconomic.com",
-              "link": "https://www.todayeconomic.com/news/article.html?no=32365"
-            },
-            {
-              "source": "bizwork.co.kr",
-              "link": "https://www.bizwork.co.kr/news/articleView.html?idxno=419699"
-            },
-            {
-              "source": "wolyo.co.kr",
-              "link": "https://www.wolyo.co.kr/news/articleView.html?idxno=318801"
-            },
-            {
-              "source": "lcnews.co.kr",
-              "link": "https://www.lcnews.co.kr/news/articleView.html?idxno=209378"
-            },
-            {
-              "source": "동아일보",
-              "link": "https://www.donga.com/news/Economy/article/all/20261009/134812803/2"
-            },
-            {
-              "source": "경향신문",
-              "link": "https://www.khan.co.kr/article/202610082215005/?utm_source=khan_rss&utm_medium=rss&utm_campaign=economy_news"
-            },
-            {
-              "source": "MBN",
-              "link": "https://www.mbn.co.kr/pages/news/newsView.php?category=mbn00003&news_seq_no=5223686"
-            },
-            {
-              "source": "AI타임스",
-              "link": "https://www.aitimes.com/news/articleView.html?idxno=216062"
-            },
-            {
-              "source": "MBN",
-              "link": "https://www.mbn.co.kr/pages/news/newsView.php?category=mbn00003&news_seq_no=5223846"
-            },
-            {
-              "source": "세계일보",
-              "link": "https://www.segye.com/newsView/20261008514204?OutUrl=naver"
-            },
-            {
-              "source": "ytn.co.kr",
-              "link": "https://www.ytn.co.kr/_ln/0102_202610082235508232"
-            },
-            {
-              "source": "imnews.imbc.com",
-              "link": "https://imnews.imbc.com/replay/2026/nwdesk/article/6856664_37004.html"
-            },
-            {
-              "source": "obsnews.co.kr",
-              "link": "https://www.obsnews.co.kr/news/articleView.html?idxno=1539942"
-            },
-            {
-              "source": "세계일보",
-              "link": "https://www.segye.com/newsView/20261008513627?OutUrl=naver"
-            },
-            {
-              "source": "thetracker.co.kr",
-              "link": "https://thetracker.co.kr/View.aspx?No=4256721"
-            },
-            {
-              "source": "opinionnews.co.kr",
-              "link": "http://www.opinionnews.co.kr/news/articleView.html?idxno=145412"
-            },
-            {
-              "source": "intn.co.kr",
-              "link": "http://www.intn.co.kr/news/articleView.html?idxno=2053902"
-            },
-            {
-              "source": "kjdaily.com",
-              "link": "http://www.kjdaily.com/article.php?aid=1791426906688546276"
-            },
-            {
-              "source": "jeonmae.co.kr",
-              "link": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1299796"
-            },
-            {
-              "source": "동아일보",
-              "link": "https://www.donga.com/news/Economy/article/all/20261008/134807630/1"
-            },
-            {
-              "source": "techm.kr",
-              "link": "https://www.techm.kr/news/articleView.html?idxno=155934"
-            },
-            {
-              "source": "fieldnews.kr",
-              "link": "http://www.fieldnews.kr/news/articleView.html?idxno=32091"
-            },
-            {
-              "source": "suwonilbo.kr",
-              "link": "https://www.suwonilbo.kr/view.html?id=L261007220638e2a9"
-            },
-            {
-              "source": "dizzotv.com",
-              "link": "https://www.dizzotv.com/site/data/html_dir/2026/10/08/2026100880016.html"
+              "link": "https://www.sentv.co.kr/article/view/sentv202610090004"
             },
             {
               "source": "hidomin.com",
-              "link": "https://www.hidomin.com/news/articleView.html?idxno=724098"
-            },
-            {
-              "source": "한겨레",
-              "link": "https://www.hani.co.kr/arti/economy/marketing/1281432.html"
-            },
-            {
-              "source": "인더스트리뉴스",
-              "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=87214"
-            },
-            {
-              "source": "nocutnews.co.kr",
-              "link": "https://www.nocutnews.co.kr/news/6588684?utm_source=naver&utm_medium=article&utm_campaign=20261008020035"
-            },
-            {
-              "source": "yonhapnewstv.co.kr",
-              "link": "http://www.yonhapnewstv.co.kr/news/MYH202610081332126M2"
-            },
-            {
-              "source": "biztribune.co.kr",
-              "link": "http://www.biztribune.co.kr/news/articleView.html?idxno=360285"
-            },
-            {
-              "source": "한국경제",
-              "link": "https://magazine.hankyung.com/business/article/202610081100b"
-            },
-            {
-              "source": "전자신문",
-              "link": "https://www.etnews.com/20261009000007"
-            },
-            {
-              "source": "서울신문",
-              "link": "https://www.seoul.co.kr/news/editOpinion/editorial/2026/10/09/20261009027008?wlog_tag3=naver"
-            },
-            {
-              "source": "ajunews.com",
-              "link": "https://www.ajunews.com/view/20261008151153746"
-            },
-            {
-              "source": "국민일보",
-              "link": "https://www.kmib.co.kr/article/view.asp?arcid=9000021095&cp=nv"
-            },
-            {
-              "source": "news2day.co.kr",
-              "link": "https://www.news2day.co.kr/article/20261008500212"
-            },
-            {
-              "source": "asiatime.co.kr",
-              "link": "https://www.asiatime.co.kr/article/20261008500231"
-            },
-            {
-              "source": "ytn.co.kr",
-              "link": "https://www.ytn.co.kr/_ln/0102_202610081437340186"
-            },
-            {
-              "source": "bizhankook.com",
-              "link": "https://bizhankook.com/articles/samsung-tops-100trillion-hbm4-growth.html"
-            },
-            {
-              "source": "한국일보",
-              "link": "https://www.hankookilbo.com/news/article/A2026100810420000233?did=NA"
-            },
-            {
-              "source": "mediaus.co.kr",
-              "link": "https://www.mediaus.co.kr/news/articleView.html?idxno=318376"
-            },
-            {
-              "source": "efnews.co.kr",
-              "link": "http://www.efnews.co.kr/news/articleView.html?idxno=132983"
-            },
-            {
-              "source": "sateconomy.co.kr",
-              "link": "http://sateconomy.co.kr/news/view/1065577698121223"
-            },
-            {
-              "source": "m-i.kr",
-              "link": "https://www.m-i.kr/news/articleView.html?idxno=2003898"
-            },
-            {
-              "source": "worktoday.co.kr",
-              "link": "http://www.worktoday.co.kr/news/articleView.html?idxno=90184"
-            },
-            {
-              "source": "mydaily.co.kr",
-              "link": "https://www.mydaily.co.kr/page/view/2026100810044140394"
-            },
-            {
-              "source": "뉴스1",
-              "link": "https://www.news1.kr/industry/general-industry/6313960"
-            },
-            {
-              "source": "joongangenews.com",
-              "link": "https://www.joongangenews.com/news/articleView.html?idxno=553389"
-            },
-            {
-              "source": "aitimes.kr",
-              "link": "https://www.aitimes.kr/news/articleView.html?idxno=42220"
-            },
-            {
-              "source": "한국경제",
-              "link": "https://www.hankyung.com/article/2026100818171"
-            },
-            {
-              "source": "seouleconews.com",
-              "link": "http://www.seouleconews.com/news/articleView.html?idxno=94212"
-            },
-            {
-              "source": "newstomato.com",
-              "link": "http://www.newstomato.com/ReadNews.aspx?no=1316094&inflow=N"
-            },
-            {
-              "source": "news.knn.co.kr",
-              "link": "https://news.knn.co.kr/news/article_sns/1816"
+              "link": "https://www.hidomin.com/news/articleView.html?idxno=724181"
             }
           ],
-          "score": 70
-        },
-        {
-          "title": "'엔비디아도 넘었다' 삼성전자, 3분기 영업익 107조 '새 역사'",
-          "summary": "인공지능(AI) 산업을 주도하는 엔비디아를 비롯한 미국 빅테크 기업들의 분기 영업이익마저 뛰어넘었다.... 아울러 신규 반도체 공장 건설부터 실제 웨이퍼 생산까지 3년 반 이상이 걸리는 만큼 단기간에 공급을...",
-          "link": "https://www.nocutnews.co.kr/news/6588602?utm_source=naver&utm_medium=article&utm_campaign=20261008114734",
-          "source": "nocutnews.co.kr",
-          "published": "2026-10-08T08:39:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "삼성전자-AI반도체-메모리",
-          "related": [
-            {
-              "source": "smedaily.co.kr",
-              "link": "http://www.smedaily.co.kr/news/articleView.html?idxno=364389"
-            },
-            {
-              "source": "newskr.kr",
-              "link": "http://www.newskr.kr/news/articleView.html?idxno=106996"
-            },
-            {
-              "source": "ebn.co.kr",
-              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727126"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "EV 성장 둔화에도 버틴 현대차...친환경·AI로 미래차 판 넓힌다[정의선...",
-          "summary": "정 회장은 지난 7월 미국 샌프란시스코 AI 서밋에서 \"전통적인 자동차 제조의 경계를 넘어 자율주행, 로보틱스, AI 팩토리 등을 확장해 피지컬 AI 솔루션 기업으로 전환을 추진하고 있다\"고 밝혔다. 피지컬 AI는 자동차와...",
-          "link": "https://www.newsway.co.kr/news/view?ud=2026100715115830315",
-          "source": "newsway.co.kr",
-          "published": "2026-10-08T06:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 1,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "자동차",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "현대차그룹-피지컬AI 기업 전환-자동차산업",
-          "related": [],
           "score": 70
         }
       ]
@@ -1942,11 +865,11 @@
       "label": "기술·인프라",
       "items": [
         {
-          "title": "세종시, 7조 원 규모 AI 데이터센터 투자 협약",
-          "summary": "뉴데일리 이길표 기자 = 세종시가 7조 원 규모의 인공지능(AI) 데이터센터 건립을 위한 투자 협약을... 기업들은 자금 조달과 기반시설 구축에 힘쓰고, 지역 AI 산업 생태계 활성화를 위한 협력사업도 발굴하기로 했다....",
-          "link": "https://cc.newdaily.co.kr/site/data/html/2026/10/08/2026100800252.html",
-          "source": "cc.newdaily.co.kr",
-          "published": "2026-10-08T15:44:00+09:00",
+          "title": "세종시, 미래 발전의 디딤돌 ... 7조원 인공지능(AI) 데이터센터 건립 투...",
+          "summary": "8일 시청 회의실에서는 7조 원 규모의 인공지능(AI) 데이터센터 건립 투자를 위한 업무협약 체결식을 가졌다.... 모이는 산업 생태계를 조성해 새로운 성장 기반을 마련 했다\" 며 \"세종시를 대한민국을 대표하는 인공지능...",
+          "link": "https://www.gukjenews.com/news/articleView.html?idxno=3717139",
+          "source": "gukjenews.com",
+          "published": "2026-10-09T12:10:00+09:00",
           "grade": "S",
           "m": "주제",
           "section": 2,
@@ -1958,244 +881,487 @@
             "데이터센터"
           ],
           "core": 0,
-          "evidence": "세종시-AI데이터센터 건립-7조 규모",
-          "related": [
-            {
-              "source": "ccnnews.co.kr",
-              "link": "http://www.ccnnews.co.kr/news/articleView.html?idxno=415989"
-            },
-            {
-              "source": "breaknews.com",
-              "link": "http://www.breaknews.com/1241872"
-            },
-            {
-              "source": "서울경제",
-              "link": "https://www.sedaily.com/article/20099529?ref=naver"
-            }
-          ],
+          "evidence": "세종시-AI데이터센터-7조원 투자",
+          "related": [],
           "score": 100
         },
         {
-          "title": "세종시, 대한민국 AI 산업 거점 도약…7조 원대 데이터센터 들어선다",
-          "summary": "사진=세종시 제공  세종특별자치시가 총 7조 원 규모의 인공지능(AI) 데이터센터를 유치하며 관련 산업 생태계 조성에 나선다. 세종시는 8일 시청 회의실에서 SK증권, 메테우스자산운용, 시드에이치와 'AI 데이터센터 건립...",
-          "link": "https://daily.hankooki.com/news/articleView.html?idxno=1413264",
-          "source": "daily.hankooki.com",
-          "published": "2026-10-08T15:22:00+09:00",
-          "grade": "S",
+          "title": "자율주행·휴머노이드 ‘눈’ 맞춘다…피지컬 AI 시대 뜨는 캘리브레이...",
+          "summary": "피지컬 AI가 연구개발을 넘어 산업 현장으로 확산하면서 센서 검교정 기술의 중요성도 커지는 모습이다. 10일 관련 업계에 따르면 자율주행차와 휴머노이드, 산업용 로봇 등에 탑재되는 센서가 다양해지면서...",
+          "link": "https://www.etoday.co.kr/news/view/2634064",
+          "source": "etoday.co.kr",
+          "published": "2026-10-10T09:02:00+09:00",
+          "grade": "A",
           "m": "주제",
           "section": 2,
-          "region": "타지자체",
-          "loc": "세종",
+          "region": "전국",
+          "loc": null,
           "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "세종시-AI데이터센터 유치-7조 규모",
-          "related": [
-            {
-              "source": "KBS",
-              "link": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8681437&ref=A"
-            },
-            {
-              "source": "news.skbroadband.com",
-              "link": "https://news.skbroadband.com/news/articleView.html?idxno=239765"
-            },
-            {
-              "source": "nspna.com",
-              "link": "https://www.nspna.com/news/?mode=view&newsid=831123"
-            },
-            {
-              "source": "biz.sbs.co.kr",
-              "link": "https://biz.sbs.co.kr/article_hub/20000339055?division=NAVER"
-            },
-            {
-              "source": "연합뉴스",
-              "link": "https://www.yna.co.kr/view/AKR20261008158200063"
-            },
-            {
-              "source": "dtnews24.com",
-              "link": "http://www.dtnews24.com/news/articleView.html?idxno=815908"
-            },
-            {
-              "source": "파이낸셜뉴스",
-              "link": "https://www.fnnews.com/news/202610081355297881"
-            },
-            {
-              "source": "newsworker.co.kr",
-              "link": "https://www.newsworker.co.kr/news/articleView.html?idxno=507783"
-            },
-            {
-              "source": "daejonilbo.com",
-              "link": "https://www.daejonilbo.com/news/articleView.html?idxno=2305788"
-            },
-            {
-              "source": "yonhapnewstv.co.kr",
-              "link": "http://www.yonhapnewstv.co.kr/news/AKR20261008144248iMK"
-            },
-            {
-              "source": "newspim.com",
-              "link": "https://www.newspim.com/news/view/20261008000850"
-            },
-            {
-              "source": "nocutnews.co.kr",
-              "link": "https://www.nocutnews.co.kr/news/6588899?utm_source=naver&utm_medium=article&utm_campaign=20261008014135"
-            }
-          ],
-          "score": 100
-        },
-        {
-          "title": "[과기원NOW] GIST-KAIST, 같은 색상에 '빛의 지문' 담은 광보안소자 개발...",
-          "summary": "■ 울산과학기술원(UNIST)은 백승렬 인공지능대학원 교수 연구팀이 스웨덴 말뫼에서 열린 유럽컴퓨터비전학회(ECCV 2026) 연계 경진대회 세 곳에서 각각 1·2·3위를 차지했다고 8일 밝혔다. 컴퓨터 비전은 인공지능(AI)이...",
-          "link": "https://www.dongascience.com/news/view/80273",
-          "source": "dongascience.com",
-          "published": "2026-10-08T17:53:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "UNIST AI대학원-컴퓨터 비전-국제대회 수상",
-          "related": [],
-          "score": 78
-        },
-        {
-          "title": "정기선 회장 '미래사업' 승부수…HD현대, 조선 넘어 AI·SMR 키운다 [재계...",
-          "summary": "HD현대중공업은 선박용 엔진에서 쌓은 기술력을 바탕으로 AI 데이터센터 전력시장 진출을 추진하고 있다. 이를 위해 발전용 엔진 생산기지 구축에 8336억원을 투자하기로 했다. SMR 주기기 제작 전용 공장에도 2386억원을...",
-          "link": "https://www.newspost.kr/news/articleView.html?idxno=226245",
-          "source": "newspost.kr",
-          "published": "2026-10-08T17:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "조선",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "HD현대중공업-AI 데이터센터 전력시장-발전용엔진",
-          "related": [],
-          "score": 78
-        },
-        {
-          "title": "작은 곤충 찾고 환자 걸음 분석…UNIST 비전 AI 국제대회 입상",
-          "summary": "교수는 “이번 성과는 컴퓨터 비전 기술이 농업, 로봇, 임상 등 다양한 분야의 문제 해결에 활용될 수 있음을 보여준다”며 “앞으로도 실제 환경에 적용할 수 있는 비전 AI 기술을 연구해 나가겠다”고 말했다. 울산=",
-          "link": "https://www.viva100.com/article/20261008500673",
-          "source": "viva100.com",
-          "published": "2026-10-08T15:36:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "UNIST 비전 AI-곤충탐지·환자분석-국제대회",
-          "related": [
-            {
-              "source": "연합뉴스",
-              "link": "https://www.yna.co.kr/view/AKR20261008151300057?input=1195m"
-            },
-            {
-              "source": "tournews21.com",
-              "link": "https://www.tournews21.com/news/articleView.html?idxno=145284"
-            }
-          ],
-          "score": 78
-        },
-        {
-          "title": "“500m 밖도 잡는다”…인텔리빅스, 방사청 62억원 수주 ‘AI 경계병’ ...",
-          "summary": "찾아내는 ‘AI 경계병’이 개발된다. 눈·비·안개 등으로 시야가 나빠져도 500m 거리의 사람이나 차량 등을 찾아내고 인공지능(AI)이 상황을 분석해 경계 인력의 판단을 돕는 방식이다. 안전 AI 기업 인텔리빅스는...",
-          "link": "https://www.edaily.co.kr/News/Read?newsId=03821206645610952&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article",
-          "source": "이데일리",
-          "published": "2026-10-08T14:20:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
-          "industry": "공공",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "인텔리빅스-AI 경계병 시스템-GOP",
-          "related": [
-            {
-              "source": "thelec.kr",
-              "link": "https://www.thelec.kr/news/articleView.html?idxno=63490"
-            },
-            {
-              "source": "epnc.co.kr",
-              "link": "https://www.epnc.co.kr/news/articleView.html?idxno=407969"
-            },
-            {
-              "source": "aitimes.kr",
-              "link": "https://www.aitimes.kr/news/articleView.html?idxno=42234"
-            },
-            {
-              "source": "로봇신문",
-              "link": "https://www.irobotnews.com/news/articleView.html?idxno=48902"
-            },
-            {
-              "source": "fetv.co.kr",
-              "link": "https://www.fetv.co.kr/news/articleView.html?idxno=311480"
-            },
-            {
-              "source": "byline.network",
-              "link": "https://byline.network/?p=9004111222622780"
-            },
-            {
-              "source": "financialpost.co.kr",
-              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=279479"
-            },
-            {
-              "source": "paxetv.com",
-              "link": "http://www.paxetv.com/news/articleView.html?idxno=283681"
-            }
-          ],
-          "score": 78
-        },
-        {
-          "title": "UNIST AI대학원 백승렬 교수팀, ECCV 2026 연계 챌린지서 각각 1·2·3위 올...",
-          "summary": "인공지능(AI)이 농경지의 작은 곤충을 찾아내고, 한 번의 시범으로 로봇 손에 물체 잡는 법을 가르친다. 환자의 걸음걸이로 보행 장애 정도도 예측한다. UNIST 연구진이 이 같은 컴퓨터 비전 기술로 국제 경진대회 세...",
-          "link": "https://www.aitimes.kr/news/articleView.html?idxno=42215",
-          "source": "aitimes.kr",
-          "published": "2026-10-08T08:44:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "울산",
-          "loc": null,
-          "ulsan_score": 8,
           "industry": "기타",
           "tech": [
             "피지컬AI"
           ],
           "core": 0,
-          "evidence": "UNIST AI대학원-컴퓨터비전 경진대회-3개분야입상",
+          "evidence": "자율주행·휴머노이드-센서 검교정 기술-피지컬AI 산업",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "SKT, 통신·AI 결합 본격화…AI 데이터센터·토큰 게이트웨이 띄운다",
+          "summary": "이번 전략은 AI 기술과 AX(AI 전환)를 기반으로 통신, AI 서비스, AI 인프라 사업을 연결하는 것이 핵심이다. SK텔레콤은 이를 바탕으로 AI 모델과 인프라뿐 아니라 AI 사용 과정에서 발생하는 토큰을 관리·활용하는...",
+          "link": "https://www.thepublic.kr/news/articleView.html?idxno=321633",
+          "source": "thepublic.kr",
+          "published": "2026-10-10T08:18:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "IT·통신·데이터센터",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "SK텔레콤-AI 데이터센터·토큰 게이트웨이-통신·AI 인프라",
           "related": [
             {
-              "source": "아시아경제",
-              "link": "https://view.asiae.co.kr/article/2026100809384349043"
+              "source": "apnews.kr",
+              "link": "https://www.apnews.kr/news/articleView.html?idxno=3051919"
+            },
+            {
+              "source": "lcnews.co.kr",
+              "link": "https://www.lcnews.co.kr/news/articleView.html?idxno=209448"
+            },
+            {
+              "source": "news.tvchosun.com",
+              "link": "https://news.tvchosun.com/site/data/html_dir/2026/10/09/2026100990148.html"
+            },
+            {
+              "source": "epnc.co.kr",
+              "link": "https://www.epnc.co.kr/news/articleView.html?idxno=407972"
+            },
+            {
+              "source": "cnbnews.com",
+              "link": "https://www.cnbnews.com/news/articleView.html?idxno=1018791"
+            },
+            {
+              "source": "news.ifm.kr",
+              "link": "https://news.ifm.kr/news/articleView.html?idxno=481231"
+            },
+            {
+              "source": "financialpost.co.kr",
+              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=279587"
             }
           ],
-          "score": 78
+          "score": 70
+        },
+        {
+          "title": "로봇 춤판, 스마트안경 ‘번쩍’… 이색 물품 등장한 ‘시연 국감’",
+          "summary": "이 의원의 시연 질의는 중국의 ‘피지컬 AI’ 발전 속도에 대한 경각심을 일깨우는 차원에서 기획됐다. 이 의원은 이날 “올해 상반기 선진 5개국 기준 중국의 휴머노이드 특허 점유율이 60.8%로 급상승했는데, 한국은 4.6...",
+          "link": "https://www.joongang.co.kr/article/25468578",
+          "source": "중앙일보",
+          "published": "2026-10-10T08:00:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "피지컬AI",
+            "로봇"
+          ],
+          "core": 0,
+          "evidence": "중국 휴머노이드 로봇 특허점유율 60.8% vs 한국 4.6%",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "얀덱스 데이터센터 이틀째 드론 공격…AI 슈퍼컴퓨터 2대 위기",
+          "summary": "러시아 AI·테크 기업 얀덱스는 칼루가 지역 데이터센터가 드론 공격을 받아 여러 모듈이 완전히 작동을... 칼루가 데이터센터는 칼루가 그랍체보 산업단지에 위치하며, 얀덱스가 총 서버 랙 용량 기준으로 자사 최대...",
+          "link": "https://www.imaeil.com/page/view/2026100921150373925",
+          "source": "imaeil.com",
+          "published": "2026-10-09T21:17:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "해외",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "IT·통신·데이터센터",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "얀덱스-AI슈퍼컴퓨터-칼루가데이터센터",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "최태원, 광주 반도체 부지 전격 방문…AI 팹 '속도전'",
+          "summary": "단순한 생산공장 증설을 넘어 호남권을 첨단 IT 제조 기반의 신산업 허브로 탈바꿈시키는 경제적 파급 효과가 예상된다. 정부 차원의 정책적 지원과 전력 공급망 구축이 적시에 연계될 경우, 대한민국은 AI 반도체...",
+          "link": "https://www.goodkyung.com/news/articleView.html?idxno=292205",
+          "source": "goodkyung.com",
+          "published": "2026-10-09T19:38:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "타지자체",
+          "loc": "광주",
+          "ulsan_score": 0,
+          "industry": "반도체",
+          "tech": [
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "SK-AI팹 광주부지 전격방문-호남권첨단산업",
+          "related": [
+            {
+              "source": "매일경제",
+              "link": "https://www.mk.co.kr/article/12172433"
+            },
+            {
+              "source": "경향신문",
+              "link": "https://www.khan.co.kr/article/202610091551001/?utm_source=khan_rss&utm_medium=rss&utm_campaign=economy_news"
+            },
+            {
+              "source": "인더스트리뉴스",
+              "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=87292"
+            },
+            {
+              "source": "greened.kr",
+              "link": "https://www.greened.kr/news/articleView.html?idxno=351753"
+            },
+            {
+              "source": "lkp.news",
+              "link": "http://www.lkp.news/news/articleView.html?idxno=84811"
+            },
+            {
+              "source": "ebn.co.kr",
+              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727284"
+            },
+            {
+              "source": "insight.co.kr",
+              "link": "https://www.insight.co.kr/news/577183"
+            },
+            {
+              "source": "lawleader.co.kr",
+              "link": "https://www.lawleader.co.kr/news/articleView.html?idxno=20134"
+            },
+            {
+              "source": "apnews.kr",
+              "link": "https://www.apnews.kr/news/articleView.html?idxno=3051913"
+            },
+            {
+              "source": "서울신문",
+              "link": "https://www.seoul.co.kr/news/economy/industry/2026/10/09/20261009500140"
+            },
+            {
+              "source": "dailysportshankook.co.kr",
+              "link": "https://www.dailysportshankook.co.kr/news/articleView.html?idxno=434278"
+            },
+            {
+              "source": "it-b.co.kr",
+              "link": "https://www.it-b.co.kr/news/articleView.html?idxno=90185"
+            },
+            {
+              "source": "tournews21.com",
+              "link": "https://www.tournews21.com/news/articleView.html?idxno=145322"
+            },
+            {
+              "source": "ebn.co.kr",
+              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727286"
+            },
+            {
+              "source": "srtimes.kr",
+              "link": "http://www.srtimes.kr/news/articleView.html?idxno=214372"
+            },
+            {
+              "source": "rightknow.co.kr",
+              "link": "http://www.rightknow.co.kr/news/articleView.html?idxno=34959"
+            },
+            {
+              "source": "뉴스1",
+              "link": "https://www.news1.kr/industry/general-industry/6315351"
+            },
+            {
+              "source": "news2day.co.kr",
+              "link": "https://www.news2day.co.kr/article/20261009500069"
+            },
+            {
+              "source": "한국경제",
+              "link": "https://magazine.hankyung.com/business/article/202610092953b"
+            },
+            {
+              "source": "sports.hankooki.com",
+              "link": "https://sports.hankooki.com/news/articleView.html?idxno=6941432"
+            },
+            {
+              "source": "greenpostkorea.co.kr",
+              "link": "https://www.greenpostkorea.co.kr/news/articleView.html?idxno=307643"
+            },
+            {
+              "source": "econonews.co.kr",
+              "link": "http://www.econonews.co.kr/news/articleView.html?idxno=445504"
+            },
+            {
+              "source": "news.ifm.kr",
+              "link": "https://news.ifm.kr/news/articleView.html?idxno=481254"
+            },
+            {
+              "source": "서울경제",
+              "link": "https://www.sedaily.com/article/20099932?ref=naver"
+            },
+            {
+              "source": "헤럴드경제",
+              "link": "https://biz.heraldcorp.com/article/10897906?ref=naver"
+            },
+            {
+              "source": "pinpointnews.co.kr",
+              "link": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=494054"
+            },
+            {
+              "source": "newsworks.co.kr",
+              "link": "https://www.newsworks.co.kr/news/articleView.html?idxno=856067"
+            },
+            {
+              "source": "viva100.com",
+              "link": "https://www.viva100.com/article/20261009500154"
+            },
+            {
+              "source": "newscj.com",
+              "link": "https://www.newscj.com/news/articleView.html?idxno=3439075"
+            },
+            {
+              "source": "서울신문",
+              "link": "https://www.seoul.co.kr/news/economy/industry/2026/10/09/20261009500140?wlog_tag3=naver"
+            },
+            {
+              "source": "헤럴드경제",
+              "link": "https://biz.heraldcorp.com/article/10897899?ref=naver"
+            },
+            {
+              "source": "지디넷코리아",
+              "link": "https://zdnet.co.kr/view/?no=20261009163220"
+            },
+            {
+              "source": "consumernews.co.kr",
+              "link": "http://www.consumernews.co.kr/news/articleView.html?idxno=765595"
+            },
+            {
+              "source": "epnc.co.kr",
+              "link": "https://www.epnc.co.kr/news/articleView.html?idxno=407975"
+            },
+            {
+              "source": "bloter.net",
+              "link": "https://www.bloter.net/news/articleView.html?idxno=675377"
+            },
+            {
+              "source": "techm.kr",
+              "link": "https://www.techm.kr/news/articleView.html?idxno=155962"
+            },
+            {
+              "source": "dailian.co.kr",
+              "link": "https://www.dailian.co.kr/news/view/1699815/?sc=Naver"
+            },
+            {
+              "source": "news.tf.co.kr",
+              "link": "https://news.tf.co.kr/read/economy/2374688.htm"
+            },
+            {
+              "source": "seoultimes.news",
+              "link": "https://www.seoultimes.news/news/article.html?no=2000100709"
+            },
+            {
+              "source": "biz.newdaily.co.kr",
+              "link": "https://biz.newdaily.co.kr/site/data/html/2026/10/09/2026100900061.html"
+            },
+            {
+              "source": "파이낸셜뉴스",
+              "link": "https://www.fnnews.com/news/202610091644073430"
+            },
+            {
+              "source": "popcornnews.net",
+              "link": "http://www.popcornnews.net/news/articleView.html?idxno=135495"
+            },
+            {
+              "source": "dealsite.co.kr",
+              "link": "https://dealsite.co.kr/articles/170412"
+            },
+            {
+              "source": "ajunews.com",
+              "link": "https://www.ajunews.com/view/20261009163837756"
+            },
+            {
+              "source": "news.einfomax.co.kr",
+              "link": "https://news.einfomax.co.kr/news/articleView.html?idxno=4438493"
+            },
+            {
+              "source": "globale.co.kr",
+              "link": "https://www.globale.co.kr/news/articleView.html?idxno=40887"
+            },
+            {
+              "source": "metroseoul.co.kr",
+              "link": "http://www.metroseoul.co.kr/article/20261009500020"
+            },
+            {
+              "source": "g-enews.com",
+              "link": "https://www.g-enews.com/view.php?ud=20261009185307839231a5c2dd38_1"
+            },
+            {
+              "source": "weekly.hankooki.com",
+              "link": "https://weekly.hankooki.com/news/articleView.html?idxno=7188202"
+            },
+            {
+              "source": "뉴시스",
+              "link": "https://www.newsis.com/view/NISX20261009_0003820292"
+            },
+            {
+              "source": "이데일리",
+              "link": "https://www.edaily.co.kr/News/Read?newsId=02794566645611280&mediaCodeNo=257&utm_source=naver&utm_medium=referral&utm_campaign=news_syndication&utm_content=original_article"
+            },
+            {
+              "source": "econonews.co.kr",
+              "link": "http://www.econonews.co.kr/news/articleView.html?idxno=445505"
+            },
+            {
+              "source": "중앙일보",
+              "link": "https://www.joongang.co.kr/article/25468466"
+            },
+            {
+              "source": "newsclaim.co.kr",
+              "link": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3077975"
+            },
+            {
+              "source": "ftoday.co.kr",
+              "link": "http://www.ftoday.co.kr/news/articleView.html?idxno=366971"
+            },
+            {
+              "source": "머니투데이",
+              "link": "https://www.mt.co.kr/industry/2026/10/09/2026100916284260972"
+            },
+            {
+              "source": "etoday.co.kr",
+              "link": "https://www.etoday.co.kr/news/view/2634165"
+            },
+            {
+              "source": "fetv.co.kr",
+              "link": "https://www.fetv.co.kr/news/articleView.html?idxno=311530"
+            },
+            {
+              "source": "mediapen.com",
+              "link": "https://www.mediapen.com/news/view/1129003"
+            }
+          ],
+          "score": 70
+        },
+        {
+          "title": "미 해군, AI 전투기 'X-BAT'에 1억5000만달러 추가 투자…총 4억달러 규모",
+          "summary": "실드AI는 현재 기체와 임무 시스템, 함정 운용 적합성, 생산 체계를 동시에 개발하고 있다고 밝혔다.... 향후 시험에서는 수직 이착륙 성능과 AI 기반 자율비행, 통신이 제한된 환경에서의 임무 수행 능력 등이 주요...",
+          "link": "https://www.fntoday.co.kr/news/articleView.html?idxno=394916",
+          "source": "fntoday.co.kr",
+          "published": "2026-10-09T17:02:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "해외",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "로봇",
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "미국 해군-AI 전투기 X-BAT 추가투자-자율비행",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "전차 엔진부터 AI 데이터센터 비상전력까지…군산이 HD건설기계 새 거점...",
+          "summary": "이 엔진은 AI 데이터센터와 대형 건축물, 산업시설의 비상발전 설비에 쓰인다. AI 데이터센터는 전력 공급이 끊기면 서버와 냉각 설비가 멈출 수 있어 비상발전 설비를 갖춰야 한다. 생성형 AI 확산으로 데이터센터...",
+          "link": "https://www.newsway.co.kr/news/view?ud=2026100813312926320",
+          "source": "newsway.co.kr",
+          "published": "2026-10-09T13:22:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "타지자체",
+          "loc": "전북",
+          "ulsan_score": 0,
+          "industry": "에너지",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "HD건설기계-발전엔진-데이터센터·산업시설 비상전력",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "통신3사 AIDC 확장 경쟁…관건은 전력 공급",
+          "summary": "SKT 15GW·KT 1.1GW·LGU+ 400MW 확장 추진 SK텔레콤, KT, LG유플러스 등 통신3사가 강력 추진하고 있는 인공지능(AI)... NICE신용평가는 이후 발표된 첨단산업 투자 수요까지 반영하면 소요 자금이 더 늘어날 수 있다고...",
+          "link": "https://news.dealsitetv.com/articles/176649",
+          "source": "news.dealsitetv.com",
+          "published": "2026-10-09T12:06:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "IT·통신·데이터센터",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "통신3사-AIDC확장-전력공급 경쟁",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "AI부터 전기차까지…경남 ‘열 관리’ 선점",
+          "summary": "[앵커] 인공지능 데이터센터부터 전기차까지 첨단산업이 성장할수록 함께 커지는 시장이 있습니다. 기기에서... 이 같은 AI 데이터센터 냉각 솔루션을 차세대 핵심 사업으로 키우는 LG전자. 올해 상반기에만 수주액이 6천억...",
+          "link": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8681886&ref=A",
+          "source": "KBS",
+          "published": "2026-10-09T11:33:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "타지자체",
+          "loc": "경남",
+          "ulsan_score": 0,
+          "industry": "IT·통신·데이터센터",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "경남-AI데이터센터냉각솔루션-차세대사업",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "제주 전력정보 한데 묶어 AI로 예측… 2027년 통합 플랫폼 구축",
+          "summary": "인공지능(AI)으로 분석·예측하는 통합 플랫폼 구축이 추진된다. 공공기관과 에너지 사업자의 데이터를 연결하고 도민과 기업에도 개방해 제주 분산에너지 산업의 활용 기반을 넓히겠다는 구상이다. 9일...",
+          "link": "https://www.fnnews.com/news/202610091020323927",
+          "source": "파이낸셜뉴스",
+          "published": "2026-10-09T10:30:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 2,
+          "region": "타지자체",
+          "loc": "제주",
+          "ulsan_score": 0,
+          "industry": "에너지",
+          "tech": [
+            "데이터센터"
+          ],
+          "core": 0,
+          "evidence": "제주-분산에너지AI플랫폼-2027년구축",
+          "related": [],
+          "score": 70
         },
         {
           "title": "인텔리빅스, 국방 AI 감시 개발 착수",
@@ -2215,16 +1381,7 @@
           ],
           "core": 0,
           "evidence": "인텔리빅스-국방AI영상감시-국경감시시장",
-          "related": [
-            {
-              "source": "ddaily.co.kr",
-              "link": "https://www.ddaily.co.kr/page/view/2026100817091708471"
-            },
-            {
-              "source": "boannews.com",
-              "link": "https://www.boannews.com/news/articleView.html?idxno=146279"
-            }
-          ],
+          "related": [],
           "score": 70
         },
         {
@@ -2308,754 +1465,6 @@
           ],
           "core": 0,
           "evidence": "LG전자-AI데이터센터냉각-수조원수주",
-          "related": [
-            {
-              "source": "s-journal.co.kr",
-              "link": "https://www.s-journal.co.kr/news/articleView.html?idxno=44300"
-            },
-            {
-              "source": "naeil.com",
-              "link": "https://www.naeil.com/news/read/604581?ref=naver"
-            },
-            {
-              "source": "inews24.com",
-              "link": "http://www.inews24.com/view/2012934"
-            },
-            {
-              "source": "cbci.co.kr",
-              "link": "https://www.cbci.co.kr/news/articleView.html?idxno=613154"
-            },
-            {
-              "source": "biztribune.co.kr",
-              "link": "http://www.biztribune.co.kr/news/articleView.html?idxno=360294"
-            },
-            {
-              "source": "econovill.com",
-              "link": "https://www.econovill.com/news/articleView.html?idxno=753080"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "티디에스이노베이션-KAIST 등 8개 기관, AI칩 위한 2D 반도체 핵심 기술 개발",
-          "summary": "차세대 AI 반도체 구현을 위한 2D 반도체 핵심 기술이 국제학술지 네이처(Nature)에 게재됐다. 티디에스이노베이션(공동대표 강기범·모상현)은 KAIST·UNIST·한양대·포스텍·성균관대·고려대·MIT 등 대학 컨소시엄과 공동 연구를 통해 고품질 단결정 성장의 핵심 난제인 '결정 성장 시작 위…",
-          "link": "https://www.hellot.net/news/article.html?no=115350",
-          "source": "헬로티",
-          "published": "2026-10-08T17:56:18",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "UNIST 포함 컨소시엄-2D반도체 핵심기술-AI칩",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "크래프톤, 게임 넘어 로봇으로…서울대와 '월드모델' 산학협력 본격 시동",
-          "summary": "[인더스트리뉴스 문기수 기자] 크래프톤이 서울대학교와 손잡고 게임과 로봇을 아우르는 '월드모델(World Model)' 인공지능(AI) 공동연구에 본격 착수했다. 게임 개발 과정에서 축적한 대규모 가상세계 시뮬레이션 역량을 피지컬 AI(물리 기반 AI) 및 로보틱스 분야로 본격 확장하겠다는 구상이다.크래프톤은 서울대학교 대학원 협동과정 인공지능전공과 서울대 캠퍼스에서 공동연구 출범식을 열고 향후 3년간 추진할 핵심 세부 과제와 연구 로드맵을 확정했다고 8일 밝혔다. 월드모델은 AI가 현재 환경을 입체적으로 인지하고, 특정 행동에 따",
-          "link": "https://www.industrynews.co.kr/news/articleView.html?idxno=87249",
-          "source": "인더스트리뉴스",
-          "published": "2026-10-08T15:29:11",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "크래프톤-월드모델 AI 공동연구-로봇·시뮬레이션",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "경기도, 광역버스 '고속도로 자율주행' 실증한다… 추미애 \"'미래 교통시...",
-          "summary": "E2E 자율주행 AI 모델 개발도 지원한다. 도는 판교에서 원격운전 공유차량 실증도 진행하고 있다. 지난달 말부터 안전운전자가 탑승한 상태에서 기술을 검증하고 있으며 이달까지 해당 실증을 거친 뒤 11~12월에는...",
-          "link": "https://www.newscj.com/news/articleView.html?idxno=3438979",
-          "source": "newscj.com",
-          "published": "2026-10-09T00:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "물류",
-          "tech": [
-            "자율제조"
-          ],
-          "core": 0,
-          "evidence": "경기도-자율주행광역버스AI모델-고속도로",
-          "related": [
-            {
-              "source": "betanews.net",
-              "link": "https://www.betanews.net/article/view/beta202610080190"
-            },
-            {
-              "source": "safetynews.co.kr",
-              "link": "https://www.safetynews.co.kr/news/articleView.html?idxno=250947"
-            },
-            {
-              "source": "서울신문",
-              "link": "https://www.seoul.co.kr/news/publicnews/2026/10/08/20261008500285?wlog_tag3=naver"
-            },
-            {
-              "source": "kyeonggi.com",
-              "link": "https://www.kyeonggi.com/article/20261008580298"
-            },
-            {
-              "source": "consumernews.co.kr",
-              "link": "http://www.consumernews.co.kr/news/articleView.html?idxno=765579"
-            },
-            {
-              "source": "newspim.com",
-              "link": "https://www.newspim.com/news/view/20261008001319"
-            },
-            {
-              "source": "머니투데이",
-              "link": "https://www.mt.co.kr/policy/2026/10/08/2026100817304562114"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "텍사스, 데이터센터 전력망 접속 검증하고 인허가 보류",
-          "summary": "AI 데이터센터의 전력 수요가 늘면서 미국에서 전력망 접속과 신규 설비 비용 부담이 규제 쟁점으로... 자유주의 싱크탱크 케이토 연구소의 트래비스 피셔는 특정 산업을 차별할 수 있다는 우려를 제기하면서도 접근...",
-          "link": "https://www.tokenpost.kr/news/ai/419986",
-          "source": "tokenpost.kr",
-          "published": "2026-10-08T23:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "AI 데이터센터 전력망 접속 규제 심화",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "크래프톤ㆍ서울대, 게임·로봇 월드모델 공동연구 돌입…3년간 AI 인재 ...",
-          "summary": "2026년 3월에는 한화에어로스페이스와 피지컬 AI 전략적 동맹을 맺고 목표 규모 10억 달러(원화 약 1조3500억원)에 달하는 글로벌 AI·로보틱스 펀드 조성을 추진하는 등, 가상 엔터테인먼트 소프트웨어를 미래 산업의 물리적...",
-          "link": "http://www.ttlnews.com/news/articleView.html?idxno=3150522",
-          "source": "ttlnews.com",
-          "published": "2026-10-08T17:58:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "크래프톤·서울대-피지컬AI 월드모델 개발-로봇",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "조현준 효성 회장, 美 AI 데이터센터 전력시장 선점..기술 경영 부각",
-          "summary": "효성중공업의 이같은 전략은 글로벌 AI산업이 급성장하는 가운데 진행되는 것이어서 주목된다. 실제로 로이터통신은 지난 3일(현지시간) \"데이터센터를 중심으로 AI 산업에 전세계의 막대한 자금이 몰리고 있다\"며 \"그...",
-          "link": "http://www.choicenews.co.kr/news/articleView.html?idxno=172050",
-          "source": "choicenews.co.kr",
-          "published": "2026-10-08T17:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "에너지",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "효성중공업-AI데이터센터 전력시장-미국",
-          "related": [
-            {
-              "source": "smarttoday.co.kr",
-              "link": "https://www.smarttoday.co.kr/ko-kr/articles/112450"
-            },
-            {
-              "source": "consumernews.co.kr",
-              "link": "http://www.consumernews.co.kr/news/articleView.html?idxno=765545"
-            },
-            {
-              "source": "ftoday.co.kr",
-              "link": "http://www.ftoday.co.kr/news/articleView.html?idxno=366932"
-            },
-            {
-              "source": "handmk.com",
-              "link": "https://www.handmk.com/news/articleView.html?idxno=43944"
-            },
-            {
-              "source": "ezyeconomy.com",
-              "link": "https://www.ezyeconomy.com/news/articleView.html?idxno=240624"
-            },
-            {
-              "source": "smartbizn.com",
-              "link": "https://www.smartbizn.com/news/articleView.html?idxno=155973"
-            },
-            {
-              "source": "ekoreanews.co.kr",
-              "link": "https://www.ekoreanews.co.kr/news/articleView.html?idxno=88546"
-            },
-            {
-              "source": "ebn.co.kr",
-              "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727209"
-            },
-            {
-              "source": "financialpost.co.kr",
-              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=279480"
-            },
-            {
-              "source": "businessplus.kr",
-              "link": "https://www.businessplus.kr/news/articleView.html?idxno=117916"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "“4207억 쏟아붓는 대구발 AX 혁신”… 로봇·바이오 R&D 공모 돌입",
-          "summary": "이동하 DIP 원장은 “이번 지역거점 AX 혁신 기술개발 사업의 공모는 지역 전략산업의 AI 전환을 본격화하는 중요한 출발점”이라며, “산·학·연의 우수한 연구개발 역량을 결집해 로봇과 바이오·헬스케어 분야의...",
-          "link": "https://www.etnews.com/20261008000328",
-          "source": "전자신문",
-          "published": "2026-10-08T16:59:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "대구",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "대구-로봇·바이오헬스케어-AX혁신기술개발",
-          "related": [
-            {
-              "source": "imaeil.com",
-              "link": "https://www.imaeil.com/page/view/2026100816562328164"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "\"LG전자, 3분기 실적 착시…'진짜 본업'과 AI·로봇 리레이팅은 살아있다...",
-          "summary": "예정이며, AI 데이터센터 Cooling 매출이 내년부터 조 단위 규모로 확대될 것으로 전망된다. 마이크로소프트향 신규 수주 제안도 진행 중이다. 로보틱스 사업에서는 로봇 데이터팩토리 구축 및 액추에이터 수주...",
-          "link": "https://www.newsquest.co.kr/news/articleView.html?idxno=302343",
-          "source": "newsquest.co.kr",
-          "published": "2026-10-08T16:58:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "LG전자-AI데이터센터냉각-조 단위수주",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "레노버 AI 익스프레스 출시…사전 검증된 AI 팩토리&구축 서비스",
-          "summary": "AI 팩토리 구축과 운영 서비스는 AI 활용 사례 발굴과 ROI 검증, 개념검증(PoC) 수행, GPU 환경의 성능, 활용률, 비용 효율 최적화 등이다. 또 서버용 프리미어 서포트 플러스(Premier Support Plus for Servers)를 통해...",
-          "link": "https://www.thelec.kr/news/articleView.html?idxno=63494",
-          "source": "thelec.kr",
-          "published": "2026-10-08T16:34:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "레노버-AI팩토리구축-엔비디아협력",
-          "related": [
-            {
-              "source": "byline.network",
-              "link": "https://byline.network/?p=9004111222622699"
-            },
-            {
-              "source": "kr.aving.net",
-              "link": "https://kr.aving.net/news/articleView.html?idxno=1815201"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "엘리스그룹, 모듈형 AI 데이터센터 ‘PMDC’ 상표 등록 완료",
-          "summary": "엘리스그룹은 2021년 자체 설계한 모듈형 AI 데이터센터에 ‘PMDC’ 명칭을 적용해 개발, 운영하고 있다. 엘리스 PMDC는 서버와 전력·냉각·네트워크 등 핵심 설비를 공장에서 미리 제작, 전력과 부지가 확보된 현장에...",
-          "link": "https://magazine.hankyung.com/job-joy/article/202610081522d",
-          "source": "한국경제",
-          "published": "2026-10-08T16:16:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "엘리스그룹-모듈형 AI 데이터센터-PMDC 상표등록",
-          "related": [
-            {
-              "source": "epnc.co.kr",
-              "link": "https://www.epnc.co.kr/news/articleView.html?idxno=407959"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "LG그룹, 현대차 제치고 그룹 시총 3위 탈환…325일 만에 '역전'",
-          "summary": "특히 LG는 엔비디아와 로봇, AI 팩토리, 모빌리티 분야에서 협력을 추진하고 있다. LG전자가 보유한 냉각 기술 등을 활용해 급증하는 AI 데이터센터 인프라 시장을 공략하는 사업 확대에도 속도를 내고 있다....",
-          "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727203",
-          "source": "ebn.co.kr",
-          "published": "2026-10-08T15:22:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "LG-AI팩토리냉각기술-데이터센터",
-          "related": [
-            {
-              "source": "뉴스1",
-              "link": "https://www.news1.kr/finance/general-stock/6314460"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "엘리스그룹, 모듈형 AI 데이터센터 PMDC 상표권 등록 완료",
-          "summary": "인공지능(AI) 산업 솔루션 제공 기업 엘리스그룹이 자체 개발한 모듈형 AI 데이터센터 ‘PMDC’에 대한 상표권 등록을 완료했다고 8일 밝혔다. 엘리스 PMDC는 서버와 전력·냉각·네트워크 등 핵심 설비를 공장에서 미리...",
-          "link": "https://www.mk.co.kr/article/12171512",
-          "source": "매일경제",
-          "published": "2026-10-08T15:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "엘리스-모듈형PMDC-데이터센터상표권",
-          "related": [
-            {
-              "source": "datanet.co.kr",
-              "link": "https://www.datanet.co.kr/news/articleView.html?idxno=214988"
-            },
-            {
-              "source": "전자신문",
-              "link": "https://www.etnews.com/20261008000273"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "SK하이닉스, ‘AI 환경연구소’ 신설…반도체 녹색전환 주도한다",
-          "summary": "새로 만들어질 AI 환경연구소는 반도체 공장과 데이터센터 운영에 필요한 에너지 공급에 더해 공정 전반의 환경 부하를 낮추는 기술을 집중적으로 연구한다. AI 알고리즘을 활용해 전력 수요를 예측하고 데이터센터...",
-          "link": "https://www.mk.co.kr/article/12171501",
-          "source": "매일경제",
-          "published": "2026-10-08T14:51:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "SK하이닉스-AI환경연구소-에너지효율",
-          "related": [
-            {
-              "source": "헤럴드경제",
-              "link": "https://biz.heraldcorp.com/article/10896810?ref=naver"
-            },
-            {
-              "source": "cwn.kr",
-              "link": "https://www.cwn.kr/news/articleView.html?idxno=58691"
-            },
-            {
-              "source": "mediafine.co.kr",
-              "link": "https://www.mediafine.co.kr/news/articleView.html?idxno=92023"
-            },
-            {
-              "source": "munhwa.com",
-              "link": "https://www.munhwa.com/article/11622196?ref=naver"
-            },
-            {
-              "source": "newstomato.com",
-              "link": "http://www.newstomato.com/ReadNews.aspx?no=1316069&inflow=N"
-            },
-            {
-              "source": "inews24.com",
-              "link": "http://www.inews24.com/view/2013049"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "휴머노이드 넘어 '피지컬 AI'새 판 짠다...KAIST, 'Physical AI KOREA 2026' ...",
-          "summary": "등장하고, 제조 현장에서도 피지컬 AI의 시범 적용이 시작되면서 관련 기술에 대한 기대가 커지고 있다.... 판단하는 자율 이동 기술을 소개한다. 같은 학부 배현민 교수 연구팀은 모터·센서·제어 기술을 결합해...",
-          "link": "https://www.aitimes.kr/news/articleView.html?idxno=42226",
-          "source": "aitimes.kr",
-          "published": "2026-10-08T13:36:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "KAIST-피지컬AI 기술 시범-제조현장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "[글로벌 마켓노트]피지컬 AI 뛰어드는 日 기업, 최고 무기는 현장경험·데이터",
-          "summary": "일본 주요 제조기업들이 '피지컬 인공지능(AI)' 시장에 잇따라 뛰어들고 있습니다. 피지컬 AI는 실제 제조 현장에서 축적된 데이터와 생산 노하우가 경쟁력을 좌우하는 만큼, 오랜 제조업 기반을 갖춘 일본 기업들이 현장 경험과 로봇 기술을 AI와 결합해 새로운 사업 기회를 모색하는 모습입니다.8일 업계에 따르면 히타치와 세계 최대 산업용 로봇 기업인 화낙은 최근 피지컬 AI 공동 사업화를 위한 전략적 파트너십을 체결했습니다. 히타치의 AI 기술과 화낙의 산업용 로봇을 결합해 실제 제조 현장에서 피지컬 AI를 구현하는 것이 핵심입니다.",
-          "link": "https://view.asiae.co.kr/article/2026100809100299162",
-          "source": "아시아경제",
-          "published": "2026-10-08T11:01:26+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "철강·기계",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "히타치·화낙-피지컬AI 파트너십-제조현장",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "AIDC 병목, GPU·전력서 메모리로…정석근 SK하이퍼 대표 \"韓에 새 기회\"",
-          "summary": "<p><img src=\"https://image.newsis.com/2026/10/08/NISI20261008_0002258494_web.jpg?rnd=20261008104936\" /></p><br />[서울=뉴시스]윤현성 기자 = 인공지능(AI) 데이터센터(AIDC) 경쟁의 핵심 병목이 GPU·전력 확보에서 &#039;메모리 역량&#039;과 &#039;사업성·수익구조&#039;로 옮겨갈 수 있다는 전망이 나왔다. 메모리 반도체와 첨단 제조, ICT 인프라 경쟁력을 갖춘 한국에는 글로벌 &#039;AI 토큰 팩토리&#039; 시장을 공략할 새로운 기회가 될 수 있다는 진단이다.<br /><br />한국정보통신진흥협회(KAIT)는 8일 서울 강남구 조선팰리스 서울 강남에서 제16차 &#039;디지털 인사이트 포럼&#039;을 열고 글로벌 AIDC 산업의 변화와 국내 AI 인프라 경쟁력 강화 방안을 논의했다고 밝혔다.<br /><br />국내 주요 AI·디지털 기업과 ICT 유관기관,...",
-          "link": "https://www.newsis.com/view/NISX20261008_0003818809",
-          "source": "뉴시스",
-          "published": "2026-10-08T10:56:48+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "한국-AI 데이터센터 병목-메모리·수익구조",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "국내 AI 데이터센터 입지 평가 전국 시·도중 '충남'이 85점으로 1위",
-          "summary": "충남연구원은 8일 AI 데이터센터의 입지 여건을 전국 광역시·도를 대상으로 분석한 결과, 충남이 100점 만점에 85점으로 가장 높은 점수를 기록했다고 밝혔다. 이번 평가는 AI 데이터센터 입지에 중요한 전력 수급, 통신...",
-          "link": "https://www.kmecnews.co.kr/news/articleView.html?idxno=52213",
-          "source": "kmecnews.co.kr",
-          "published": "2026-10-08T10:14:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "충남",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "충남-AI데이터센터 인프라-전국 허브",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "E8, 부산 에코델타시티에 온톨로지 AI·디지털트윈 공급",
-          "summary": "연내 NAXiS·NDX Pro 적용…로봇·도시 데이터 연계한 통합 운영체계 구축 피지컬 AI 운영 플랫폼 기업 E8(이에이트)가 부산 에코델타 스마트시티 국가시범도시에 온톨로지 인공지능(AI)과 디지털트윈 솔루션을 공급한다....",
-          "link": "https://dealsite.co.kr/articles/170330",
-          "source": "dealsite.co.kr",
-          "published": "2026-10-08T10:02:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "부산",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "디지털트윈",
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "E8-피지컬AI·디지털트윈 공급-부산에코델타시티",
-          "related": [
-            {
-              "source": "financialpost.co.kr",
-              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=279326"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "SK이터닉스·마스턴투자운용, 연료전지 연계형 AI 데이터센터 개발 '맞손...",
-          "summary": "SK이터닉스가 지난 7일 마스턴투자운용과 연료전지 연계형 데이터센터 사업 추진을 위한 업무협약(MOU)을 체결했다고 8일 밝혔다. 협약에 따라 양사는 데이터센터 부지 내 연료전지 발전설비를 활용한 전력공급 솔루션을...",
-          "link": "https://www.etnews.com/20261008000067",
-          "source": "전자신문",
-          "published": "2026-10-08T10:01:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "SK이터닉스-AI 데이터센터-연료전지 연계",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "데이터창고 넘어 ‘AI토큰 공장’으로 \"한국에 기회 왔다”",
-          "summary": "AI 데이터센터(AIDC)의역할이 데이터를 저장하고 처리하는 시설에서 대규모로 ‘지능’을 생산하는 ‘AI 토큰 팩토리’로 바뀌고 있다. AI 시장 중심이 모델 학습에서 서비스 추론으로 이동하면서 GPU와 전력에 이어...",
-          "link": "https://zdnet.co.kr/view/?no=20261008095332",
-          "source": "지디넷코리아",
-          "published": "2026-10-08T09:54:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "AI 추론 중심-토큰 처리-데이터센터",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "정석근 SK하이퍼 대표 \"AI 인프라 산업 병목 변화하고 있다\"",
-          "summary": "한국은 메모리 반도체와 첨단 제조, ICT 인프라 분야에서 세계적인 경쟁력을 갖추고 있는 만큼 정부의 지원과 민간 투자, 산업 간 협력을 결합한다면 글로벌 ‘AI 토큰 팩토리’ 시대의 핵심 거점으로 성장할 수...",
-          "link": "https://www.etoday.co.kr/news/view/2633760",
-          "source": "etoday.co.kr",
-          "published": "2026-10-08T09:44:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "SK하이퍼-AI 추론 인프라-메모리 수요",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "[단독] 대만, AI 데이터센터 전력난에 실리콘 포토닉스·CPO로 승부수",
-          "summary": "반도체 제조 기술을 활용해 광학 부품을 칩 안에 집적하기 때문에 기존 광통신 장비보다 소형화할 수 있고... 생성형 AI와 거대언어모델(LLM)이 확산되면서 GPU와 HBM, 네트워크 스위치 사이에서 처리해야 하는 데이터의...",
-          "link": "http://www.bizwnews.com/news/articleView.html?idxno=148374",
-          "source": "bizwnews.com",
-          "published": "2026-10-08T09:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "해외",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "대만-AI 데이터센터 전력-포토닉스",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "“AI 데이터센터 경쟁, GPU·전력 넘어 메모리·수익성이 좌우”",
-          "summary": "8일 조선팰리스 서울 강남에서 열린 제16차 '디지털 인사이트 포럼'(Digital Insight Forum)에서 정석근 SK텔레콤 AI CIC장 겸 SK하이퍼 대표는 '지능 생산 공장으로서 AI 데이터센터'를 주제로 글로벌 AI 인프라 산업의 변화와...",
-          "link": "https://www.dailian.co.kr/news/view/1699246/?sc=Naver",
-          "source": "dailian.co.kr",
-          "published": "2026-10-08T09:29:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "AI 데이터센터-메모리·수익성-경쟁",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "\"액체냉각부터 원격 관제까지\"…하이엠솔루텍, AIDC 공조 원스톱 케어",
-          "summary": "LG전자의 냉난방공조(HVAC) 유지보수 전문 자회사 하이엠솔루텍이 인공지능(AI) 데이터센터 시장의 성장에 발맞춰 공기냉각부터 액체냉각 설비까지 아우르는 'AI 데이터센터 HVAC 통합 유지보수' 체계를 대폭 강화한다. 하이엠솔루텍은 8일 기존 LG칠러 및 냉각탑, 공기조화기(AHU) 등 공조 부대설비 중심의 유지보수 서비스를 넘어, 고밀도 AI 서버에 필수적인 냉각수 분배장치(CDU)와 직접 냉각 시스템(TCS) 등 액체냉각 설비 영역으로 통합 관리 범위를 확장한다고 밝혔다.  CDU는 액체냉각 시스템에서 AI 서버 내부로 냉각",
-          "link": "https://view.asiae.co.kr/article/2026100809110510220",
-          "source": "아시아경제",
-          "published": "2026-10-08T09:11:06+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "LG-AI데이터센터 냉각시스템-액체냉각 관리",
-          "related": [
-            {
-              "source": "조선일보",
-              "link": "https://biz.chosun.com/it-science/ict/2026/10/08/CCO6KTY2MZB65ECCACX2H5VMP4/?utm_source=naver&utm_medium=original&utm_campaign=biz"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "[모닝 리포트] \"GS건설, 1조 AI데이터센터 수주 눈앞…내년 영업익 62%↑...",
-          "summary": "아직 원가율을 100%로 설정해 실행예산을 현실화하지 않은 현장이 남아 있어 향후 현실화 과정에서... GS그룹이 강원 동해시 북평제2산업단지에서 추진하는 AI데이터센터는 총 1.2기가와트(GW) 규모다. 1~3부지에 대한...",
-          "link": "https://www.newspim.com/news/view/20261008000126",
-          "source": "newspim.com",
-          "published": "2026-10-08T09:11:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "타지자체",
-          "loc": "강원",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "GS건설-AI데이터센터-강원동해",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "\"반도체 환경 난제 해결하겠다\"…SK하이닉스 'AI 환경연구소' 설립 추진",
-          "summary": "난제를 AI 기술로 해결해 나가겠다는 구상이다. 이를 위해 반도체 공장은 물론 데이터센터 운영에 필요한 에너지 공급과 공정 전반의 환경 부하를 낮추는 기술을 집중 연구한다. AI 알고리즘을 활용해 전력 수요를...",
-          "link": "https://view.asiae.co.kr/article/2026100808215450820",
-          "source": "아시아경제",
-          "published": "2026-10-08T08:21:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "SK하이닉스-AI 환경연구소 설립-반도체 환경 난제",
-          "related": [
-            {
-              "source": "헤럴드경제",
-              "link": "https://biz.heraldcorp.com/article/10896418?ref=naver"
-            },
-            {
-              "source": "gokorea.kr",
-              "link": "https://www.gokorea.kr/news/articleView.html?idxno=880765"
-            },
-            {
-              "source": "biz.sbs.co.kr",
-              "link": "https://biz.sbs.co.kr/article_hub/20000338871?division=NAVER"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "[분석] AMD 리사 수·엔비디아 젠슨 황 ··· '같거나 다르거나'",
-          "summary": "한국에는 삼성전자·SK하이닉스의 HBM과 반도체 제조 기반이 있고 자동차·로봇·스마트팩토리라는 피지컬AI 시장이 있다. 여기에 국산 NPU와 AI 소프트웨어 기업까지 성장하고 있다. 엔비디아는 이미 확보한 AI 컴퓨팅...",
-          "link": "https://www.datasom.co.kr/news/articleView.html?idxno=210252",
-          "source": "datasom.co.kr",
-          "published": "2026-10-08T08:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 2,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "피지컬AI",
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "AMD·엔비디아-피지컬AI 산업 적용-한국 시장",
           "related": [],
           "score": 70
         }
@@ -3065,11 +1474,11 @@
       "label": "정책·생태계·인재",
       "items": [
         {
-          "title": "3대 메가 프로젝트에 중소기업도 참여…이소영 “대통령이 회의 들어오...",
-          "summary": "반도체, 피지컬AI, 데이터센터 3개 분야에 정부와 민간이 초대규모 투자를 하는 ‘3대 메가프로젝트’에... 이 장관은 다음 주 충청권을 시작으로 전국을 권역별로 방문해 스마트공장과 전통시장 등 정책 현장을 점검할...",
-          "link": "https://www.segye.com/newsView/20261008517116?OutUrl=naver",
-          "source": "세계일보",
-          "published": "2026-10-08T19:06:00+09:00",
+          "title": "배경훈 부총리 \"추진해 온 AI사업, 국가 AI생태계 만드는 과정\"",
+          "summary": "배 부총리는 \"세계 AI 산업과 기술 발전을 분석하는 'State of AI Report 2026'에서 대한민국의 AI 전략을 의미 있게 다뤘다\"며 \"주목할 부분은 대한민국이 단순히 AI 데이터센터를 구축하는 것을 넘어 독자 AI 모델 개발과...",
+          "link": "https://www.mt.co.kr/tech/2026/10/09/2026100921281661940",
+          "source": "머니투데이",
+          "published": "2026-10-09T21:34:00+09:00",
           "grade": "S",
           "m": "주제",
           "section": 3,
@@ -3078,43 +1487,148 @@
           "ulsan_score": 0,
           "industry": "기타",
           "tech": [
-            "피지컬AI",
-            "데이터센터"
+            "LLM·에이전트"
           ],
           "core": 0,
-          "evidence": "중앙정부-3대 메가프로젝트(반도체·피지컬AI·데이터센터)-전국",
-          "related": [
-            {
-              "source": "newspim.com",
-              "link": "https://www.newspim.com/news/view/20261008001024"
-            },
-            {
-              "source": "서울경제",
-              "link": "https://www.sedaily.com/article/20099590?ref=naver"
-            }
-          ],
+          "evidence": "정부-독자AI모델개발·데이터센터-국가생태계",
+          "related": [],
           "score": 100
         },
         {
-          "title": "울산과학대 '글로벌IT·스포츠건강재활' 학사 심화과정 신설",
-          "summary": "자동차·조선·화학 등 울산 주력산업의 AI·클라우드 전환에 따른 IT 인력 수요를 반영해 AI 활용 개발 중심으로 교육과정을 구성한다. 졸업 후 AI 개발자와 데이터 사이언티스트 클라우드·AI 인프라 설계 엔지니어...",
-          "link": "https://www.newsis.com/view/NISX20261008_0003818934",
-          "source": "뉴시스",
-          "published": "2026-10-08T13:07:00+09:00",
-          "grade": "A",
+          "title": "[2026 국감] '16조 AI' 송곳질문… 박정하 국힘 의원 \"결정 과정 밝혀야...",
+          "summary": "독파모는 산업·공공 분야의 AI 활용을 넓히고 세계 수준의 모델을 개발하는 기존 목표에 따라 계속 추진한다는 설명이다. 반면 프론티어 AI는 당초 계획을 세웠을 때보다 빠르게 높아지는 기술 수준에 대응하기 위한 추가...",
+          "link": "https://www.bzeronews.com/news/articleView.html?idxno=823655",
+          "source": "bzeronews.com",
+          "published": "2026-10-09T20:36:00+09:00",
+          "grade": "S",
           "m": "주제",
           "section": 3,
-          "region": "울산",
+          "region": "전국",
           "loc": null,
-          "ulsan_score": 8,
-          "industry": "자동차",
+          "ulsan_score": 0,
+          "industry": "기타",
           "tech": [
             "LLM·에이전트"
           ],
           "core": 0,
-          "evidence": "울산과학대-AI·클라우드 교육-울산산업",
+          "evidence": "정부-독자AI모델·산업공공AX-생태계구축",
           "related": [],
-          "score": 78
+          "score": 100
+        },
+        {
+          "title": "인하대학교, 제조·물류·로봇 산업 AI 전환 이끌 석·박사 인재 양성.....",
+          "summary": "인하대학교가 제조·물류·로봇 산업의 인공지능 전환(AX)을 선도할 석·박사급 전문인재 양성에 나선다.... 인하대는 이번 사업 선정으로 산업 현장과 연계한 AI 교육·연구 기반을 지속적으로 확대할 수 있게 됐다. 앞서...",
+          "link": "https://www.lecturernews.com/news/articleView.html?idxno=211803",
+          "source": "lecturernews.com",
+          "published": "2026-10-10T09:10:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 3,
+          "region": "타지자체",
+          "loc": "인천",
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "로봇"
+          ],
+          "core": 0,
+          "evidence": "인하대-제조·물류·로봇 산업 AI 인재양성-석박사 과정",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "최혁진, 공공기관 AI 도입 전 일자리 영향평가 법안 발의",
+          "summary": "최혁진 국회의원은 \"올해 공공기관 AI 업무전환 예산에 작년의 5배인 2조 4천억원이 투입되고 경영평가에도 적극 반영되지만, 채용 감소 등에 대비는 없는 실정\"이라며, AI 영향을 사전에 평가하고 직원을 재교육하는...",
+          "link": "https://www.mbceg.co.kr/post/140841",
+          "source": "mbceg.co.kr",
+          "published": "2026-10-09T20:34:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 3,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "공공",
+          "tech": [
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "최혁진-공공기관AI 도입 일자리영향평가-중앙정부",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "한컴이노스트림, 'SLW 2026' 시민혁신상 수상…피지컬 AI 교육 성과",
+          "summary": "코엑스 A홀에 마련된 '양재·수서 피지컬 AI 존'에서는 산업용 로봇과 엔비디아(NVIDIA)의 로봇 시뮬레이션 플랫폼 '아이작 심(Isaac Sim)'을 활용한 피지컬 AI 교육 콘텐츠를 시연했다. 특히 관람객이 가상환경에서...",
+          "link": "https://www.ebn.co.kr/news/articleView.html?idxno=1727281",
+          "source": "ebn.co.kr",
+          "published": "2026-10-09T14:48:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 3,
+          "region": "전국",
+          "loc": null,
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "피지컬AI"
+          ],
+          "core": 0,
+          "evidence": "한컴이노스트림-피지컬AI 교육 콘텐츠-로봇 시뮬레이션",
+          "related": [
+            {
+              "source": "newsroad.co.kr",
+              "link": "http://www.newsroad.co.kr/news/articleView.html?idxno=65538"
+            }
+          ],
+          "score": 70
+        },
+        {
+          "title": "[주목 e-도시] \"첨단+에너지 결합, 초광역 산업벨트\" 광주·전남 메가시...",
+          "summary": "\"AI로 도시 산업을 재편\" 광주 AI산업융합지구…\"첨단 제조·모빌리티·헬스케어\" 광주 AI산업융합지구는 국가 AI 전략의 핵심 거점으로 조성된 지역 혁신 클러스터로, 광주를 AI 기반 첨단산업 도시로 재편하기 위한 핵심...",
+          "link": "http://www.economytalk.kr/news/articleView.html?idxno=424565",
+          "source": "economytalk.kr",
+          "published": "2026-10-09T12:14:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 3,
+          "region": "타지자체",
+          "loc": "광주",
+          "ulsan_score": 0,
+          "industry": "기타",
+          "tech": [
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "광주-AI산업융합지구-첨단제조·모빌리티·헬스케어",
+          "related": [],
+          "score": 70
+        },
+        {
+          "title": "고양시, 글로벌 AI 허브 유치 전략 구체화… 의료·바이오 경쟁력 승부...",
+          "summary": "고양특례시가 글로벌 AI 허브 유치를 위한 전략 구체화에 나섰다. 고양시는 지역의 강점인 의료 인프라와... 학계·의료계·산업계 관계자와 시민 100여 명이 참석했다. 포럼에서는 국제사회가 필요로 하는 의제를...",
+          "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=713098",
+          "source": "newsfreezone.co.kr",
+          "published": "2026-10-09T12:08:00+09:00",
+          "grade": "A",
+          "m": "주제",
+          "section": 3,
+          "region": "타지자체",
+          "loc": "경기",
+          "ulsan_score": 0,
+          "industry": "의료",
+          "tech": [
+            "기타"
+          ],
+          "core": 0,
+          "evidence": "고양시-글로벌AI허브-의료·바이오",
+          "related": [
+            {
+              "source": "pointdaily.co.kr",
+              "link": "https://www.pointdaily.co.kr/news/articleView.html?idxno=321812"
+            }
+          ],
+          "score": 70
         },
         {
           "title": "SKT-업스테이지, 안랩 등 11곳과 '맞손'… '독자 AI 보안 협의체' 출범",
@@ -3134,24 +1648,7 @@
           ],
           "core": 0,
           "evidence": "SKT·업스테이지-생성형AI보안-협의체",
-          "related": [
-            {
-              "source": "popcornnews.net",
-              "link": "http://www.popcornnews.net/news/articleView.html?idxno=135443"
-            },
-            {
-              "source": "ftoday.co.kr",
-              "link": "http://www.ftoday.co.kr/news/articleView.html?idxno=366928"
-            },
-            {
-              "source": "itbiznews.com",
-              "link": "https://www.itbiznews.com/news/articleView.html?idxno=227363"
-            },
-            {
-              "source": "m-i.kr",
-              "link": "https://www.m-i.kr/news/articleView.html?idxno=2004100"
-            }
-          ],
+          "related": [],
           "score": 70
         },
         {
@@ -3172,659 +1669,6 @@
           ],
           "core": 0,
           "evidence": "충주시-피지컬AI 중심 산업 유치-AI수도 구축",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "리사 수 이어 매디슨 황도 방한…넓어지는 AI 협력",
-          "summary": "AI 산업의 무게중심이 반도체에서 데이터센터와 로봇·자율주행 등으로 넓어지면서 한국 기업과의 접점도 확대되는 모습이다. 9일 관련업계에 따르면 리사 수 AMD 회장은 지난 6일 재방한했다. 올해 3월 이재용...",
-          "link": "https://it.chosun.com/news/articleView.html?idxno=2023092171626",
-          "source": "조선일보",
-          "published": "2026-10-09T06:00:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "AMD·엔비디아-한국 AI 협력 확대-로봇·데이터센터",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "부산시, 35조 5,250억 원 투입해 122개 공약 추진…임기 내 95개 사업 목...",
-          "summary": "해양 관련 공공기관 이전과 가덕도신공항 적기 개항을 추진하고, 해양 인공지능 데이터센터를 구축해 새로운 해양산업 기반을 조성한다. 해양 행정기관과 기업, 연구·산업 기능을 집적해 국가 해양전략을 이끄는...",
-          "link": "http://www.newstown.co.kr/news/articleView.html?idxno=718070",
-          "source": "newstown.co.kr",
-          "published": "2026-10-08T20:22:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "부산",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "부산시-해양AI데이터센터-신항",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "남양주시, 왕숙 산업단지 세부 계획 승인…기업 유치 속도",
-          "summary": "2032년 완공을 목표로 진건읍 일대에 수도권 최대 규모인 120만㎡로 조성되며 인공지능·클라우드·데이터, 연구개발, 바이오·첨단 제조 등 미래산업 분야의 기업과 연구개발 기능을 집적하게 됩니다. 왕숙...",
-          "link": "https://www.obsnews.co.kr/news/articleView.html?idxno=1539909",
-          "source": "obsnews.co.kr",
-          "published": "2026-10-08T18:14:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "남양주시-AI·데이터산단-왕숙",
-          "related": [
-            {
-              "source": "서울경제",
-              "link": "https://www.sedaily.com/article/20099642?ref=naver"
-            },
-            {
-              "source": "kgnews.co.kr",
-              "link": "https://www.kgnews.co.kr/news/article.html?no=914447"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "한림대, AI중심대학 선정 따라 AI·AX 인재양성 체계 구축 돌입",
-          "summary": "3억 원의 정부 지원을 확보했다. 이를 바탕으로 학부부터 석·박사 과정까지 연계되는 AI·AX 인재양성 체계를 구축하고, 전공 간 융합교육과 산학협력을 확대해 나갈 계획이다.",
-          "link": "https://dhnews.co.kr/news/view/1065601066638273",
-          "source": "dhnews.co.kr",
-          "published": "2026-10-08T17:22:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "강원",
-          "ulsan_score": 0,
-          "industry": "공공",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "한림대-AI·AX인재양성체계-학부·석박사",
-          "related": [
-            {
-              "source": "kukinews.com",
-              "link": "https://www.kukinews.com/article/view/kuk202610080182"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "[2026국감]최혁진 의원, AI 도입에 따른 고용영향 사전평가·근로자 보호...",
-          "summary": "실제로 올해 정부는 AI 전환 예산을 전년 대비 5배인 2조4,000억으로 늘리고, 공공기관 경영평가에 AI 활용 실적을 반영하는 등 적극적인 모습을 보이고 있다. 그러나 현행 '인공지능기본법'의 영향평가는 기본권 보호에...",
-          "link": "http://www.srtimes.kr/news/articleView.html?idxno=214349",
-          "source": "srtimes.kr",
-          "published": "2026-10-08T17:14:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [],
-          "core": 0,
-          "evidence": "최혁진-AI도입고용영향평가-공공기관법개정",
-          "related": [
-            {
-              "source": "straightnews.co.kr",
-              "link": "https://www.straightnews.co.kr/news/articleView.html?idxno=312814"
-            },
-            {
-              "source": "newsfreezone.co.kr",
-              "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=713017"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "KOSA-한국벤처투자, 유망 AI·SW 기업 투자 생태계 지원 '맞손'",
-          "summary": "주요 협약 내용은 유망 △AI·SW 투자지원 생태계 확대 △AI·SW 기술·시장 수요와 투자를 연결하는 정보 교류 파이프라인 구축 △AI 전환(AX) 및 AI 기술 실증 사례 확산을 위한 연계 △AI·SW 기업의 글로벌 진출 지원...",
-          "link": "https://www.itdaily.kr/news/articleView.html?idxno=242101",
-          "source": "itdaily.kr",
-          "published": "2026-10-08T16:48:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [],
-          "core": 0,
-          "evidence": "KOSA·한국벤처투자-AI·SW투자-산업AX실증",
-          "related": [
-            {
-              "source": "전자신문",
-              "link": "https://www.etnews.com/20261008000297"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "글로벌 빅테크·국가대표 AI 총출동…6만 8000명 찾은 AI 페스타, K-AI 존...",
-          "summary": "또 오후 세션에선 국가AI전략위원회 조준희 산업 AX생태계 분과위원장과 하용호 공공 AX 분과위원이 각각 산업과 공공 부문의 AI 전환 전략을 소개했다. 두 연사는 현장 적용을 위한 정책 방향과 실행 과제를 짚으며...",
-          "link": "https://zdnet.co.kr/view/?no=20261008153444",
-          "source": "지디넷코리아",
-          "published": "2026-10-08T16:33:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [],
-          "core": 0,
-          "evidence": "국가AI전략위-산업·공공AX생태계-정책방향",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "전북특별자치도,피지컬AI·로봇 산업 선점 위한 협력 본격화",
-          "summary": "전북특별자치도는 포럼을 통해 발굴한 현장 의견과 산업 과제를 정책에 반영하고, 국가전략사업 및 국내외 산학연 협력사업으로 연계해 전북의 피지컬AI·로봇 산업 경쟁력을 강화할 계획이다. 이원택...",
-          "link": "https://hbnpress.com/news/view/1065596479127849",
-          "source": "hbnpress.com",
-          "published": "2026-10-08T16:30:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "전북-피지컬AI·로봇 산업 협력 포럼-전북",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "남양주시, 1조9천억 왕숙산단 미래산업 거점 조성",
-          "summary": "산업단지에는 인공지능(AI)·클라우드·데이터, 연구개발(R&D), 바이오·첨단제조 등 미래산업 분야 기업과 연구개발 기능을 집적한다. 기업 입지와 연구개발, 산업활동을 연계해 수도권 동북부의 미래산업 거점으로...",
-          "link": "http://www.newstown.co.kr/news/articleView.html?idxno=718047",
-          "source": "newstown.co.kr",
-          "published": "2026-10-08T16:20:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "남양주시-AI·데이터산업단지-왕숙",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "충남연구원 \"AI데이터센터 입지 경쟁력 전국 1위\"",
-          "summary": "천안·아산은 수도권 접근성과 산업단지 집적도를 활용한 '산업 엣지 데이터센터 허브'로, 홍성·예산은 도청 등 행정기관이 밀집한 특성을 살려 '행정 엣지 데이터센터 허브'로 구분했다. 공주·부여·청양·금산은...",
-          "link": "https://www.goodmorningcc.com/news/articleView.html?idxno=453677",
-          "source": "goodmorningcc.com",
-          "published": "2026-10-08T15:54:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "충남",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "충남-AI데이터센터 입지경쟁력-천안·아산·홍성·예산",
-          "related": [
-            {
-              "source": "news.tf.co.kr",
-              "link": "https://news.tf.co.kr/read/national/2374354.htm"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "AMD 광주 거점 제안…‘글로벌 AI 기업 유치’ 지역경제 판 바꿀까",
-          "summary": "당시 임 의원은 하정우 현 AI 전략위원회 부위원장과 함께 리사 수 CEO를 만나 AI 인프라 확충과 지역산업의 AI 전환, 차세대 인재 양성 등을 논의했다. 임 의원이 제안한 구상은 AMD 연구센터를 단순한 연구시설로...",
-          "link": "https://www.viva100.com/article/20261008500679",
-          "source": "viva100.com",
-          "published": "2026-10-08T15:38:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "광주",
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "AMD-연구센터·인프라 확충-광주",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "김재준 군산시장 취임 100일 '군산 재도약' 본격화…현대차 투자·미래산...",
-          "summary": "로봇 제조공장과 협력기업을 함께 유치해 피지컬AI 산업을 육성하고 청년들이 지역에 정착할 수 있는 일자리도 만들겠다고 밝혔다. 새만금의 10기가와트 규모 신재생에너지는 기업 유치 기반으로 활용한다. RE100 관련...",
-          "link": "https://www.newspim.com/news/view/20261008001043",
-          "source": "newspim.com",
-          "published": "2026-10-08T15:24:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "군산시-피지컬AI 산업 육성-로봇공장",
-          "related": [
-            {
-              "source": "newsfreezone.co.kr",
-              "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=712944"
-            },
-            {
-              "source": "연합뉴스",
-              "link": "https://www.yna.co.kr/view/AKR20261008086400055?input=1195m"
-            },
-            {
-              "source": "nocutnews.co.kr",
-              "link": "https://www.nocutnews.co.kr/news/6588891?utm_source=naver&utm_medium=article&utm_campaign=20261008013235"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "기획처·중장기전략위, 규제샌드박스·피지컬AI 혁신방안 논의",
-          "summary": "<p><img src=\"https://image.newsis.com/2026/04/22/NISI20260422_0021255084_web.jpg?rnd=20260422133343\" /></p><br />[세종=뉴시스]임하은 기자 = 기획예산처와 중장기전략위원회가 신기술의 사업화를 촉진하기 위해 규제샌드박스의 실효성을 높이고 피지컬 인공지능(AI) 실증을 확대하는 방안을 논의했다.<br /><br />기획처와 7기 중장기전략위원회는 8일 제9차 혁신성장반 분과회의를 열었다고 밝혔다.<br /><br />이날 회의에서는 규제샌드박스의 후속 법령 정비가 지연되는 문제를 개선하고, 산업 생산성 혁신과 자율제조 확산을 위한 피지컬AI 생태계를 육성하는 방안이 논의됐다.<br /><br />최해옥 과학기술정책연구원 연구위원은 규제샌드박스 승인은 빠르게 늘고 있지만 후속 법령 정비 속도는 이를 따라가지 못하고 있다고 지적했다. 규제샌드박스 누적 승인 건수는 2732건이지만 법령 정비가 완료된 사...",
-          "link": "https://www.newsis.com/view/NISX20261008_0003819288",
-          "source": "뉴시스",
-          "published": "2026-10-08T14:56:38+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "중앙정부-규제샌드박스·피지컬AI 혁신방안-신기술사업화",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "고흥 스마트팜 혁신밸리, AI 농업인재 양성 거점으로 뜬다",
-          "summary": "교육과정은 △시설원예 AX △노지·무인농기계 AX △데이터·클라우드 AX 등 3개 분야로 특화되며, 전체... 지원을 아끼지 않겠다\"며 \"지역 농업의 디지털 전환과 산업 생태계 확장의 모범 사례를 만들겠다\"고 말했다.",
-          "link": "https://www.greened.kr/news/articleView.html?idxno=351707",
-          "source": "greened.kr",
-          "published": "2026-10-08T14:50:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전남",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "고흥-스마트팜 AI 인재양성-시설원예·무인농기계",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "박수현 지사 “철강산업 지원 계속… 제2서해대교 민자·재정 병행”",
-          "summary": "또 철강 산업 공정 최적화와 품질 관리 등을 뒷받침할 정부의 AX 실증산단, AI 융합 실증 허브 구축 공모에도 참여할 방침이다. 수년째 공전 중인 제2서해대교 건설 사업은 민자 사업 유치와 국가계획 반영을 통한 재정 사업...",
-          "link": "https://www.mk.co.kr/article/12171496",
-          "source": "매일경제",
-          "published": "2026-10-08T14:46:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "전북-철강·제조 AX 정책-실증산단",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "김재준 군산시장 \"성장의 기회, 시민이 체감하는 변화 이끌 것\"",
-          "summary": "그는 \"로봇 제조공장과 협력기업을 함께 유치해 피지컬 AI 산업을 키우고 청년들이 떠나지 않아도 되는 일자리를 만들겠다\"고 밝혔다. 새만금 국제공항 정상 추진과 인입 철도 임기 내 착공, 새만금신항과 군산항 연계...",
-          "link": "https://www.news1.kr/local/jeonbuk/6314242",
-          "source": "뉴스1",
-          "published": "2026-10-08T11:51:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "군산시-피지컬AI 산업-로봇공장 유치",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "전석훈 경기도의원, 경기 AI 경쟁력, ‘집적단지’로 끌어올린다… ‘경...",
-          "summary": "산업단지의 피지컬 인공지능 실증 기반은 이미 경기도에 있다. 지금은 컴퓨팅과 실증, 인허가 지원이 사업마다 흩어져 있을 뿐”이라며 “이 조례는 그 자산을 ‘경기 AI 특구’라는 이름으로 한곳에 모으는 설계도”라고...",
-          "link": "https://www.seoul.co.kr/news/publicnews/local_govern/kyungki_do/2026/10/08/20261008500042?wlog_tag3=naver",
-          "source": "서울신문",
-          "published": "2026-10-08T09:59:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "경기",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "경기도-피지컬AI 특구-성남·시흥 산단",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "전북자치도, 피지컬AI‧로봇 글로벌 전략 포럼 개최",
-          "summary": "전북특별자치도는 오늘(8일) 산학연정 및 기업 관계자 50여 명이 참석한 가운데 '전북 피지컬AI·로봇 글로벌 전략 조찬포럼' 첫 회의를 개최했다고 밝혔습니다. 이번 포럼은 급변하는 피지컬AI와 로봇 분야의 기술 및 정책...",
-          "link": "http://www.yonhapnewstv.co.kr/news/AKR202610080955132oU",
-          "source": "yonhapnewstv.co.kr",
-          "published": "2026-10-08T09:56:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI",
-            "로봇"
-          ],
-          "core": 0,
-          "evidence": "전북자치도-피지컬AI·로봇 포럼-제조산업",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "국립군산대-영국 로버트고든대, 첨단산업 공동연구·학술교류 논의",
-          "summary": "또한, 현대자동차그룹의 새만금 투자계획과 연계해 피지컬 AI·수소·재생에너지 분야의 지역 산업 수요에 대응하는 공동연구 주제 발굴과 산업체 연계 실증 테스트베드 구축 방안을 모색했다. 국립군산대 관계자는...",
-          "link": "https://dhnews.co.kr/news/view/1065573161178319",
-          "source": "dhnews.co.kr",
-          "published": "2026-10-08T09:46:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "전북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "군산대-피지컬AI 공동연구-새만금",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "IBK기업은행, 중소기업 'AI 전환(AX)' 전방위 지원…진단부터 현장 안착...",
-          "summary": "IBK기업은행이 인력과 자금 부족으로 인공지능(AI) 도입에 어려움을 겪는 중소기업을 위해 진단부터 실전 교육, 현장 안착까지 이어지는 중소기업 AI 전환(AX) 지원 체계를 가동한다고 7일 밝혔다. 기업은행은 지난 4월...",
-          "link": "https://www.thepublic.kr/news/articleView.html?idxno=321465",
-          "source": "thepublic.kr",
-          "published": "2026-10-08T09:34:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "금융",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "IBK기업은행-중소기업 AI 도입 진단·교육·현장 적용-전국",
-          "related": [
-            {
-              "source": "newsroad.co.kr",
-              "link": "http://www.newsroad.co.kr/news/articleView.html?idxno=65450"
-            },
-            {
-              "source": "public25.com",
-              "link": "https://www.public25.com/news/articleView.html?idxno=56068"
-            },
-            {
-              "source": "newsfreezone.co.kr",
-              "link": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=712835"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "SKT·업스테이지-보안기업·대학과 ‘독자 AI 사이버보안 협의체’ 출범",
-          "summary": "SK텔레콤은 업스테이지와 국내 주요 정보보호 기업, 대학이 함께하는 '독자 인공지능(AI) 사이버보안 협의체'를 출범하고, AI 정보보호 기술 협력을 위한 업무협약을 체결했다고 8일 밝혔다. 전날 오후 SKT타워에서 열린 협약식에는 SKT와 업스테이지를 비롯해 SK쉴더스, 시큐아이, 안랩, 라온시큐어, 지니언스, 파이오링크 등 정보보호 기업 6개사와 고려대, 숭실대, 부산대 등 대학 3개교를 포함해 총 11개 기관이 참여했다. 이번 협약은 정부의 '독자 AI 파운데이션 모델 프로젝트(독파모)'에서 3단계에 진출한 SKT의 'A.X",
-          "link": "https://view.asiae.co.kr/article/2026100809100298108",
-          "source": "아시아경제",
-          "published": "2026-10-08T09:10:03+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "IT·통신·데이터센터",
-          "tech": [
-            "LLM·에이전트"
-          ],
-          "core": 0,
-          "evidence": "SKT-독자 AI 파운데이션 모델-사이버보안",
-          "related": [
-            {
-              "source": "뉴시스",
-              "link": "https://www.newsis.com/view/NISX20261008_0003818462"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "LG전자, 청소년 로봇대회 후원…피지컬 AI 인재 접점 넓힌다",
-          "summary": "이번 후원은 LG전자가 로봇을 단순 제품군이 아닌 피지컬 AI 사업으로 확대하고 있는 흐름과도 맞닿아... LG전자는 로봇 학습과 운영에 필요한 데이터를 수집·관리하는 ‘LG 데이터팩토리’를 운영하고 있다. 축적한...",
-          "link": "https://thetracker.co.kr/View.aspx?No=4256031",
-          "source": "thetracker.co.kr",
-          "published": "2026-10-08T09:07:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "로봇",
-            "피지컬AI"
-          ],
-          "core": 0,
-          "evidence": "LG전자-청소년로봇대회후원-피지컬AI인재",
-          "related": [
-            {
-              "source": "slist.kr",
-              "link": "https://www.slist.kr/news/articleView.html?idxno=772073"
-            },
-            {
-              "source": "thefairnews.co.kr",
-              "link": "https://www.thefairnews.co.kr/news/articleView.html?idxno=90067"
-            },
-            {
-              "source": "헤럴드경제",
-              "link": "https://biz.heraldcorp.com/article/10896490?ref=naver"
-            },
-            {
-              "source": "financialpost.co.kr",
-              "link": "https://www.financialpost.co.kr/news/articleView.html?idxno=279316"
-            },
-            {
-              "source": "pinpointnews.co.kr",
-              "link": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=493548"
-            },
-            {
-              "source": "daily.hankooki.com",
-              "link": "https://daily.hankooki.com/news/articleView.html?idxno=1413030"
-            },
-            {
-              "source": "pointdaily.co.kr",
-              "link": "https://www.pointdaily.co.kr/news/articleView.html?idxno=321769"
-            },
-            {
-              "source": "inews24.com",
-              "link": "http://www.inews24.com/view/2013080"
-            },
-            {
-              "source": "ngonews.kr",
-              "link": "https://www.ngonews.kr/news/articleView.html?idxno=240090"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "[현장] 박찬대 인천시장, 2028 G20 유치 공식화…'인천 리레이팅' 제시",
-          "summary": "인천시는 글로벌 AI 허브 송도 유치와 공항·항만 물류에 AI를 접목하는 '인천 물류 AX 얼라이언스'를... 박 시장은 이를 AI·바이오·콘텐츠·에너지의 'ABC+E' 전략으로 묶어 인천의 새 성장축으로 제시했다. 이번...",
-          "link": "https://www.startuptoday.co.kr/news/articleView.html?idxno=815317",
-          "source": "startuptoday.co.kr",
-          "published": "2026-10-08T08:32:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "인천",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "데이터센터"
-          ],
-          "core": 0,
-          "evidence": "인천시-물류AX얼라이언스·AI허브-공항항만",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "리사 수 \"한국서 AI 연구자 수백명 채용\"…AMD, 韓 AI거점 본격 구축",
-          "summary": "\" AI 인재 확보부터 국산 AI 칩 연동, 고성능 메모리 협력까지. 엔비디아를 바짝 추격 중인 AMD가 한국을 핵심 파트너로 삼아 AI 동맹의 스펙트럼을 넓혀가고 있습니다. TV조선 이나라입니다.",
-          "link": "https://news.tvchosun.com/site/data/html_dir/2026/10/08/2026100890044.html",
-          "source": "news.tvchosun.com",
-          "published": "2026-10-08T08:27:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "반도체",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "AMD-AI연구인력채용-한국",
-          "related": [],
-          "score": 70
-        },
-        {
-          "title": "금오공대, ‘AI중심대학사업’ 발대식 가져",
-          "summary": "금오공대는 AI중심대학사업을 통해 최장 8년간 총 263.5억 원(국비 225억 원)을 투입해 대학 조직과 교육과정을 AI 중심으로 개편하고, 반도체·방산·로봇 등 K-전략산업의 기술 혁신을 이끌 실무형 AI·AX 융합인재를...",
-          "link": "https://www.hankyung.com/article/202610089905h",
-          "source": "한국경제",
-          "published": "2026-10-08T08:25:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "타지자체",
-          "loc": "경북",
-          "ulsan_score": 0,
-          "industry": "기타",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "국립금오공대-AI중심대학-반도체·방산·로봇AX인재",
-          "related": [
-            {
-              "source": "shinailbo.co.kr",
-              "link": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5069793"
-            },
-            {
-              "source": "tk.newdaily.co.kr",
-              "link": "https://tk.newdaily.co.kr/site/data/html/2026/10/08/2026100800076.html"
-            }
-          ],
-          "score": 70
-        },
-        {
-          "title": "최태원 회장 \"AI-녹색전환은 쌍둥이전략\"...이재명 대통령 \"국제 경쟁력...",
-          "summary": "최태원 회장은 인공지능 전환(AX)과 녹색전환(GX)을 함께 설계하고 추진해야 할 '국가의 쌍둥이 전략'으로 제안했다. AI가 에너지 효율과 탄소 감축을 높이고, 녹색전환이 AI 산업의 지속 가능한 성장을 뒷받침하는...",
-          "link": "https://www.greened.kr/news/articleView.html?idxno=351652",
-          "source": "greened.kr",
-          "published": "2026-10-08T06:57:00+09:00",
-          "grade": "A",
-          "m": "주제",
-          "section": 3,
-          "region": "전국",
-          "loc": null,
-          "ulsan_score": 0,
-          "industry": "에너지",
-          "tech": [
-            "기타"
-          ],
-          "core": 0,
-          "evidence": "최태원-AI·녹색전환-국가쌍둥이전략",
           "related": [],
           "score": 70
         }
