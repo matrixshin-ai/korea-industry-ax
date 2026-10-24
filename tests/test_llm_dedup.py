@@ -194,3 +194,52 @@ def test_llm_merge_candidates_ignores_duplicate_id_across_groups_in_one_response
     assert merge_map == {"https://b.example.com/2": "https://a.example.com/1"}
     assert "https://c.example.com/3" not in merge_map
     assert "https://c.example.com/3" not in merge_map.values()
+
+
+def _truck_case():
+    from fixtures_20261020_truck import ROUNDUP, TRUCK_EVENT, filler_titles
+    fillers = [_article(t, f"https://f.example.com/{k}", "매체") for k, t in enumerate(filler_titles(300))]
+    events = [_article(t, f"https://n.example.com/{i}", s) for i, t, s in TRUCK_EVENT + [ROUNDUP]]
+    # 실제 빌드처럼 같은 사건 기사가 다른 후보 사이에 흩어져 들어온다 (26건 간격, 첫 항목은 다른 후보).
+    items = list(fillers)
+    for k, ev in enumerate(events):
+        items.insert(k * 26 + 13, ev)
+    truck_links = {f"https://n.example.com/{i}" for i, _, _ in TRUCK_EVENT}
+    return items, truck_links
+
+
+def test_order_for_chunking_puts_20261020_truck_event_in_one_chunk():
+    items, truck_links = _truck_case()
+    plain = [{it["link"] for it in c} & truck_links for c in llm_dedup._chunk(items, llm_dedup.MAX_CHUNK_SIZE)]
+    assert sum(1 for c in plain if c) > 1  # 정렬 전: 여러 청크에 흩어짐 (10-21 빌드 재현)
+
+    ordered = llm_dedup._order_for_chunking(items)
+    assert sorted(it["link"] for it in ordered) == sorted(it["link"] for it in items)  # 순서만 바뀜
+    pos = [k for k, it in enumerate(ordered) if it["link"] in truck_links]
+    assert pos[-1] - pos[0] <= len(truck_links)  # 사건 기사끼리 붙어 있다 (모음 기사 1건 끼는 정도)
+    chunks = [{it["link"] for it in c} & truck_links for c in llm_dedup._chunk(ordered, llm_dedup.MAX_CHUNK_SIZE)]
+    assert [len(c) for c in chunks if c] == [len(truck_links)]
+
+
+def test_llm_dedup_logs_chunk_ids_and_merged_groups():
+    import hashlib
+    items, truck_links = _truck_case()
+
+    def fake_create(**kwargs):
+        # 가짜 Haiku: 트럭 실증 제목만 한 그룹으로 묶고 나머지는 단독.
+        payload = json.loads(kwargs["messages"][0]["content"])
+        truck = [p["i"] for p in payload if "자율주행" in p["t"] or "대형트럭" in p["t"]]
+        rest = [[p["i"]] for p in payload if p["i"] not in truck]
+        return _text_response(json.dumps(([truck] if truck else []) + rest))
+
+    client = MagicMock()
+    client.messages.create.side_effect = fake_create
+    log = {}
+    merge_map = llm_dedup.llm_merge_candidates(client, items, log)
+
+    sid = lambda link: hashlib.sha1(link.encode("utf-8")).hexdigest()[:8]
+    assert len(log["chunks"]) == log["chunk_count"] == 4
+    assert sorted(i for c in log["chunks"] for i in c["ids"]) == sorted(sid(it["link"]) for it in items)
+    groups = [g for c in log["chunks"] for g in c["groups"]]
+    assert len(groups) == 1 and set(groups[0]) == {sid(l) for l in truck_links}
+    assert set(merge_map) | set(merge_map.values()) == truck_links

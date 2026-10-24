@@ -36,12 +36,13 @@ MIN_CHUNK_SPLIT_SIZE, mirroring classify.py's halve-and-retry fallback -
 smaller chunks are both less likely to trip whatever caused the failure and
 lose less work if they still do.
 """
+import hashlib
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from dedup import _choose_better
+from dedup import _choose_better, _extract_organizations, _get_combined_text, _tokenize_for_similarity
 from classify import INPUT_PRICE_PER_M, OUTPUT_PRICE_PER_M
 
 MODEL = "claude-haiku-4-5-20251001"
@@ -50,6 +51,13 @@ MAX_CHUNK_SIZE = 100  # lowered from 200 on 2026-09-29 - a smaller chunk both lo
 # odds of hitting whatever caused the 2026-09-29 parse failure and (with the
 # halve-and-retry fallback above) loses less work per failure either way
 MIN_CHUNK_SPLIT_SIZE = 20  # floor for the halve-and-retry fallback on a failed chunk
+# Chunk ordering (2026-10-24): candidates used to be split in build order, so
+# same-event articles published hours apart (10-20 현대차·기아 레벨4 자율주행
+# 트럭 실증, 11 outlets) could land in different chunks and never be compared.
+# Candidates are now ordered so items sharing an organization / similar titles
+# sit next to each other before the straight partition below.
+ORDER_ORG_BONUS = 0.5  # added to title Jaccard when two items share a detected organization
+ORDER_LOOKBACK = 3  # next item is the one closest to any of the last N placed items
 
 SYSTEM_PROMPT = """당신은 한국어 뉴스 동일 사건 판별기입니다.
 입력은 JSON 배열이며, 각 원소는 {"i": id, "t": 제목, "s": 매체명}입니다. 이 기사
@@ -65,6 +73,45 @@ SYSTEM_PROMPT = """당신은 한국어 뉴스 동일 사건 판별기입니다.
 
 def _chunk(items, size):
     return [items[i:i + size] for i in range(0, len(items), size)]
+
+
+def _item_id(item: dict) -> str:
+    """sha1(link)[:8] - the same id scripts/export_to_vault.py puts in vault
+    filenames (and public-ax uses as anchor_id), so a logged group can be
+    traced to vault/public-ax files directly."""
+    return hashlib.sha1((item.get("link") or "").encode("utf-8")).hexdigest()[:8]
+
+
+def _order_for_chunking(items: list) -> list:
+    """Greedy nearest-neighbour ordering: start from the first item, then
+    repeatedly place the remaining item most similar to any of the last
+    ORDER_LOOKBACK placed items (title Jaccard + ORDER_ORG_BONUS for a shared
+    organization; ties keep the original order). An item with no similarity
+    to the recent ones falls back to original order. Only the order changes -
+    the chunks are still a straight partition, so the anti-chain guarantee
+    (each item in exactly one chunk) is unchanged."""
+    if len(items) < 3:
+        return list(items)
+    orgs = [_extract_organizations(_get_combined_text(it)) for it in items]
+    toks = [set(_tokenize_for_similarity(it.get("title", ""))) for it in items]
+
+    def score(i, j):
+        union = len(toks[i] | toks[j])
+        sim = len(toks[i] & toks[j]) / union if union else 0.0
+        return sim + (ORDER_ORG_BONUS if orgs[i] & orgs[j] else 0.0)
+
+    remaining = list(range(1, len(items)))
+    order = [0]
+    while remaining:
+        recent = order[-ORDER_LOOKBACK:]
+        best, best_score = remaining[0], 0.0
+        for j in remaining:
+            s = max(score(i, j) for i in recent)
+            if s > best_score:
+                best, best_score = j, s
+        remaining.remove(best)
+        order.append(best)
+    return [items[i] for i in order]
 
 
 def _parse_json_array(text: str):
@@ -109,9 +156,11 @@ def _merge_one_chunk(client, chunk_items: list, log: dict) -> dict:
             merge_map.update(_merge_one_chunk(client, chunk_items[mid:], log))
             return merge_map
         log.setdefault("llm_dedup_errors", []).append({"chunk_size": len(chunk_items), "error": str(e)})
+        log.setdefault("chunks", []).append({"ids": [_item_id(it) for it in chunk_items], "failed": True})
         return {}
 
     merge_map = {}
+    merged_groups = []
     assigned = set()
     for group in groups if isinstance(groups, list) else []:
         ids = group if isinstance(group, list) else []
@@ -128,6 +177,14 @@ def _merge_one_chunk(client, chunk_items: list, log: dict) -> dict:
         for it in group_items:
             if it is not rep:
                 merge_map[it.get("link", "")] = rep.get("link", "")
+        merged_groups.append([_item_id(rep)] + [_item_id(it) for it in group_items if it is not rep])
+    # Per-chunk decision log by id (2026-10-24): which items were sent together
+    # and which groups were merged (representative first). Items not in any
+    # group were judged singletons. Before this, only token counts were logged,
+    # so "never in the same chunk" and "compared but judged different" could
+    # not be told apart.
+    log.setdefault("chunks", []).append({"ids": [_item_id(it) for it in chunk_items],
+                                         "groups": merged_groups})
     return merge_map
 
 
@@ -151,7 +208,7 @@ def llm_merge_candidates(client, items: list, log: dict) -> dict:
     if not items:
         log["estimated_cost_usd"] = 0.0
         return {}
-    chunks = _chunk(items, MAX_CHUNK_SIZE)
+    chunks = _chunk(_order_for_chunking(items), MAX_CHUNK_SIZE)
     log["chunk_count"] = len(chunks)
     merge_map = {}
     for c in chunks:

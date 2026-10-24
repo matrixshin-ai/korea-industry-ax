@@ -93,3 +93,34 @@ def test_no_org_match_and_low_title_similarity_still_does_not_merge():
     )
     result = deduplicate_articles([a, b])
     assert len(result) == 2
+
+
+def test_20261020_level4_truck_titles_merge_on_shared_level_number():
+    # 2026-10-20 사례: 기관명(현대차)은 모두 일치했지만 금액이 없어 관문(org+숫자)을
+    # 전부 통과하지 못했다. 레벨N·km를 숫자 신호로 잡은 뒤에는 "레벨4" 제목들이 하나로 묶인다.
+    from fixtures_20261020_truck import TRUCK_EVENT
+    items = [_article(t, "", f"https://n.example.com/{i}", s, score=8) for i, t, s in TRUCK_EVENT]
+    result = deduplicate_articles(items)
+    biggest = max(result, key=lambda r: len(r["related"]))
+    group = {biggest["link"]} | {r["link"] for r in biggest["related"]}
+    level4 = {"759ded29", "6d173edd", "b32568e3", "0e5d7687", "ded7f3e4", "cec4ba38"}
+    assert {f"https://n.example.com/{i}" for i in level4} <= group
+    assert len(result) < len(items)
+
+
+def test_new_number_patterns_and_compound_dae_excluded():
+    from dedup import _extract_non_date_numbers as nums
+    assert nums("고속도로 400km 실전운행") == {"400:km"}
+    assert nums("레벨 4 자율주행") == {"4:level"}
+    assert nums("자율주행 트럭 20대 투입") == {"20:units"}
+    assert nums("컨테이너선 8척 수주") == {"8:ships"}
+    assert nums("국내 4대 그룹 총수") == set()
+    assert nums("울산 2대학 협약") == set()
+
+
+def test_age_expressions_are_not_unit_counts():
+    from dedup import _extract_non_date_numbers as nums
+    for text in ("20대 남성", "30대 여성", "20대 청년 채용", "50대 이상", "40대 이하",
+                 "30대 초반", "40대 후반", "50대중반"):
+        assert nums(text) == set(), text
+    assert nums("로봇 30대 도입") == {"30:units"}
