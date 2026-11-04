@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-11-04T01:38:03.055927+00:00",
+  "total_candidates": 7295,
+  "cache_hits": 1180,
+  "to_classify": 5744,
+  "failed_batches": [],
+  "finance_title_filtered_out": 371,
+  "keyword_prefilter_pass": 4306,
+  "keyword_prefilter_filtered_out": 1438,
+  "batches_api_id": "msgbatch_01PoJvEqYTMR8nkRo9rXEbN8",
+  "batches_api_group_count": 54,
+  "batches_api_timed_out": false,
+  "batches_api_input_tokens": 1056988,
+  "batches_api_output_tokens": 229165,
+  "batches_api_fallback_group_count": 0,
+  "batches_api_fallback_item_count": 0,
+  "rule_capped": 0,
+  "input_tokens": 1056988,
+  "output_tokens": 229165,
+  "estimated_cost_usd": 1.1014,
+  "finished_at": "2026-11-04T01:40:26.954683+00:00"
+}

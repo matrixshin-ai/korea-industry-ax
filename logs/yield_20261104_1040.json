@@ -1,46 +1,64 @@
 {
   "rss": {
-    "https://www.kmib.co.kr/rss/data/kmibEcoRss.xml": {
-      "source": "국민일보",
-      "candidates": 62,
-      "s": 2,
-      "a": 3
-    },
-    "https://www.mbn.co.kr/rss/economy/": {
-      "source": "MBN",
-      "candidates": 20,
+    "https://www.khan.co.kr/rss/rssdata/economy_news.xml": {
+      "source": "경향신문",
+      "candidates": 50,
       "s": 0,
       "a": 0
     },
+    "https://www.kmib.co.kr/rss/data/kmibEcoRss.xml": {
+      "source": "국민일보",
+      "candidates": 60,
+      "s": 1,
+      "a": 4
+    },
     "https://www.ksilbo.co.kr/rss/allArticle.xml": {
       "source": "경상일보",
-      "candidates": 200,
+      "candidates": 183,
+      "s": 0,
+      "a": 2
+    },
+    "https://www.newsis.com/RSS/health.xml": {
+      "source": "뉴시스",
+      "candidates": 100,
       "s": 0,
       "a": 1
     },
     "https://www.sedaily.com/rss/economy": {
       "source": "서울경제",
-      "candidates": 34,
+      "candidates": 33,
       "s": 0,
-      "a": 0
+      "a": 1
     },
     "https://biz.heraldcorp.com/rss/google/economy": {
       "source": "헤럴드경제",
-      "candidates": 79,
+      "candidates": 60,
       "s": 0,
-      "a": 4
+      "a": 1
     },
-    "https://www.aitimes.com/rss/allArticle.xml": {
-      "source": "AI타임스",
+    "https://www.fnnews.com/rss/r20/fn_realnews_economy.xml": {
+      "source": "파이낸셜뉴스",
       "candidates": 41,
       "s": 2,
       "a": 0
     },
-    "https://www.irobotnews.com/rss/allArticle.xml": {
-      "source": "로봇신문",
-      "candidates": 35,
+    "https://www.aitimes.com/rss/allArticle.xml": {
+      "source": "AI타임스",
+      "candidates": 44,
       "s": 0,
       "a": 1
+    },
+    "https://www.irobotnews.com/rss/allArticle.xml": {
+      "source": "로봇신문",
+      "candidates": 23,
+      "s": 0,
+      "a": 1
+    },
+    "https://www.hellot.net/data/rss/news.xml": {
+      "source": "헬로티",
+      "candidates": 26,
+      "s": 1,
+      "a": 0
     },
     "https://www.hankyung.com/feed/economy": {
       "source": "한국경제",
@@ -51,8 +69,8 @@
     "https://www.asiae.co.kr/rss/industry-IT.htm": {
       "source": "아시아경제",
       "candidates": 100,
-      "s": 0,
-      "a": 3
+      "s": 1,
+      "a": 2
     },
     "https://rss.donga.com/economy.xml": {
       "source": "동아일보",
@@ -68,13 +86,13 @@
     },
     "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml": {
       "source": "조선일보",
-      "candidates": 94,
+      "candidates": 97,
       "s": 0,
-      "a": 3
+      "a": 1
     },
     "https://www.seoul.co.kr/xml/rss/google_economy.xml": {
       "source": "서울신문",
-      "candidates": 37,
+      "candidates": 38,
       "s": 0,
       "a": 2
     },
@@ -84,53 +102,23 @@
       "s": 0,
       "a": 0
     },
-    "https://www.ulsanpress.net/rss/allArticle.xml": {
-      "source": "울산신문",
-      "candidates": 50,
-      "s": 0,
-      "a": 2
-    },
-    "https://www.newsis.com/RSS/industry.xml": {
-      "source": "뉴시스",
-      "candidates": 100,
-      "s": 0,
-      "a": 0
-    },
-    "https://www.newsis.com/RSS/health.xml": {
-      "source": "뉴시스",
-      "candidates": 98,
-      "s": 0,
-      "a": 2
-    },
-    "http://rss.edaily.co.kr/edaily_news.xml": {
-      "source": "이데일리",
-      "candidates": 49,
-      "s": 0,
-      "a": 1
-    },
     "http://rss.etnews.com/Section901.xml": {
       "source": "전자신문",
       "candidates": 30,
       "s": 0,
-      "a": 1
-    },
-    "https://www.hellot.net/data/rss/news.xml": {
-      "source": "헬로티",
-      "candidates": 33,
-      "s": 1,
-      "a": 3
+      "a": 0
     },
     "https://www.industrynews.co.kr/rss/allArticle.xml": {
       "source": "인더스트리뉴스",
       "candidates": 50,
       "s": 1,
-      "a": 2
+      "a": 0
     },
-    "https://www.khan.co.kr/rss/rssdata/economy_news.xml": {
-      "source": "경향신문",
-      "candidates": 50,
-      "s": 2,
-      "a": 1
+    "https://www.mbn.co.kr/rss/economy/": {
+      "source": "MBN",
+      "candidates": 14,
+      "s": 0,
+      "a": 0
     },
     "https://www.iusm.co.kr/rss/allArticle.xml": {
       "source": "울산매일",
@@ -138,15 +126,27 @@
       "s": 0,
       "a": 1
     },
+    "https://www.ulsanpress.net/rss/allArticle.xml": {
+      "source": "울산신문",
+      "candidates": 50,
+      "s": 0,
+      "a": 1
+    },
     "http://www.ujeil.com/rss/allArticle.xml": {
       "source": "울산제일일보",
-      "candidates": 78,
+      "candidates": 75,
       "s": 0,
       "a": 0
     },
-    "https://www.fnnews.com/rss/r20/fn_realnews_economy.xml": {
-      "source": "파이낸셜뉴스",
-      "candidates": 28,
+    "https://www.newsis.com/RSS/industry.xml": {
+      "source": "뉴시스",
+      "candidates": 100,
+      "s": 0,
+      "a": 1
+    },
+    "http://rss.edaily.co.kr/edaily_news.xml": {
+      "source": "이데일리",
+      "candidates": 4,
       "s": 0,
       "a": 0
     },
@@ -154,221 +154,231 @@
       "source": "산업일보",
       "candidates": 10,
       "s": 0,
-      "a": 1
+      "a": 0
     }
   },
   "naver": {
     "\"AI 전환\"": {
-      "candidates": 654,
-      "s": 4,
-      "a": 59
+      "candidates": 566,
+      "s": 15,
+      "a": 71
     },
     "\"산업 AX\"": {
       "candidates": 12,
       "s": 0,
-      "a": 2
+      "a": 1
     },
     "\"제조 AX\"": {
-      "candidates": 33,
+      "candidates": 51,
+      "s": 0,
+      "a": 7
+    },
+    "AX 전략": {
+      "candidates": 200,
+      "s": 8,
+      "a": 6
+    },
+    "\"제조 AI\"": {
+      "candidates": 28,
+      "s": 4,
+      "a": 0
+    },
+    "AI 공장": {
+      "candidates": 692,
+      "s": 7,
+      "a": 32
+    },
+    "AI 팩토리": {
+      "candidates": 166,
+      "s": 17,
+      "a": 17
+    },
+    "생성형 AI 제조": {
+      "candidates": 52,
       "s": 0,
       "a": 2
     },
-    "AX 전략": {
-      "candidates": 321,
-      "s": 1,
-      "a": 23
-    },
-    "\"제조 AI\"": {
-      "candidates": 50,
-      "s": 25,
-      "a": 3
-    },
-    "AI 공장": {
-      "candidates": 656,
-      "s": 7,
-      "a": 64
-    },
-    "AI 팩토리": {
-      "candidates": 312,
-      "s": 59,
-      "a": 51
-    },
-    "생성형 AI 제조": {
-      "candidates": 51,
-      "s": 0,
-      "a": 4
-    },
     "자율제조": {
-      "candidates": 208,
-      "s": 3,
-      "a": 5
+      "candidates": 196,
+      "s": 0,
+      "a": 24
     },
     "자율공장": {
-      "candidates": 44,
+      "candidates": 26,
       "s": 0,
       "a": 1
     },
     "자율생산": {
-      "candidates": 205,
+      "candidates": 160,
       "s": 0,
       "a": 12
     },
     "스마트팩토리": {
-      "candidates": 61,
+      "candidates": 88,
       "s": 0,
       "a": 0
     },
     "스마트공장": {
-      "candidates": 90,
+      "candidates": 107,
       "s": 0,
-      "a": 6
+      "a": 12
     },
     "\"디지털 트윈\"": {
-      "candidates": 249,
+      "candidates": 154,
       "s": 0,
-      "a": 67
+      "a": 10
+    },
+    "예지보전": {
+      "candidates": 3,
+      "s": 0,
+      "a": 0
+    },
+    "피지컬 AI": {
+      "candidates": 358,
+      "s": 4,
+      "a": 50
     },
     "휴머노이드": {
-      "candidates": 132,
+      "candidates": 147,
       "s": 0,
-      "a": 16
+      "a": 4
     },
     "지능형 로봇": {
-      "candidates": 11,
+      "candidates": 12,
       "s": 0,
       "a": 0
     },
     "산업용 로봇 AI": {
-      "candidates": 13,
+      "candidates": 6,
       "s": 0,
       "a": 2
     },
     "AIDC": {
-      "candidates": 93,
-      "s": 0,
-      "a": 30
-    },
-    "엣지 AI 제조": {
-      "candidates": 17,
-      "s": 0,
-      "a": 5
-    },
-    "AI 비전 검사": {
-      "candidates": 15,
-      "s": 0,
-      "a": 0
-    },
-    "제조 AI 지원사업": {
-      "candidates": 51,
-      "s": 0,
-      "a": 3
-    },
-    "AI 바우처": {
-      "candidates": 9,
-      "s": 0,
-      "a": 0
-    },
-    "산업 AI 예산": {
-      "candidates": 254,
-      "s": 0,
-      "a": 3
-    },
-    "FDE": {
-      "candidates": 6,
-      "s": 0,
-      "a": 0
-    },
-    "AI 해커톤": {
-      "candidates": 140,
-      "s": 0,
-      "a": 0
-    },
-    "AI 부트캠프": {
-      "candidates": 26,
-      "s": 0,
-      "a": 3
-    },
-    "제조 AI 교육": {
-      "candidates": 51,
-      "s": 0,
-      "a": 4
-    },
-    "AI 재교육": {
-      "candidates": 17,
-      "s": 0,
-      "a": 1
-    },
-    "울산 AI": {
-      "candidates": 167,
-      "s": 2,
-      "a": 22
-    },
-    "UNIST AI": {
-      "candidates": 7,
-      "s": 0,
-      "a": 1
-    },
-    "울산 데이터센터": {
-      "candidates": 2,
-      "s": 0,
-      "a": 0
-    },
-    "조선 AI": {
-      "candidates": 220,
-      "s": 0,
-      "a": 0
-    },
-    "석유화학 AI": {
-      "candidates": 27,
-      "s": 1,
-      "a": 2
-    },
-    "배터리 AI 공정": {
-      "candidates": 15,
-      "s": 0,
-      "a": 2
-    },
-    "정유 AI": {
-      "candidates": 21,
-      "s": 0,
-      "a": 0
-    },
-    "산업 AI": {
-      "candidates": 884,
-      "s": 0,
-      "a": 51
-    },
-    "피지컬 AI": {
-      "candidates": 416,
-      "s": 111,
-      "a": 15
-    },
-    "산업 데이터": {
-      "candidates": 384,
-      "s": 0,
-      "a": 11
-    },
-    "AI 데이터센터": {
-      "candidates": 335,
-      "s": 0,
-      "a": 4
-    },
-    "예지보전": {
-      "candidates": 9,
+      "candidates": 18,
       "s": 0,
       "a": 0
     },
     "온디바이스 AI 제조": {
-      "candidates": 11,
+      "candidates": 22,
+      "s": 0,
+      "a": 0
+    },
+    "엣지 AI 제조": {
+      "candidates": 5,
+      "s": 0,
+      "a": 0
+    },
+    "AI 비전 검사": {
+      "candidates": 29,
+      "s": 0,
+      "a": 0
+    },
+    "M.AX": {
+      "candidates": 21,
+      "s": 0,
+      "a": 3
+    },
+    "제조 AI 지원사업": {
+      "candidates": 36,
+      "s": 0,
+      "a": 0
+    },
+    "AI 바우처": {
+      "candidates": 25,
+      "s": 0,
+      "a": 0
+    },
+    "산업 AI 예산": {
+      "candidates": 224,
       "s": 0,
       "a": 0
     },
     "AI 실증": {
-      "candidates": 331,
+      "candidates": 371,
       "s": 0,
-      "a": 14
+      "a": 10
     },
-    "자동차 AI 공장": {
+    "FDE": {
+      "candidates": 9,
+      "s": 0,
+      "a": 6
+    },
+    "AI 해커톤": {
+      "candidates": 63,
+      "s": 0,
+      "a": 1
+    },
+    "AI 부트캠프": {
+      "candidates": 7,
+      "s": 0,
+      "a": 0
+    },
+    "AX 인재": {
+      "candidates": 11,
+      "s": 0,
+      "a": 0
+    },
+    "제조 AI 교육": {
+      "candidates": 43,
+      "s": 0,
+      "a": 0
+    },
+    "AI 재교육": {
+      "candidates": 6,
+      "s": 0,
+      "a": 0
+    },
+    "울산 AI": {
+      "candidates": 86,
+      "s": 0,
+      "a": 4
+    },
+    "울산 로봇": {
+      "candidates": 5,
+      "s": 0,
+      "a": 0
+    },
+    "조선 AI": {
+      "candidates": 171,
+      "s": 0,
+      "a": 1
+    },
+    "석유화학 AI": {
+      "candidates": 15,
+      "s": 0,
+      "a": 0
+    },
+    "배터리 AI 공정": {
+      "candidates": 6,
+      "s": 0,
+      "a": 0
+    },
+    "정유 AI": {
+      "candidates": 6,
+      "s": 0,
+      "a": 0
+    },
+    "산업 AI": {
+      "candidates": 869,
+      "s": 5,
+      "a": 37
+    },
+    "산업 데이터": {
+      "candidates": 299,
+      "s": 0,
+      "a": 0
+    },
+    "AI 데이터센터": {
+      "candidates": 434,
+      "s": 0,
+      "a": 32
+    },
+    "제조 파운데이션 모델": {
+      "candidates": 2,
+      "s": 0,
+      "a": 0
+    },
+    "\"AI 드라이브\"": {
       "candidates": 1,
       "s": 0,
       "a": 0
@@ -378,18 +388,18 @@
       "s": 0,
       "a": 0
     },
-    "M.AX": {
+    "울산 AX": {
+      "candidates": 5,
+      "s": 0,
+      "a": 3
+    },
+    "UNIST AI": {
       "candidates": 1,
       "s": 0,
-      "a": 1
+      "a": 0
     },
-    "AX 인재": {
-      "candidates": 32,
-      "s": 0,
-      "a": 1
-    },
-    "울산 로봇": {
-      "candidates": 5,
+    "울산 데이터센터": {
+      "candidates": 3,
       "s": 0,
       "a": 0
     }
